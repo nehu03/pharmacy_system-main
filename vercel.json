@@ -1,0 +1,6 @@
+{
+  "rewrites": [
+    { "source": "/", "destination": "/pharmacy_system-main/index.html" },
+    { "source": "/:path*", "destination": "/pharmacy_system-main/:path*" }
+  ]
+}

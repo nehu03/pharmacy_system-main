@@ -24,8 +24,12 @@ Med it Easy — Supabase setup (after code changes in this folder)
 
 7) Import this GitHub repo in Vercel → New Project.
 
-8) Set Root Directory to: pharmacy_system-main
-   (the inner folder that contains login.html, js/, index.html — not the repo root.)
+8) Root Directory — pick ONE approach (wrong setting causes 404 NOT_FOUND):
+   A) RECOMMENDED: set Root Directory to exactly:   pharmacy_system-main
+      (inner folder with login.html / js/ / index.html). Leave Build empty. Framework: Other.
+      Your site is served at https://YOUR-PROJECT.vercel.app/ with no extra path.
+   B) ALTERNATIVE: leave Root Directory EMPTY (repo root). Framework: Other.
+      A vercel.json at the repo root rewrites requests into pharmacy_system-main/.
 
 9) Framework: Other. Leave Build Command empty. Deploy.
    IMPORTANT: This app is static HTML (no Next.js, no package.json with "next").
