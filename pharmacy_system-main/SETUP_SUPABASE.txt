@@ -3,13 +3,16 @@ Med it Easy — Supabase setup (after code changes in this folder)
 1) Create a project at https://supabase.com
 
 2) Project Settings → API: copy Project URL and anon public key into js/supabase-config.js
-   (see js/supabase-config.example.js)
+   (see js/supabase-config.example.js). The file is tracked in this repo for convenience.
 
 3) SQL Editor: paste and run the full contents of:
    supabase/migrations/20250329120000_init_pharmacy.sql
+   Success looks like: finished with no errors (DDL often shows "Success. No rows returned").
 
-4) Authentication → URL configuration: add your site URL (e.g. http://localhost:8765) to
-   Site URL and Redirect URLs if you use email confirmation.
+4) Authentication → URL configuration: add every URL where users open the app:
+   - Local: http://127.0.0.1:8765 (or your static server port)
+   - Production: https://YOUR-PROJECT.vercel.app (and custom domain if you add one)
+   Put the primary URL in Site URL and the same list in Redirect URLs.
 
 5) For local testing, Authentication → Providers → Email: consider turning OFF
    "Confirm email" so signUp returns a session immediately (needed for admin RPC flow).
@@ -17,4 +20,16 @@ Med it Easy — Supabase setup (after code changes in this folder)
 6) Change the admin secret: edit claim_admin_role in the migration (or create a new migration)
    and keep login.html / registration in sync — do not ship the default secret to production.
 
-7) Deploy static HTML to any host (Netlify, Vercel, etc.) and repeat step 4 with the production URL.
+--- Vercel (static deploy) ---
+
+7) Import this GitHub repo in Vercel → New Project.
+
+8) Set Root Directory to: pharmacy_system-main
+   (the inner folder that contains login.html, js/, index.html — not the repo root.)
+
+9) Framework: Other. Leave Build Command empty. Deploy.
+
+10) After deploy, copy your live URL (e.g. https://xxx.vercel.app) and add it in Supabase
+    Authentication → URL configuration (step 4).
+
+11) index.html at the app root redirects to login.html so opening / on Vercel works.
