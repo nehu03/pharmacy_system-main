@@ -28,6 +28,10 @@ Med it Easy — Supabase setup (after code changes in this folder)
    (the inner folder that contains login.html, js/, index.html — not the repo root.)
 
 9) Framework: Other. Leave Build Command empty. Deploy.
+   IMPORTANT: This app is static HTML (no Next.js, no package.json with "next").
+   In Vercel: Project → Settings → General → Framework Preset = "Other" (not Next.js).
+   If you see "No Next.js version detected" or "package.json has next", you picked Next.js
+   or the wrong Root Directory. Fix Framework Preset + Root Directory, then Redeploy.
 
 10) After deploy, copy your live URL (e.g. https://xxx.vercel.app) and add it in Supabase
     Authentication → URL configuration (step 4).
