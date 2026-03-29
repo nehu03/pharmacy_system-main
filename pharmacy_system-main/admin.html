@@ -713,6 +713,15 @@
     showToast('Reply sent successfully!');
   }
 
+ 
+  // ── LOGOUT ──
+  function doLogout() {
+    sessionStorage.clear();
+    localStorage.removeItem('meditSession');
+    location.href = 'login.html';
+  }
+
+
   // ── NOTIFICATIONS ──
   function clearNotifs() {
     ['nd1','nd2','nd3'].forEach(id => { const el = document.getElementById(id); if(el) el.style.display='none'; });
