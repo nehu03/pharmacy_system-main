@@ -1,0 +1,326 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Ortho Belts & Support</title>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    body { font-family: "Segoe UI", sans-serif; background: #f5f9ff; color: #0d1a2e; }
+    .app { min-height: 100vh; display: flex; flex-direction: column; }
+    .header { background: linear-gradient(135deg, #e3f0ff 0%, #e8f4fd 60%, #cce0ff 100%); border-bottom: 2px solid #1976d2; }
+    .header-content { max-width: 1200px; margin: 0 auto; padding: 20px 24px; }
+    .header-top { display: flex; align-items: center; gap: 16px; justify-content: space-between; }
+    .logo { font-size: 2.4rem; }
+    .header-text { text-align: center; flex: 1; }
+    .site-title { font-size: 2.2rem; font-weight: 800; letter-spacing: 0.14em; color: #0d47a1; text-transform: uppercase; }
+    .site-tagline { font-size: 0.95rem; color: #1565c0; margin-top: 4px; }
+    .cart-icon { font-size: 1.5rem; cursor: pointer; background: white; border: 2px solid #1976d2; border-radius: 50px; padding: 6px 14px; display: flex; align-items: center; gap: 6px; user-select: none; }
+    .cart-icon:hover { background: #e3f0ff; }
+    .cart-count { font-size: 1rem; font-weight: 700; color: #0d47a1; }
+    .top-nav { background: #e3f0ff; border-bottom: 2px solid #90caf9; display: flex; flex-wrap: wrap; justify-content: center; padding: 0 16px; overflow-x: auto; }
+    .nav-btn { background: none; border: none; border-bottom: 3px solid transparent; padding: 14px 18px; font-size: 0.88rem; font-weight: 600; color: #1565c0; cursor: pointer; white-space: nowrap; transition: color 0.2s, border-color 0.2s, background 0.2s; }
+    .nav-btn:hover { color: #0d47a1; background: #bbdefb; }
+    .nav-btn.active { color: #0d47a1; border-bottom-color: #0d47a1; background: #bbdefb; }
+    .body-layout { flex: 1; display: flex; max-width: 1200px; margin: 24px auto; width: 100%; padding: 0 16px; gap: 24px; }
+    .sidebar { width: 220px; flex-shrink: 0; background: white; border-radius: 16px; border: 1.5px solid #90caf9; padding: 20px 0; height: fit-content; box-shadow: 0 2px 12px rgba(13,71,161,0.07); }
+    .sidebar-title { font-size: 0.78rem; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; color: #1565c0; padding: 0 20px 12px; border-bottom: 1.5px solid #90caf9; margin-bottom: 8px; }
+    .sidebar-list { list-style: none; }
+    .sidebar-btn { display: block; width: 100%; background: none; border: none; border-left: 3px solid transparent; text-align: left; padding: 10px 20px; font-size: 0.9rem; color: #1565c0; cursor: pointer; transition: background 0.15s, color 0.15s, padding-left 0.15s; }
+    .sidebar-btn:hover { background: #e3f0ff; color: #0d47a1; padding-left: 26px; }
+    .sidebar-btn.active { background: #bbdefb; color: #0d47a1; font-weight: 700; border-left-color: #0d47a1; padding-left: 26px; }
+    .main-content { flex: 1; min-width: 0; }
+    .section-header { margin-bottom: 20px; display: flex; align-items: baseline; gap: 12px; flex-wrap: wrap; }
+    .section-title { font-size: 1.5rem; font-weight: 800; color: #0d47a1; }
+    .section-subtitle { font-size: 0.85rem; color: #1565c0; }
+    .products-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 20px; }
+    .product-card { background: white; border-radius: 16px; border: 1.5px solid #90caf9; overflow: hidden; box-shadow: 0 2px 10px rgba(13,71,161,0.07); display: flex; flex-direction: column; transition: transform 0.2s, box-shadow 0.2s; }
+    .product-card:hover { transform: translateY(-4px); box-shadow: 0 8px 24px rgba(13,71,161,0.15); }
+    .product-img { background: linear-gradient(135deg, #e3f0ff 0%, #e8f4fd 100%); height: 130px; display: flex; align-items: center; justify-content: center; }
+    .product-emoji { font-size: 3.2rem; user-select: none; }
+    .product-info { padding: 14px 14px 8px; flex: 1; }
+    .product-name { font-size: 0.88rem; font-weight: 600; color: #0d1a2e; line-height: 1.4; margin-bottom: 6px; }
+    .product-price { font-size: 1rem; font-weight: 800; color: #0d47a1; }
+    .add-to-cart-btn { margin: 0 14px 14px; padding: 9px 0; background: linear-gradient(90deg, #1976d2, #0288d1); color: white; border: none; border-radius: 50px; font-size: 0.85rem; font-weight: 700; cursor: pointer; transition: opacity 0.2s, transform 0.1s, background 0.3s; }
+    .add-to-cart-btn:hover { opacity: 0.9; transform: scale(1.02); }
+    .add-to-cart-btn.added { background: linear-gradient(90deg, #66bb6a, #43a047); }
+    .footer { background: #e3f0ff; border-top: 1.5px solid #90caf9; text-align: center; padding: 18px; font-size: 0.85rem; color: #1565c0; }
+    @media (max-width: 768px) {
+      .site-title { font-size: 1.3rem; }
+      .body-layout { flex-direction: column; margin: 16px auto; }
+      .sidebar { width: 100%; }
+      .sidebar-list { display: flex; flex-wrap: wrap; gap: 4px; padding: 0 12px 12px; }
+      .sidebar-btn { width: auto; border: 1.5px solid #90caf9; border-left: 1.5px solid #90caf9; border-radius: 50px; padding: 7px 16px; font-size: 0.82rem; }
+      .sidebar-btn.active { padding-left: 16px; border-color: #0d47a1; }
+      .products-grid { grid-template-columns: repeat(auto-fill, minmax(160px, 1fr)); gap: 14px; }
+      .nav-btn { padding: 12px 10px; font-size: 0.8rem; }
+    }
+  </style>
+</head>
+<body>
+<div class="app">
+  <header class="header">
+    <div class="header-content">
+      <div class="header-top">
+        <div class="logo">🦴</div>
+        <div class="header-text">
+          <h1 class="site-title">ORTHO BELTS &amp; SUPPORT</h1>
+          <p class="site-tagline">Support your body, move with confidence</p>
+        </div>
+        <div class="cart-icon">🛒 <span class="cart-count" id="cartCount">0</span></div>
+      </div>
+    </div>
+  </header>
+  <nav class="top-nav" id="topNav"></nav>
+  <div class="body-layout">
+    <aside class="sidebar">
+      <h3 class="sidebar-title">Categories</h3>
+      <ul class="sidebar-list" id="sidebarList"></ul>
+    </aside>
+    <main class="main-content">
+      <div class="section-header">
+        <h2 class="section-title" id="sectionTitle"></h2>
+        <p class="section-subtitle" id="sectionSubtitle"></p>
+      </div>
+      <div class="products-grid" id="productsGrid"></div>
+    </main>
+  </div>
+  <footer class="footer"><p>&copy; 2026 Ortho Belts &amp; Support. Built with 💙</p></footer>
+</div>
+<script>
+  const data = {
+    "Wrist & Hands": {
+      "Wrist Braces": [
+        { name: "Mueller Fitted Wrist Brace Right Hand", price: "$14.99" },
+        { name: "Futuro Night Wrist Sleep Support Adjustable", price: "$19.99" },
+        { name: "Dr. Scholl's Wrist Brace One Size Fits All", price: "$12.49" },
+        { name: "Ace Brand Deluxe Wrist Stabilizer Left", price: "$16.99" },
+        { name: "Copper Compression Wrist Brace Unisex", price: "$17.49" }
+      ],
+      "Wrist Splints": [
+        { name: "Rolyan Wrist Splint Volar Left Medium", price: "$22.99" },
+        { name: "3-Point Products Oval-8 Finger Splint Size 7", price: "$9.99" },
+        { name: "North Coast Medical Wrist Splint Beige", price: "$26.99" },
+        { name: "ProCare Cock-Up Wrist Splint Right Large", price: "$18.49" },
+        { name: "Thermoskin Thermal Wrist/Hand Brace Left", price: "$24.99" }
+      ],
+      "Thumb Supports": [
+        { name: "Mueller Thumb Stabilizer One Size", price: "$11.99" },
+        { name: "Futuro Thumb Stabilizer Adjustable", price: "$13.49" },
+        { name: "3pp ThumSling NP Thumb Spica Splint", price: "$28.99" },
+        { name: "CMC Thumb Brace Splint Right Medium", price: "$19.99" },
+        { name: "Bauerfeind RhizoLoc Thumb Orthosis Right", price: "$34.99" }
+      ],
+      "Compression Gloves": [
+        { name: "Copper Compression Arthritis Gloves Medium", price: "$16.99" },
+        { name: "IMAK Compression Active Gloves Small", price: "$21.99" },
+        { name: "Thermoskin Arthritic Gloves Large", price: "$18.49" },
+        { name: "ComfyBrace Arthritis Hand Compression Gloves", price: "$14.99" },
+        { name: "Dr. Frederick's Original Arthritis Gloves", price: "$19.99" }
+      ]
+    },
+    "Knee Support": {
+      "Knee Braces": [
+        { name: "Mueller Adjustable Hinged Knee Brace Large", price: "$34.99" },
+        { name: "Bauerfeind GenuTrain Knee Support Size 4", price: "$79.99" },
+        { name: "DonJoy Reaction Web Knee Brace Medium", price: "$59.99" },
+        { name: "Futuro Comfort Knee Support With Side Stabilizers", price: "$24.99" },
+        { name: "Ossur Form Fit Knee Brace Medium", price: "$44.99" }
+      ],
+      "Knee Sleeves": [
+        { name: "Physix Gear Sport Knee Compression Sleeve XL", price: "$19.99" },
+        { name: "Copper Compression Knee Sleeve Large", price: "$17.49" },
+        { name: "UFlex Athletics Knee Compression Sleeve Medium", price: "$14.99" },
+        { name: "Shock Doctor 200 Knee Sleeve Large", price: "$22.99" },
+        { name: "Mava Sports Knee Sleeve Pair Large", price: "$16.99" }
+      ],
+      "Patellar Straps": [
+        { name: "Cho-Pat Dual Action Knee Strap Medium", price: "$26.99" },
+        { name: "DashSport Patellar Tendon Knee Strap", price: "$12.99" },
+        { name: "Bauerfeind GenuPoint Knee Strap One Size", price: "$29.99" },
+        { name: "Mueller Jumper's Knee Strap One Size", price: "$14.49" },
+        { name: "McDavid Knee Strap Patellar Tendon Support", price: "$13.99" }
+      ],
+      "Hinged Knee Supports": [
+        { name: "Donjoy Armor Fource Point Knee Brace Large", price: "$149.99" },
+        { name: "Breg Fusion OA Knee Brace Medium", price: "$129.99" },
+        { name: "OA Unloader Knee Brace Right Medium", price: "$99.99" },
+        { name: "Medline Hinged Knee Brace Adjustable", price: "$44.99" },
+        { name: "Vive Hinged Knee Brace Medium Black", price: "$39.99" }
+      ]
+    },
+    "Shoulder": {
+      "Shoulder Braces": [
+        { name: "DonJoy UltraSling IV Shoulder Immobilizer Medium", price: "$54.99" },
+        { name: "Ossur Formfit Shoulder Support One Size", price: "$39.99" },
+        { name: "Mueller Shoulder Support Elastic Large", price: "$22.99" },
+        { name: "Bauerfeind OmoTrain S Shoulder Support Size 3", price: "$89.99" },
+        { name: "BraceUP Shoulder Stability Brace Adjustable", price: "$27.99" }
+      ],
+      "Shoulder Slings": [
+        { name: "Vive Shoulder Sling Arm Support Adjustable", price: "$18.99" },
+        { name: "DeRoyal Universal Shoulder Immobilizer", price: "$24.99" },
+        { name: "Rolyan Pediatric Shoulder Immobilizer Small", price: "$29.99" },
+        { name: "Core Products Shoulder Immobilizer One Size", price: "$21.49" },
+        { name: "Alex Orthopedic 4441 Shoulder Immobilizer", price: "$19.99" }
+      ],
+      "Rotator Cuff Supports": [
+        { name: "BraceAbility Shoulder Compression Brace Wrap", price: "$32.99" },
+        { name: "Copper Compression Shoulder Brace Rotator Cuff", price: "$29.99" },
+        { name: "Shock Doctor Ultra Shoulder Support Large", price: "$34.99" },
+        { name: "McDavid Shoulder Support 464 Black XL", price: "$28.99" },
+        { name: "Neoprene Shoulder Compression Wrap Unisex", price: "$19.99" }
+      ],
+      "Posture Correctors": [
+        { name: "Evoke Pro A300 Posture Corrector Adult", price: "$29.99" },
+        { name: "Toros-Group Comfort Posture Corrector Medium", price: "$24.99" },
+        { name: "BackEmbrace Posture Corrector Unisex", price: "$34.99" },
+        { name: "Truweo Posture Corrector for Men & Women", price: "$19.99" },
+        { name: "ComfyMed Breathable Mesh Back Brace CM-PB16", price: "$27.49" }
+      ]
+    },
+    "Elbow": {
+      "Elbow Braces": [
+        { name: "Mueller Tennis Elbow Support One Size", price: "$13.99" },
+        { name: "Bauerfeind EpiTrain Elbow Support Size 4", price: "$59.99" },
+        { name: "DonJoy Lateral J Elbow Brace Large", price: "$39.99" },
+        { name: "McDavid Elbow Sleeve with Strap 489", price: "$19.99" },
+        { name: "Ossur Rebound Elbow Brace Medium", price: "$44.99" }
+      ],
+      "Tennis Elbow Straps": [
+        { name: "Cho-Pat Tennis Elbow Support Medium", price: "$17.99" },
+        { name: "Mueller HG80 Premium Elbow Brace One Size", price: "$22.99" },
+        { name: "Rolyan Lateral Epicondylitis Clasp One Size", price: "$19.49" },
+        { name: "Tennis Elbow Brace with Compression Pad", price: "$12.99" },
+        { name: "ProCare Tennis Elbow Support One Size", price: "$14.49" }
+      ],
+      "Elbow Sleeves": [
+        { name: "Copper Compression Elbow Sleeve Large", price: "$16.99" },
+        { name: "Physix Gear Elbow Compression Sleeve Medium", price: "$14.99" },
+        { name: "Shock Doctor Elbow Sleeve 825 XL", price: "$18.99" },
+        { name: "UFlex Athletics Elbow Compression Sleeve", price: "$13.49" },
+        { name: "Mava Sports Elbow Compression Sleeve Pair", price: "$15.99" }
+      ],
+      "Cubital Tunnel Splints": [
+        { name: "BraceAbility Cubital Tunnel Elbow Brace Medium", price: "$27.99" },
+        { name: "Vive Elbow Brace Cubital Tunnel Syndrome", price: "$24.99" },
+        { name: "NuCare Cubital Tunnel Splint Pad One Size", price: "$21.99" },
+        { name: "Comfy Splints Elbow Orthosis Adjustable", price: "$34.99" },
+        { name: "Core Products Elbow Orthosis Night Splint", price: "$29.99" }
+      ]
+    },
+    "Back Support": {
+      "Lumbar Belts": [
+        { name: "Mueller Lumbar Support Back Brace Large", price: "$22.99" },
+        { name: "Aspen Horizon 627 TLSO Back Brace Medium", price: "$89.99" },
+        { name: "BraceUP Stabilizing Lumbar Lower Back Brace", price: "$27.99" },
+        { name: "Flexguard Support Back Brace Posture Corrector", price: "$19.99" },
+        { name: "Vive Lumbar Support Belt Adjustable", price: "$24.99" }
+      ],
+      "Back Braces": [
+        { name: "Aspen Vista Multipost Collar One Size", price: "$44.99" },
+        { name: "DonJoy Thoracolumbosacral Orthosis TLSO", price: "$119.99" },
+        { name: "Medline LSO Back Brace with Rigid Insert XL", price: "$54.99" },
+        { name: "ComfyMed Back Brace Posture Corrector CM-102M", price: "$29.99" },
+        { name: "Sparthos Back Support Belt Heavy Duty XL", price: "$34.99" }
+      ],
+      "Sacroiliac Belts": [
+        { name: "Serola Sacroiliac Hip Belt Medium", price: "$39.99" },
+        { name: "Ossur Form Fit SI Belt Large", price: "$49.99" },
+        { name: "BraceAbility Sacroiliac SI Joint Belt Medium", price: "$31.99" },
+        { name: "Vive SI Belt Sacroiliac Joint Support", price: "$27.99" },
+        { name: "Core Products Sacroiliac Support Belt Medium", price: "$34.99" }
+      ],
+      "Posture Correction Belts": [
+        { name: "Evoke Pro A300 Posture Corrector Large", price: "$29.99" },
+        { name: "TOROS-GROUP Comfort Posture Corrector XL", price: "$24.99" },
+        { name: "Marakym Posture Corrector Men & Women", price: "$21.99" },
+        { name: "ActivPulse Posture Corrector Adjustable", price: "$26.99" },
+        { name: "Back Brace Posture Corrector for Women Men", price: "$18.99" }
+      ]
+    },
+    "Ortho Belts & Support": {
+      "Full Body Supports": [
+        { name: "TLSO Thoracic Full Back Brace Medium", price: "$99.99" },
+        { name: "Aspen Evergreen 627 TLSO Back Brace Large", price: "$119.99" },
+        { name: "Scoliosis Back Brace Spinal Curve Correction", price: "$79.99" },
+        { name: "Ottobock LSO Back Brace Medium", price: "$89.99" },
+        { name: "Jewett Hyperextension Orthosis Medium", price: "$109.99" }
+      ],
+      "Orthopedic Belts": [
+        { name: "Tynor Abdominal Belt Medium", price: "$14.99" },
+        { name: "Dr. Morepen Lumbo Sacral Belt Large", price: "$19.99" },
+        { name: "Vissco Sacro Lumbar Belt with Double Boning XL", price: "$22.99" },
+        { name: "Wonder Care Orthopedic Lumbar Back Support", price: "$17.49" },
+        { name: "Flamingo OAP Back Belt Contoured Medium", price: "$24.99" }
+      ],
+      "Rehabilitation Supports": [
+        { name: "Aircast AirSelect Short Walking Boot Large", price: "$69.99" },
+        { name: "DonJoy Speed Pro Ankle Brace XL", price: "$49.99" },
+        { name: "Ossur Rebound Knee Brace Post Op XL", price: "$79.99" },
+        { name: "Bledsoe Axiom D-ROM Knee Brace Large", price: "$129.99" },
+        { name: "Medline Post-Op Knee Immobilizer 16 inch", price: "$39.99" }
+      ],
+      "Ankle & Foot Supports": [
+        { name: "Aircast A60 Ankle Support Brace Right Large", price: "$34.99" },
+        { name: "McDavid Ankle Brace with Strap 195 Large", price: "$22.99" },
+        { name: "Futuro Sport Adjustable Ankle Support", price: "$17.99" },
+        { name: "Copper Compression Ankle Brace Sleeve Large", price: "$16.99" },
+        { name: "Mueller Adjustable Ankle Support One Size", price: "$14.99" }
+      ]
+    }
+  };
+
+  const emojiMap = {
+    "Wrist & Hands": "🤲",
+    "Knee Support": "🦵",
+    "Shoulder": "💪",
+    "Elbow": "🦾",
+    "Back Support": "🧍",
+    "Ortho Belts & Support": "🦴"
+  };
+
+  const categories = Object.keys(data);
+  let activeCategory = categories[0];
+  let activeSub = Object.keys(data[activeCategory])[0];
+  let cartCount = 0;
+
+  function render() {
+    document.getElementById('topNav').innerHTML = categories.map(cat =>
+      `<button class="nav-btn${activeCategory===cat?' active':''}" onclick="selectCategory('${cat.replace(/&/g,'__AMP__').replace(/'/g,"\\'")}')">${emojiMap[cat]||'🦴'} ${cat}</button>`
+    ).join('');
+    const subs = Object.keys(data[activeCategory]);
+    document.getElementById('sidebarList').innerHTML = subs.map(sub =>
+      `<li><button class="sidebar-btn${activeSub===sub?' active':''}" onclick="selectSub('${sub.replace(/'/g,"\\'")}')">${sub}</button></li>`
+    ).join('');
+    const products = data[activeCategory][activeSub];
+    document.getElementById('sectionTitle').textContent = activeSub;
+    document.getElementById('sectionSubtitle').textContent = products.length + ' products found';
+    document.getElementById('productsGrid').innerHTML = products.map((p, i) =>
+      `<div class="product-card">
+        <div class="product-img"><span class="product-emoji">${emojiMap[activeCategory]||'🦴'}</span></div>
+        <div class="product-info"><p class="product-name">${p.name}</p><p class="product-price">${p.price}</p></div>
+        <button class="add-to-cart-btn" id="btn-${i}" onclick="addToCart(${i})">Add to Cart</button>
+      </div>`
+    ).join('');
+    document.getElementById('cartCount').textContent = cartCount;
+  }
+
+  function selectCategory(cat) {
+    activeCategory = cat.replace(/__AMP__/g, '&');
+    activeSub = Object.keys(data[activeCategory])[0];
+    render();
+  }
+  function selectSub(sub) { activeSub = sub; render(); }
+  function addToCart(i) {
+    cartCount++;
+    document.getElementById('cartCount').textContent = cartCount;
+    const btn = document.getElementById('btn-'+i);
+    btn.textContent = '✓ Added!'; btn.classList.add('added');
+    setTimeout(() => { btn.textContent = 'Add to Cart'; btn.classList.remove('added'); }, 1500);
+  }
+
+  render();
+</script>
+</body>
+</html>

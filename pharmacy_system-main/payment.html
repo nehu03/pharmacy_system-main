@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>💳 Payment Page</title>
+<style>
+body{
+    font-family:'Segoe UI',sans-serif;
+    background: linear-gradient(135deg,#0f2027,#203a43,#2c5364);
+    color:white;
+    padding:30px;
+}
+h2{
+    text-align:center;
+    margin-bottom:20px;
+}
+.container{
+    max-width:500px;
+    margin: auto;
+    background: rgba(255,255,255,0.1);
+    padding:20px;
+    border-radius:15px;
+    text-align:center;
+    backdrop-filter: blur(10px);
+}
+select, input{
+    width:80%;
+    padding:10px;
+    margin:10px 0;
+    border-radius:10px;
+    border:none;
+    outline:none;
+}
+button{
+    padding:10px 20px;
+    border:none;
+    border-radius:20px;
+    background: #00c6ff;
+    color:white;
+    cursor:pointer;
+    margin-top:10px;
+}
+button:hover{
+    background:#0072ff;
+}
+.cart-summary{
+    text-align:left;
+    margin:20px 0;
+    background: rgba(255,255,255,0.15);
+    padding:10px;
+    border-radius:10px;
+}
+.cart-summary ul{
+    list-style:none;
+    padding-left:0;
+}
+.cart-summary li{
+    margin-bottom:5px;
+}
+.total-price{
+    font-weight:bold;
+    margin-top:10px;
+}
+</style>
+</head>
+<body>
+
+<h2>💳 Payment Page</h2>
+
+<div class="container">
+
+    <div class="cart-summary">
+        <h3>🛒 Cart Summary</h3>
+        <ul id="cartItems"></ul>
+        <div class="total-price">Total: ₹<span id="totalPrice">0</span></div>
+    </div>
+
+    <select id="paymentMethod">
+        <option value="credit">Credit Card</option>
+        <option value="debit">Debit Card</option>
+        <option value="upi">UPI</option>
+        <option value="cod">Cash on Delivery</option>
+    </select>
+
+    <br>
+    <button onclick="payNow()">Pay Now</button>
+</div>
+
+<script>
+// Load cart from localStorage
+let cart = JSON.parse(localStorage.getItem("cart")) || [];
+updateCartDisplay();
+
+function updateCartDisplay(){
+    let list = document.getElementById("cartItems");
+    let total = 0;
+    list.innerHTML = "";
+    cart.forEach(item=>{
+        let li = document.createElement("li");
+        li.innerText = item.name + " x " + item.quantity + " = ₹" + item.total + (item.premium?" 🌟":"");
+        list.appendChild(li);
+        total += item.total;
+    });
+    document.getElementById("totalPrice").innerText = total;
+}
+
+function payNow(){
+    // Check if user logged in
+    if(localStorage.getItem("isLoggedIn") !== "true"){
+        alert("Please login first!");
+        window.location.href = "ordersucc.html";
+        return;
+    }
+
+    // Check if cart is empty
+    if(cart.length === 0){
+        alert("Your cart is empty!");
+        return;
+    }
+
+    alert("Payment Successful! ✅");
+    localStorage.removeItem("cart"); // Clear cart
+    window.location.href = "ordersucc.html"; // Redirect to order success
+}
+</script>
+
+</body>
+</html>

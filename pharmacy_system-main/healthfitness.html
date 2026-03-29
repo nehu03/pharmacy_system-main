@@ -1,0 +1,242 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Health & Fitness</title>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    body { font-family: "Segoe UI", sans-serif; background: #f0fff4; color: #0d2010; }
+    .app { min-height: 100vh; display: flex; flex-direction: column; }
+    .header { background: linear-gradient(135deg, #e8f5e9 0%, #f1f8e9 60%, #c8e6c9 100%); border-bottom: 2px solid #43a047; }
+    .header-content { max-width: 1200px; margin: 0 auto; padding: 20px 24px; }
+    .header-top { display: flex; align-items: center; gap: 16px; justify-content: space-between; }
+    .logo { font-size: 2.4rem; }
+    .header-text { text-align: center; flex: 1; }
+    .site-title { font-size: 2.2rem; font-weight: 800; letter-spacing: 0.14em; color: #1b5e20; text-transform: uppercase; }
+    .site-tagline { font-size: 0.95rem; color: #388e3c; margin-top: 4px; }
+    .cart-icon { font-size: 1.5rem; cursor: pointer; background: white; border: 2px solid #43a047; border-radius: 50px; padding: 6px 14px; display: flex; align-items: center; gap: 6px; user-select: none; }
+    .cart-icon:hover { background: #e8f5e9; }
+    .cart-count { font-size: 1rem; font-weight: 700; color: #1b5e20; }
+    .top-nav { background: #f1f8e9; border-bottom: 2px solid #a5d6a7; display: flex; flex-wrap: wrap; justify-content: center; padding: 0 16px; overflow-x: auto; }
+    .nav-btn { background: none; border: none; border-bottom: 3px solid transparent; padding: 14px 22px; font-size: 0.9rem; font-weight: 600; color: #2e7d32; cursor: pointer; white-space: nowrap; transition: color 0.2s, border-color 0.2s, background 0.2s; }
+    .nav-btn:hover { color: #1b5e20; background: #dcedc8; }
+    .nav-btn.active { color: #1b5e20; border-bottom-color: #1b5e20; background: #dcedc8; }
+    .body-layout { flex: 1; display: flex; max-width: 1200px; margin: 24px auto; width: 100%; padding: 0 16px; gap: 24px; }
+    .sidebar { width: 220px; flex-shrink: 0; background: white; border-radius: 16px; border: 1.5px solid #a5d6a7; padding: 20px 0; height: fit-content; box-shadow: 0 2px 12px rgba(27,94,32,0.07); }
+    .sidebar-title { font-size: 0.78rem; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; color: #388e3c; padding: 0 20px 12px; border-bottom: 1.5px solid #a5d6a7; margin-bottom: 8px; }
+    .sidebar-list { list-style: none; }
+    .sidebar-btn { display: block; width: 100%; background: none; border: none; border-left: 3px solid transparent; text-align: left; padding: 10px 20px; font-size: 0.9rem; color: #2e7d32; cursor: pointer; transition: background 0.15s, color 0.15s, padding-left 0.15s; }
+    .sidebar-btn:hover { background: #f1f8e9; color: #1b5e20; padding-left: 26px; }
+    .sidebar-btn.active { background: #dcedc8; color: #1b5e20; font-weight: 700; border-left-color: #1b5e20; padding-left: 26px; }
+    .main-content { flex: 1; min-width: 0; }
+    .section-header { margin-bottom: 20px; display: flex; align-items: baseline; gap: 12px; flex-wrap: wrap; }
+    .section-title { font-size: 1.5rem; font-weight: 800; color: #1b5e20; }
+    .section-subtitle { font-size: 0.85rem; color: #388e3c; }
+    .products-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 20px; }
+    .product-card { background: white; border-radius: 16px; border: 1.5px solid #a5d6a7; overflow: hidden; box-shadow: 0 2px 10px rgba(27,94,32,0.07); display: flex; flex-direction: column; transition: transform 0.2s, box-shadow 0.2s; }
+    .product-card:hover { transform: translateY(-4px); box-shadow: 0 8px 24px rgba(27,94,32,0.15); }
+    .product-img { background: linear-gradient(135deg, #e8f5e9 0%, #f1f8e9 100%); height: 130px; display: flex; align-items: center; justify-content: center; }
+    .product-emoji { font-size: 3.2rem; user-select: none; }
+    .product-info { padding: 14px 14px 8px; flex: 1; }
+    .product-name { font-size: 0.88rem; font-weight: 600; color: #0d2010; line-height: 1.4; margin-bottom: 6px; }
+    .product-price { font-size: 1rem; font-weight: 800; color: #1b5e20; }
+    .add-to-cart-btn { margin: 0 14px 14px; padding: 9px 0; background: linear-gradient(90deg, #43a047, #00897b); color: white; border: none; border-radius: 50px; font-size: 0.85rem; font-weight: 700; cursor: pointer; transition: opacity 0.2s, transform 0.1s, background 0.3s; }
+    .add-to-cart-btn:hover { opacity: 0.9; transform: scale(1.02); }
+    .add-to-cart-btn.added { background: linear-gradient(90deg, #1976d2, #1565c0); }
+    .footer { background: #f1f8e9; border-top: 1.5px solid #a5d6a7; text-align: center; padding: 18px; font-size: 0.85rem; color: #388e3c; }
+    @media (max-width: 768px) {
+      .site-title { font-size: 1.4rem; }
+      .body-layout { flex-direction: column; margin: 16px auto; }
+      .sidebar { width: 100%; }
+      .sidebar-list { display: flex; flex-wrap: wrap; gap: 4px; padding: 0 12px 12px; }
+      .sidebar-btn { width: auto; border: 1.5px solid #a5d6a7; border-left: 1.5px solid #a5d6a7; border-radius: 50px; padding: 7px 16px; font-size: 0.82rem; }
+      .sidebar-btn.active { padding-left: 16px; border-color: #1b5e20; }
+      .products-grid { grid-template-columns: repeat(auto-fill, minmax(160px, 1fr)); gap: 14px; }
+      .nav-btn { padding: 12px 14px; font-size: 0.82rem; }
+    }
+  </style>
+</head>
+<body>
+<div class="app">
+  <header class="header">
+    <div class="header-content">
+      <div class="header-top">
+        <div class="logo">💪</div>
+        <div class="header-text">
+          <h1 class="site-title">HEALTH &amp; FITNESS</h1>
+          <p class="site-tagline">Fuel your body, power your life</p>
+        </div>
+        <div class="cart-icon">🛒 <span class="cart-count" id="cartCount">0</span></div>
+      </div>
+    </div>
+  </header>
+  <nav class="top-nav" id="topNav"></nav>
+  <div class="body-layout">
+    <aside class="sidebar">
+      <h3 class="sidebar-title">Categories</h3>
+      <ul class="sidebar-list" id="sidebarList"></ul>
+    </aside>
+    <main class="main-content">
+      <div class="section-header">
+        <h2 class="section-title" id="sectionTitle"></h2>
+        <p class="section-subtitle" id="sectionSubtitle"></p>
+      </div>
+      <div class="products-grid" id="productsGrid"></div>
+    </main>
+  </div>
+  <footer class="footer"><p>&copy; 2026 Health &amp; Fitness. Built with 💚</p></footer>
+</div>
+<script>
+  const data = {
+    "Vitamins & Supplements": {
+      "Multivitamins": [
+        { name: "Centrum Adults Multivitamin 100 Tablets", price: "$14.99" },
+        { name: "One A Day Men's Health Formula 100ct", price: "$16.49" },
+        { name: "Garden of Life Vitamin Code Women 120ct", price: "$29.99" },
+        { name: "Nature Made Multi Complete 130ct", price: "$12.99" },
+        { name: "Revital H Multivitamin + Ginseng 30ct", price: "$18.49" }
+      ],
+      "Calcium & Bone Health": [
+        { name: "Caltrate 600+D3 Calcium Supplement 120ct", price: "$13.99" },
+        { name: "Citracal Slow Release 1200 Calcium 80ct", price: "$17.49" },
+        { name: "Nature Made Calcium 600mg + Vitamin D3 100ct", price: "$11.99" },
+        { name: "Osteocare Original Calcium Tablets 90ct", price: "$15.99" },
+        { name: "Himalaya Calcium Forte Tablets 60ct", price: "$9.49" }
+      ],
+      "Immunity Boosters": [
+        { name: "Emergen-C 1000mg Vitamin C Packets 30ct", price: "$13.49" },
+        { name: "Airborne Immune Support Gummies 63ct", price: "$15.99" },
+        { name: "Zinc Picolinate 50mg Capsules 100ct", price: "$8.99" },
+        { name: "Nature's Bounty Elderberry Gummies 60ct", price: "$14.49" },
+        { name: "Septilin Himalaya Immunity Tablets 60ct", price: "$8.99" }
+      ],
+      "Vitamin C & D Supplements": [
+        { name: "Nature Made Vitamin D3 2000 IU 260ct", price: "$14.99" },
+        { name: "NOW Foods Vitamin C-1000 Sustained Release 100ct", price: "$11.49" },
+        { name: "Solgar Vitamin D3 125mcg 120 Softgels", price: "$18.99" },
+        { name: "Limcee Chewable Vitamin C 500mg 15s", price: "$3.99" },
+        { name: "NatureMade Vitamin C 1000mg + Rose Hips 100ct", price: "$12.99" }
+      ]
+    },
+    "Sports Nutrition": {
+      "Pre-Workout": [
+        { name: "C4 Original Pre Workout Powder Fruit Punch 390g", price: "$29.99" },
+        { name: "Optimum Nutrition Gold Standard Pre-Workout 300g", price: "$34.99" },
+        { name: "Ghost Legend Pre-Workout Warheads Sour 345g", price: "$39.99" },
+        { name: "Cellucor C4 Ripped Pre-Workout 180g", price: "$27.49" },
+        { name: "MuscleBlaze Pre-Workout Ripped 225g", price: "$24.99" }
+      ],
+      "Post-Workout Recovery": [
+        { name: "Optimum Nutrition Amino Energy 270g 30 Servings", price: "$24.99" },
+        { name: "BSN Amino X BCAA Powder Watermelon 435g", price: "$29.49" },
+        { name: "Scivation Xtend BCAA Powder Blue Raspberry 420g", price: "$27.99" },
+        { name: "MusclePharm BCAA 3:1:2 240 Capsules", price: "$22.99" },
+        { name: "Dymatize Glutamine Recovery Powder 300g", price: "$18.49" }
+      ],
+      "Energy Drinks": [
+        { name: "Monster Energy Original Green 473ml", price: "$3.49" },
+        { name: "Red Bull Energy Drink 250ml", price: "$2.99" },
+        { name: "Celsius Sparkling Orange 355ml", price: "$2.99" },
+        { name: "Bang Energy Cotton Candy 473ml", price: "$3.29" },
+        { name: "Gatorade G2 Low Calorie Sports Drink 591ml", price: "$2.49" }
+      ]
+    },
+    "Protein Food": {
+      "Whey Protein": [
+        { name: "Optimum Nutrition Gold Standard 100% Whey 2lbs", price: "$49.99" },
+        { name: "Dymatize ISO100 Hydrolyzed Whey Protein 1.6lbs", price: "$44.99" },
+        { name: "MuscleTech NitroTech Performance Whey 4lbs", price: "$54.99" },
+        { name: "MuscleBlaze Whey Gold Protein 2kg", price: "$42.49" },
+        { name: "BSN SYNTHA-6 Whey Protein Chocolate 2.91lbs", price: "$46.99" }
+      ],
+      "Plant-Based Protein": [
+        { name: "Orgain Organic Plant Protein Powder 2.03lbs", price: "$34.99" },
+        { name: "Garden of Life Sport Organic Plant Protein 806g", price: "$39.99" },
+        { name: "Vega Sport Premium Protein Chocolate 1.8lbs", price: "$44.99" },
+        { name: "NOW Foods Pea Protein Plain 2lbs", price: "$24.99" },
+        { name: "Sunwarrior Classic Organic Brown Rice Protein 750g", price: "$36.49" }
+      ],
+      "Protein Bars": [
+        { name: "Quest Nutrition Protein Bar Chocolate Chip 12ct", price: "$24.99" },
+        { name: "RXBAR Whole Food Protein Bar Chocolate Sea Salt 12ct", price: "$27.49" },
+        { name: "Clif Builder's Protein Bar Chocolate 12ct", price: "$21.99" },
+        { name: "Kind Protein Bar Dark Chocolate Nut 12ct", price: "$22.99" },
+        { name: "ONE Protein Bar Birthday Cake 12ct", price: "$23.49" }
+      ],
+      "Protein Powders": [
+  {
+    name: "Isopure Zero Carb Protein Powder Vanilla 3lbs",
+    price: "Rs.5499",
+    image: "https://data:image/jpeg;base64,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"
+  },
+  {
+    name: "Naked Whey 100% Grass Fed Protein 5lbs",
+    price: "$89.99",
+    image: "https://m.media-amazon.com/images/I/71NakedWhey.jpg"
+  },
+  {
+    name: "Six Star Pro Nutrition Whey Protein 2lbs",
+    price: "$29.99",
+    image: "https://m.media-amazon.com/images/I/71SixStarProtein.jpg"
+  },
+  {
+    name: "MuscleBlaze Raw Whey Protein Unflavored 1kg",
+    price: "$27.49",
+    image: "https://m.media-amazon.com/images/I/71MuscleBlazeRaw.jpg"
+  },
+  {
+    name: "Optimum Nutrition Serious Mass Weight Gainer 6lbs",
+    price: "$44.99",
+    image: "https://m.media-amazon.com/images/I/81SeriousMass.jpg"
+  }
+]
+    }
+  };
+
+  const emojiMap = {
+    "Vitamins & Supplements": "💊",
+    "Sports Nutrition": "⚡",
+    "Protein Food": "🥤"
+  };
+
+  const categories = Object.keys(data);
+  let activeCategory = categories[0];
+  let activeSub = Object.keys(data[activeCategory])[0];
+  let cartCount = 0;
+
+  function render() {
+    document.getElementById('topNav').innerHTML = categories.map(cat =>
+      `<button class="nav-btn${activeCategory===cat?' active':''}" onclick="selectCategory('${cat.replace(/&/g,'&amp;').replace(/'/g,"\\'")}')">${cat}</button>`
+    ).join('');
+    const subs = Object.keys(data[activeCategory]);
+    document.getElementById('sidebarList').innerHTML = subs.map(sub =>
+      `<li><button class="sidebar-btn${activeSub===sub?' active':''}" onclick="selectSub('${sub.replace(/'/g,"\\'")}')">${sub}</button></li>`
+    ).join('');
+    const products = data[activeCategory][activeSub];
+    document.getElementById('sectionTitle').textContent = activeSub;
+    document.getElementById('sectionSubtitle').textContent = products.length + ' products found';
+    document.getElementById('productsGrid').innerHTML = products.map((p, i) =>
+      `<div class="product-card">
+        <div class="product-img"><span class="product-emoji">${emojiMap[activeCategory]||'💪'}</span></div>
+        <div class="product-info"><p class="product-name">${p.name}</p><p class="product-price">${p.price}</p></div>
+        <button class="add-to-cart-btn" id="btn-${i}" onclick="addToCart(${i})">Add to Cart</button>
+      </div>`
+    ).join('');
+    document.getElementById('cartCount').textContent = cartCount;
+  }
+
+  function selectCategory(cat) { activeCategory = cat; activeSub = Object.keys(data[cat])[0]; render(); }
+  function selectSub(sub) { activeSub = sub; render(); }
+  function addToCart(i) {
+    cartCount++;
+    document.getElementById('cartCount').textContent = cartCount;
+    const btn = document.getElementById('btn-'+i);
+    btn.textContent = '✓ Added!'; btn.classList.add('added');
+    setTimeout(() => { btn.textContent = 'Add to Cart'; btn.classList.remove('added'); }, 1500);
+  }
+
+  render();
+</script>
+</body>
+</html>

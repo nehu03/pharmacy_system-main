@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"><title>Logs | Med it Easy</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<style>
+  *,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+  :root{--dark:#0f172a;--dark2:#1e293b;--dark3:#334155;--accent:#00ffcc;--red:#ef4444;--text:#f1f5f9;--muted:#94a3b8;}
+  body{font-family:"Segoe UI",sans-serif;background:#f0f4f8;display:flex;min-height:100vh;}
+  .sidebar{width:250px;background:var(--dark);display:flex;flex-direction:column;position:fixed;top:0;left:0;height:100vh;overflow-y:auto;z-index:100;}
+  .sb-logo{display:flex;align-items:center;gap:12px;padding:28px 24px 24px;border-bottom:1px solid var(--dark3);}
+  .sb-logo-icon{font-size:2rem;} .sb-logo-name{font-size:1.3rem;font-weight:900;color:var(--accent);} .sb-logo-sub{font-size:0.68rem;color:var(--muted);margin-top:1px;}
+  .sb-section-label{font-size:0.65rem;font-weight:800;letter-spacing:0.12em;text-transform:uppercase;color:#475569;padding:20px 24px 8px;}
+  .sb-link{display:flex;align-items:center;gap:12px;padding:11px 24px;color:var(--muted);text-decoration:none;font-size:0.88rem;border-left:3px solid transparent;transition:all 0.15s;}
+  .sb-link:hover,.sb-link.active{background:var(--dark2);color:var(--accent);border-left-color:var(--accent);padding-left:30px;font-weight:700;}
+  .sb-link .ico{font-size:1.1rem;width:20px;text-align:center;flex-shrink:0;}
+  .sb-badge{margin-left:auto;background:var(--red);color:white;font-size:0.62rem;font-weight:800;padding:2px 7px;border-radius:50px;}
+  .sb-divider{height:1px;background:var(--dark3);margin:10px 0;}
+  .sb-footer{margin-top:auto;padding:20px 24px;border-top:1px solid var(--dark3);display:flex;align-items:center;gap:10px;}
+  .sb-avatar{width:36px;height:36px;border-radius:50%;background:linear-gradient(135deg,var(--accent),#00b4d8);display:flex;align-items:center;justify-content:center;font-size:1rem;font-weight:800;color:var(--dark);}
+  .sb-user-name{font-size:0.85rem;font-weight:700;color:var(--text);} .sb-user-role{font-size:0.7rem;color:var(--muted);}
+  .main{flex:1;margin-left:250px;display:flex;flex-direction:column;}
+  .topbar{background:white;height:66px;display:flex;align-items:center;justify-content:space-between;padding:0 32px;border-bottom:1px solid #e2e8f0;position:sticky;top:0;z-index:50;box-shadow:0 1px 8px rgba(0,0,0,0.05);}
+  .topbar-left h1{font-size:1.35rem;font-weight:800;color:var(--dark);} .topbar-left p{font-size:0.78rem;color:#64748b;}
+  .tb-btn{background:#fee2e2;color:#ef4444;border:1.5px solid #fecaca;border-radius:50px;padding:9px 20px;font-size:0.82rem;font-weight:800;cursor:pointer;}
+  .content{padding:30px 32px;flex:1;}
+  .log-list{display:flex;flex-direction:column;gap:12px;}
+  .log-item{background:white;border-radius:14px;border:1.5px solid #e2e8f0;padding:16px 20px;display:flex;align-items:center;gap:16px;box-shadow:0 2px 8px rgba(0,0,0,0.04);transition:box-shadow 0.2s;}
+  .log-item:hover{box-shadow:0 6px 18px rgba(0,0,0,0.08);}
+  .log-icon{width:42px;height:42px;border-radius:12px;display:flex;align-items:center;justify-content:center;font-size:1.2rem;flex-shrink:0;}
+  .log-icon.sale{background:#d1fae5;} .log-icon.stock{background:#fef3c7;} .log-icon.user{background:#dbeafe;} .log-icon.warn{background:#fee2e2;} .log-icon.info{background:#ede9fe;}
+  .log-text{flex:1;}
+  .log-title{font-size:0.88rem;font-weight:700;color:#0f172a;margin-bottom:2px;}
+  .log-desc{font-size:0.76rem;color:#64748b;}
+  .log-time{font-size:0.72rem;color:#94a3b8;white-space:nowrap;}
+  .log-type{font-size:0.68rem;font-weight:800;padding:3px 10px;border-radius:50px;}
+  .log-type.sale{background:#d1fae5;color:#065f46;} .log-type.stock{background:#fef3c7;color:#92400e;} .log-type.user{background:#dbeafe;color:#1e40af;} .log-type.warn{background:#fee2e2;color:#991b1b;} .log-type.info{background:#ede9fe;color:#5b21b6;}
+  .footer{background:white;border-top:1px solid #e2e8f0;padding:16px 32px;font-size:0.78rem;color:#64748b;display:flex;justify-content:space-between;}
+</style>
+</head>
+<body>
+<aside class="sidebar">
+  <div class="sb-logo"><div class="sb-logo-icon">💊</div><div><div class="sb-logo-name">Med it Easy</div><div class="sb-logo-sub">Admin Panel</div></div></div>
+  <div class="sb-section-label">Main Menu</div>
+  <a href="admin.html" class="sb-link"><span class="ico">🏠</span> Dashboard</a>
+  <a href="product.html" class="sb-link"><span class="ico">💊</span> Products</a>
+  <a href="purchases.html" class="sb-link"><span class="ico">🛒</span> Purchases</a>
+  <a href="customer.html" class="sb-link"><span class="ico">👥</span> Customers <span class="sb-badge">12</span></a>
+  <a href="cashier.html" class="sb-link"><span class="ico">💳</span> Cashier</a>
+  <div class="sb-divider"></div>
+  <div class="sb-section-label">Management</div>
+  <a href="staff.html" class="sb-link"><span class="ico">👨‍⚕️</span> Staff</a>
+  <a href="stock.html" class="sb-link"><span class="ico">📦</span> Stock <span class="sb-badge">5</span></a>
+  <a href="logs.html" class="sb-link active"><span class="ico">📋</span> Logs</a>
+  <div class="sb-divider"></div>
+  <div class="sb-section-label">Store</div>
+  <a href="ordersonline.html" class="sb-link"><span class="ico">🌐</span> Online Orders</a>
+  <a href="onlinepharmacy.html" class="sb-link"><span class="ico">🏥</span> Online Pharmacy</a>
+  <a href="qrcode.html" class="sb-link"><span class="ico">📷</span> QR Code</a>
+  <div class="sb-footer"><div class="sb-avatar">A</div><div><div class="sb-user-name">Admin User</div><div class="sb-user-role">Super Admin</div></div></div>
+</aside>
+<div class="main">
+  <div class="topbar">
+    <div class="topbar-left"><h1>📋 Activity Logs</h1><p>Full system activity history</p></div>
+    <div class="topbar-right"><button class="tb-btn" onclick="alert('Logs cleared!')">Clear Logs</button></div>
+  </div>
+  <div class="content">
+    <div class="log-list">
+      <div class="log-item"><div class="log-icon sale">✅</div><div class="log-text"><div class="log-title">Sale completed — #INV-5042</div><div class="log-desc">Priya Sharma purchased Paracetamol, Vitamin C. Total: ₹320</div></div><div><div class="log-time">2 min ago</div><div style="margin-top:4px;"><span class="log-type sale">SALE</span></div></div></div>
+      <div class="log-item"><div class="log-icon user">👤</div><div class="log-text"><div class="log-title">New customer registered</div><div class="log-desc">Karan Singh created a new account via online pharmacy</div></div><div><div class="log-time">15 min ago</div><div style="margin-top:4px;"><span class="log-type user">USER</span></div></div></div>
+      <div class="log-item"><div class="log-icon stock">📦</div><div class="log-text"><div class="log-title">Stock updated — Paracetamol 500mg</div><div class="log-desc">Restocked from 120 to 240 units by Admin</div></div><div><div class="log-time">1 hr ago</div><div style="margin-top:4px;"><span class="log-type stock">STOCK</span></div></div></div>
+      <div class="log-item"><div class="log-icon warn">⚠️</div><div class="log-text"><div class="log-title">Low stock alert — Vitamin C 500mg</div><div class="log-desc">Only 18 units remaining. Reorder recommended.</div></div><div><div class="log-time">2 hr ago</div><div style="margin-top:4px;"><span class="log-type warn">WARNING</span></div></div></div>
+      <div class="log-item"><div class="log-icon sale">💳</div><div class="log-text"><div class="log-title">Payment received — ₹3,200</div><div class="log-desc">Ravi Kumar paid via UPI for order #ORD-1041</div></div><div><div class="log-time">3 hr ago</div><div style="margin-top:4px;"><span class="log-type sale">PAYMENT</span></div></div></div>
+      <div class="log-item"><div class="log-icon info">👨‍⚕️</div><div class="log-text"><div class="log-title">Staff login — Priya Sharma</div><div class="log-desc">Logged in from IP 192.168.1.10 at 09:00 AM</div></div><div><div class="log-time">5 hr ago</div><div style="margin-top:4px;"><span class="log-type info">LOGIN</span></div></div></div>
+      <div class="log-item"><div class="log-icon stock">📦</div><div class="log-text"><div class="log-title">Purchase order received — #PO-2041</div><div class="log-desc">MediSupply Co. delivered 12 items worth ₹18,500</div></div><div><div class="log-time">Yesterday</div><div style="margin-top:4px;"><span class="log-type stock">PURCHASE</span></div></div></div>
+      <div class="log-item"><div class="log-icon warn">🗑️</div><div class="log-text"><div class="log-title">Product deleted — Aspirin 75mg</div><div class="log-desc">Deleted by Admin. Reason: Expired batch removed.</div></div><div><div class="log-time">Yesterday</div><div style="margin-top:4px;"><span class="log-type warn">DELETE</span></div></div></div>
+    </div>
+  </div>
+  <div class="footer"><span>&copy; 2026 Med it Easy</span><span>Admin Panel v2.0</span></div>
+</div>
+</body></html>

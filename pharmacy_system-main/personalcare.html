@@ -1,0 +1,344 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Personal Care</title>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    body { font-family: "Segoe UI", sans-serif; background: #f4f9f4; color: #1a2e1a; }
+    .app { min-height: 100vh; display: flex; flex-direction: column; }
+
+    /* Header */
+    .header { background: linear-gradient(135deg, #e8f5e9 0%, #e0f2f1 60%, #c8e6c9 100%); border-bottom: 2px solid #81c784; }
+    .header-content { max-width: 1200px; margin: 0 auto; padding: 20px 24px; }
+    .header-top { display: flex; align-items: center; gap: 16px; justify-content: space-between; }
+    .logo { font-size: 2.4rem; }
+    .header-text { text-align: center; flex: 1; }
+    .site-title { font-size: 2.2rem; font-weight: 800; letter-spacing: 0.14em; color: #2e7d32; text-transform: uppercase; text-shadow: 0 1px 3px rgba(46,125,50,0.12); }
+    .site-tagline { font-size: 0.95rem; color: #558b2f; margin-top: 4px; letter-spacing: 0.04em; }
+    .cart-icon { font-size: 1.5rem; cursor: pointer; background: white; border: 2px solid #81c784; border-radius: 50px; padding: 6px 14px; display: flex; align-items: center; gap: 6px; transition: background 0.2s; user-select: none; }
+    .cart-icon:hover { background: #e8f5e9; }
+    .cart-count { font-size: 1rem; font-weight: 700; color: #2e7d32; min-width: 20px; }
+
+    /* Top Nav */
+    .top-nav { background: #f1f8e9; border-bottom: 2px solid #c5e1a5; display: flex; flex-wrap: wrap; justify-content: center; padding: 0 16px; overflow-x: auto; }
+    .nav-btn { background: none; border: none; border-bottom: 3px solid transparent; padding: 14px 18px; font-size: 0.88rem; font-weight: 600; color: #388e3c; cursor: pointer; white-space: nowrap; transition: color 0.2s, border-color 0.2s, background 0.2s; letter-spacing: 0.02em; }
+    .nav-btn:hover { color: #1b5e20; background: #dcedc8; }
+    .nav-btn.active { color: #1b5e20; border-bottom-color: #2e7d32; background: #dcedc8; }
+
+    /* Body Layout */
+    .body-layout { flex: 1; display: flex; max-width: 1200px; margin: 24px auto; width: 100%; padding: 0 16px; gap: 24px; }
+
+    /* Sidebar */
+    .sidebar { width: 220px; flex-shrink: 0; background: white; border-radius: 16px; border: 1.5px solid #c5e1a5; padding: 20px 0; height: fit-content; box-shadow: 0 2px 12px rgba(46,125,50,0.07); }
+    .sidebar-title { font-size: 0.78rem; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; color: #558b2f; padding: 0 20px 12px; border-bottom: 1.5px solid #c5e1a5; margin-bottom: 8px; }
+    .sidebar-list { list-style: none; }
+    .sidebar-btn { display: block; width: 100%; background: none; border: none; border-left: 3px solid transparent; text-align: left; padding: 10px 20px; font-size: 0.9rem; color: #33691e; cursor: pointer; transition: background 0.15s, color 0.15s, padding-left 0.15s; }
+    .sidebar-btn:hover { background: #f1f8e9; color: #1b5e20; padding-left: 26px; }
+    .sidebar-btn.active { background: #dcedc8; color: #1b5e20; font-weight: 700; border-left-color: #2e7d32; padding-left: 26px; }
+
+    /* Main */
+    .main-content { flex: 1; min-width: 0; }
+    .section-header { margin-bottom: 20px; display: flex; align-items: baseline; gap: 12px; flex-wrap: wrap; }
+    .section-title { font-size: 1.5rem; font-weight: 800; color: #2e7d32; }
+    .section-subtitle { font-size: 0.85rem; color: #558b2f; }
+    .products-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 20px; }
+
+    /* Product Card */
+    .product-card { background: white; border-radius: 16px; border: 1.5px solid #c5e1a5; overflow: hidden; box-shadow: 0 2px 10px rgba(46,125,50,0.07); display: flex; flex-direction: column; transition: transform 0.2s, box-shadow 0.2s; }
+    .product-card:hover { transform: translateY(-4px); box-shadow: 0 8px 24px rgba(46,125,50,0.14); }
+    .product-img { background: linear-gradient(135deg, #e8f5e9 0%, #e0f7fa 100%); height: 130px; display: flex; align-items: center; justify-content: center; }
+    .product-emoji { font-size: 3.2rem; user-select: none; }
+    .product-info { padding: 14px 14px 8px; flex: 1; }
+    .product-name { font-size: 0.88rem; font-weight: 600; color: #1a2e1a; line-height: 1.4; margin-bottom: 6px; }
+    .product-price { font-size: 1rem; font-weight: 800; color: #2e7d32; }
+    .add-to-cart-btn { margin: 0 14px 14px; padding: 9px 0; background: linear-gradient(90deg, #66bb6a, #26a69a); color: white; border: none; border-radius: 50px; font-size: 0.85rem; font-weight: 700; cursor: pointer; transition: opacity 0.2s, transform 0.1s, background 0.3s; letter-spacing: 0.03em; }
+    .add-to-cart-btn:hover { opacity: 0.9; transform: scale(1.02); }
+    .add-to-cart-btn.added { background: linear-gradient(90deg, #29b6f6, #1976d2); }
+
+    /* Footer */
+    .footer { background: #f1f8e9; border-top: 1.5px solid #c5e1a5; text-align: center; padding: 18px; font-size: 0.85rem; color: #558b2f; }
+    .footer a { color: #2e7d32; text-decoration: none; font-weight: 600; }
+    .footer a:hover { text-decoration: underline; }
+
+    /* Responsive */
+    @media (max-width: 768px) {
+      .site-title { font-size: 1.4rem; }
+      .body-layout { flex-direction: column; margin: 16px auto; }
+      .sidebar { width: 100%; }
+      .sidebar-list { display: flex; flex-wrap: wrap; gap: 4px; padding: 0 12px 12px; }
+      .sidebar-btn { width: auto; border: 1.5px solid #c5e1a5; border-left: 1.5px solid #c5e1a5; border-radius: 50px; padding: 7px 16px; font-size: 0.82rem; }
+      .sidebar-btn.active { padding-left: 16px; border-color: #2e7d32; }
+      .products-grid { grid-template-columns: repeat(auto-fill, minmax(160px, 1fr)); gap: 14px; }
+      .nav-btn { padding: 12px 12px; font-size: 0.8rem; }
+    }
+  </style>
+</head>
+<body>
+<div class="app">
+
+  <!-- Header -->
+  <header class="header">
+    <div class="header-content">
+      <div class="header-top">
+        <div class="logo">🌿</div>
+        <div class="header-text">
+          <h1 class="site-title">PERSONAL CARE</h1>
+          <p class="site-tagline">Feel fresh, look great every day</p>
+        </div>
+        <div class="cart-icon">
+          🛒 <span class="cart-count" id="cartCount">0</span>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <!-- Top Navigation -->
+  <nav class="top-nav" id="topNav"></nav>
+
+  <!-- Body -->
+  <div class="body-layout">
+    <aside class="sidebar">
+      <h3 class="sidebar-title">Categories</h3>
+      <ul class="sidebar-list" id="sidebarList"></ul>
+    </aside>
+    <main class="main-content">
+      <div class="section-header">
+        <h2 class="section-title" id="sectionTitle"></h2>
+        <p class="section-subtitle" id="sectionSubtitle"></p>
+      </div>
+      <div class="products-grid" id="productsGrid"></div>
+    </main>
+  </div>
+
+  <!-- Footer -->
+  <footer class="footer">
+    <p>&copy; 2026 Personal Care. Built with ❤️</p>
+  </footer>
+
+</div>
+
+<script>
+  const data = {
+    "Hair Care": {
+      "Shampoo": [
+        { name: "Head & Shoulders Classic Clean 400ml", price: "$7.99" },
+        { name: "Pantene Pro-V Smooth & Sleek", price: "$6.49" },
+        { name: "Dove Intensive Repair Shampoo", price: "$5.99" },
+        { name: "TRESemmé Keratin Smooth Shampoo", price: "$8.49" },
+        { name: "L'Oréal Paris Elvive Extraordinary", price: "$9.99" }
+      ],
+      "Conditioner": [
+        { name: "Pantene Pro-V Daily Moisture Renewal", price: "$6.99" },
+        { name: "Dove Intensive Repair Conditioner", price: "$5.99" },
+        { name: "TRESemmé Botanique Nourish & Replenish", price: "$7.49" },
+        { name: "Herbal Essences Bio:Renew Argan Oil", price: "$8.99" },
+        { name: "OGX Renewing Argan Oil Conditioner", price: "$10.49" }
+      ],
+      "Hair Oil": [
+        { name: "Parachute Coconut Hair Oil 500ml", price: "$4.99" },
+        { name: "Dabur Amla Hair Oil 300ml", price: "$5.49" },
+        { name: "Bajaj Almond Drops Hair Oil", price: "$6.99" },
+        { name: "Vatika Enriched Coconut Hair Oil", price: "$5.99" },
+        { name: "Kesh King Ayurvedic Hair Oil", price: "$7.49" }
+      ],
+      "Hair Serum": [
+        { name: "L'Oréal Paris Smooth Intense Serum", price: "$11.99" },
+        { name: "Pantene Hair Fall Control Serum", price: "$9.99" },
+        { name: "TRESemmé Keratin Smooth Serum", price: "$10.49" },
+        { name: "Livon Hair Serum 100ml", price: "$6.99" },
+        { name: "Streax Hair Serum with Walnut Oil", price: "$7.99" }
+      ]
+    },
+    "Skin Care": {
+      "Face Wash": [
+        { name: "Cetaphil Gentle Skin Cleanser 250ml", price: "$12.99" },
+        { name: "Neutrogena Deep Clean Facial Wash", price: "$9.49" },
+        { name: "Himalaya Purifying Neem Face Wash", price: "$5.99" },
+        { name: "Garnier Bright Complete Facewash", price: "$7.49" },
+        { name: "Pond's Pure White Face Wash", price: "$6.99" }
+      ],
+      "Moisturizer": [
+        { name: "Nivea Soft Moisturizing Cream 200ml", price: "$8.99" },
+        { name: "Olay Total Effects 7-in-1 Cream", price: "$18.99" },
+        { name: "Neutrogena Hydro Boost Water Gel", price: "$21.49" },
+        { name: "Vaseline Intensive Care Body Lotion", price: "$6.49" },
+        { name: "Himalaya Nourishing Skin Cream", price: "$5.99" }
+      ],
+      "Sunscreen": [
+        { name: "Neutrogena Ultra Sheer SPF 50+", price: "$14.99" },
+        { name: "Lotus Herbals Safe Sun SPF 50 PA+++", price: "$11.49" },
+        { name: "Lakme Sun Expert SPF 50 PA+++", price: "$9.99" },
+        { name: "Banana Boat Ultra Sport SPF 50+", price: "$12.99" },
+        { name: "Coppertone Sport SPF 50 Sunscreen", price: "$13.49" }
+      ]
+    },
+    "Female Hygiene": {
+      "Sanitary Pads": [
+        { name: "Whisper Ultra Clean XL+ 30 Pads", price: "$8.99" },
+        { name: "Stayfree Secure Extra Large 28 Pads", price: "$7.99" },
+        { name: "Sofy Bodyfit Extra Large 18 Pads", price: "$6.49" },
+        { name: "Always Maxi Thick Regular 36 Pads", price: "$9.49" },
+        { name: "Carefree Panty Liners Regular 60ct", price: "$5.99" }
+      ],
+      "Intimate Wash": [
+        { name: "Lactacyd Feminine Wash 250ml", price: "$9.99" },
+        { name: "Himalaya Intimate Wash 200ml", price: "$7.49" },
+        { name: "Pee Safe Intimate Wash 100ml", price: "$8.99" },
+        { name: "V-Wash Plus Expert Intimate Hygiene", price: "$10.49" },
+        { name: "Sirona Natural pH Balanced Intimate Wash", price: "$11.99" }
+      ]
+    },
+    "Bath & Hand Wash": {
+      "Body Wash": [
+        { name: "Dove Deep Moisture Body Wash 532ml", price: "$8.99" },
+        { name: "Nivea Essentially Enriched Body Wash", price: "$7.49" },
+        { name: "Olay Ultra Moisture Body Wash", price: "$9.99" },
+        { name: "Lux Velvet Jasmine Body Wash 500ml", price: "$6.99" },
+        { name: "Fiama Shower Gel Patchouli & Macadamia", price: "$7.99" }
+      ],
+      "Soaps": [
+        { name: "Dove Beauty Cream Bar 100g (Pack of 4)", price: "$6.49" },
+        { name: "Lux Soft Touch Rose & Vitamin E Bar", price: "$4.99" },
+        { name: "Dettol Original Soap 75g (Pack of 4)", price: "$5.99" },
+        { name: "Lifebuoy Total 10 Germ Protection Soap", price: "$4.49" },
+        { name: "Pears Soft & Fresh Moisturizing Soap", price: "$5.49" }
+      ],
+      "Hand Wash": [
+        { name: "Dettol Original Liquid Hand Wash 250ml", price: "$4.99" },
+        { name: "Lifebuoy Total 10 Hand Wash 250ml", price: "$4.49" },
+        { name: "Dove Moisturising Hand Wash 250ml", price: "$5.99" },
+        { name: "Palmolive Naturals Milk & Honey Hand Wash", price: "$5.49" },
+        { name: "Savlon Moisture Shield Hand Wash 200ml", price: "$4.99" }
+      ]
+    },
+    "Shaving & Hair Removal": {
+      "Razors": [
+        { name: "Gillette Mach3 Razor + 2 Refills", price: "$12.99" },
+        { name: "Gillette Venus Smooth Razor for Women", price: "$9.99" },
+        { name: "Schick Hydro 5 Sense Razor", price: "$11.49" },
+        { name: "BIC Flex 5 Disposable Razors 3ct", price: "$7.99" },
+        { name: "Gillette Fusion ProGlide Razor", price: "$14.99" }
+      ],
+      "Hair Removal Cream": [
+        { name: "Veet Sensitive Skin Hair Removal Cream 200g", price: "$8.99" },
+        { name: "Anne French Hair Removal Cream 40g", price: "$5.49" },
+        { name: "Nair Moisturizing Hair Removal Lotion", price: "$9.49" },
+        { name: "Surgi-cream Hair Remover for Face", price: "$7.99" },
+        { name: "Fem Turmeric Bleach & Hair Removal Cream", price: "$6.99" }
+      ]
+    },
+    "Body Care": {
+      "Body Lotion": [
+        { name: "Vaseline Intensive Care Cocoa Radiant 400ml", price: "$7.99" },
+        { name: "Nivea Express Hydration Body Lotion 400ml", price: "$8.49" },
+        { name: "Olay Total Effects Body Lotion SPF15", price: "$14.99" },
+        { name: "Dove DermaSpa Goodness Body Lotion", price: "$11.99" },
+        { name: "Palmer's Cocoa Butter Formula 400ml", price: "$9.49" }
+      ],
+      "Body Oil": [
+        { name: "Bio-Oil Multiuse Skin Care Oil 125ml", price: "$16.99" },
+        { name: "Palmer's Coconut Oil Body Oil 150ml", price: "$10.49" },
+        { name: "Kama Ayurveda Nalpamaradi Body Oil", price: "$19.99" },
+        { name: "Lotus Herbals Jojoba & Wheat Germ Body Oil", price: "$12.99" },
+        { name: "Wow Skin Science Sweet Almond Oil 200ml", price: "$11.49" }
+      ]
+    },
+    "Oral Care": {
+      "Toothpaste": [
+        { name: "Colgate Total Advanced Whitening 150g", price: "$5.99" },
+        { name: "Sensodyne Repair & Protect 75ml", price: "$8.99" },
+        { name: "Oral-B Pro-Expert Professional Protection", price: "$7.49" },
+        { name: "Pepsodent Germicheck Toothpaste 150g", price: "$3.99" },
+        { name: "Himalaya Botanique Complete Care", price: "$5.49" }
+      ],
+      "Toothbrush": [
+        { name: "Oral-B CrossAction All In One Toothbrush", price: "$4.99" },
+        { name: "Colgate Slim Soft Charcoal Toothbrush", price: "$3.99" },
+        { name: "Sensodyne Soft Toothbrush", price: "$4.49" },
+        { name: "Colgate ZigZag Black Medium Toothbrush", price: "$2.99" },
+        { name: "Oral-B Indicator Contour Clean Medium", price: "$3.49" }
+      ],
+      "Mouthwash": [
+        { name: "Listerine Cool Mint Antiseptic 500ml", price: "$8.99" },
+        { name: "Oral-B Pro-Expert Multi Protection Rinse", price: "$7.49" },
+        { name: "Colgate Plax Fresh Mint Mouthwash 500ml", price: "$6.99" },
+        { name: "Himalaya HiOra Mouth Wash 215ml", price: "$5.49" },
+        { name: "Sensodyne Pronamel Daily Mouthwash", price: "$9.99" }
+      ]
+    }
+  };
+
+  const emojiMap = {
+    "Hair Care": "💇",
+    "Skin Care": "✨",
+    "Female Hygiene": "🌸",
+    "Bath & Hand Wash": "🚿",
+    "Shaving & Hair Removal": "🪒",
+    "Body Care": "🧴",
+    "Oral Care": "🦷"
+  };
+
+  const categories = Object.keys(data);
+  let activeCategory = categories[0];
+  let activeSub = Object.keys(data[activeCategory])[0];
+  let cartCount = 0;
+
+  function render() {
+    // Top Nav
+    document.getElementById('topNav').innerHTML = categories.map(cat => `
+      <button class="nav-btn${activeCategory === cat ? ' active' : ''}" onclick="selectCategory('${cat}')">${cat}</button>
+    `).join('');
+
+    // Sidebar
+    const subs = Object.keys(data[activeCategory]);
+    document.getElementById('sidebarList').innerHTML = subs.map(sub => `
+      <li><button class="sidebar-btn${activeSub === sub ? ' active' : ''}" onclick="selectSub('${sub}')">${sub}</button></li>
+    `).join('');
+
+    // Products
+    const products = data[activeCategory][activeSub];
+    document.getElementById('sectionTitle').textContent = activeSub;
+    document.getElementById('sectionSubtitle').textContent = products.length + ' products found';
+    document.getElementById('productsGrid').innerHTML = products.map((p, i) => `
+      <div class="product-card">
+        <div class="product-img"><span class="product-emoji">${emojiMap[activeCategory] || '🌿'}</span></div>
+        <div class="product-info">
+          <p class="product-name">${p.name}</p>
+          <p class="product-price">${p.price}</p>
+        </div>
+        <button class="add-to-cart-btn" id="btn-${i}" onclick="addToCart('${p.name.replace(/'/g,"\\'")}', ${i})">Add to Cart</button>
+      </div>
+    `).join('');
+
+    document.getElementById('cartCount').textContent = cartCount;
+  }
+
+  function selectCategory(cat) {
+    activeCategory = cat;
+    activeSub = Object.keys(data[cat])[0];
+    render();
+  }
+
+  function selectSub(sub) {
+    activeSub = sub;
+    render();
+  }
+
+  function addToCart(name, i) {
+    cartCount++;
+    document.getElementById('cartCount').textContent = cartCount;
+    const btn = document.getElementById('btn-' + i);
+    btn.textContent = '✓ Added!';
+    btn.classList.add('added');
+    setTimeout(() => {
+      btn.textContent = 'Add to Cart';
+      btn.classList.remove('added');
+    }, 1500);
+  }
+
+  render();
+</script>
+</body>
+</html>

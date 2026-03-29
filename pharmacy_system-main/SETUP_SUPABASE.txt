@@ -1,0 +1,20 @@
+Med it Easy — Supabase setup (after code changes in this folder)
+
+1) Create a project at https://supabase.com
+
+2) Project Settings → API: copy Project URL and anon public key into js/supabase-config.js
+   (see js/supabase-config.example.js)
+
+3) SQL Editor: paste and run the full contents of:
+   supabase/migrations/20250329120000_init_pharmacy.sql
+
+4) Authentication → URL configuration: add your site URL (e.g. http://localhost:8765) to
+   Site URL and Redirect URLs if you use email confirmation.
+
+5) For local testing, Authentication → Providers → Email: consider turning OFF
+   "Confirm email" so signUp returns a session immediately (needed for admin RPC flow).
+
+6) Change the admin secret: edit claim_admin_role in the migration (or create a new migration)
+   and keep login.html / registration in sync — do not ship the default secret to production.
+
+7) Deploy static HTML to any host (Netlify, Vercel, etc.) and repeat step 4 with the production URL.

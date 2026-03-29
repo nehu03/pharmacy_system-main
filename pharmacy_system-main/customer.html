@@ -1,0 +1,812 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Customers | Med it Easy</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  :root {
+    --dark:#0f172a; --dark2:#1e293b; --dark3:#334155;
+    --accent:#00ffcc; --accent2:#00d4aa;
+    --blue:#3b82f6; --green:#10b981; --orange:#f59e0b;
+    --red:#ef4444; --purple:#8b5cf6;
+    --text:#f1f5f9; --muted:#94a3b8;
+  }
+  body { font-family:"Segoe UI",sans-serif; background:#f0f4f8; display:flex; min-height:100vh; }
+
+  /* SIDEBAR */
+  .sidebar { width:250px; background:var(--dark); display:flex; flex-direction:column; position:fixed; top:0; left:0; height:100vh; overflow-y:auto; z-index:100; }
+  .sidebar::-webkit-scrollbar { width:4px; }
+  .sidebar::-webkit-scrollbar-thumb { background:var(--dark3); border-radius:4px; }
+  .sb-logo { display:flex; align-items:center; gap:12px; padding:28px 24px 24px; border-bottom:1px solid var(--dark3); }
+  .sb-logo-icon { font-size:2rem; }
+  .sb-logo-name { font-size:1.3rem; font-weight:900; color:var(--accent); }
+  .sb-logo-sub { font-size:0.68rem; color:var(--muted); margin-top:1px; }
+  .sb-section-label { font-size:0.65rem; font-weight:800; letter-spacing:0.12em; text-transform:uppercase; color:#475569; padding:20px 24px 8px; }
+  .sb-link { display:flex; align-items:center; gap:12px; padding:11px 24px; color:var(--muted); text-decoration:none; font-size:0.88rem; font-weight:500; border-left:3px solid transparent; transition:all 0.15s; }
+  .sb-link:hover, .sb-link.active { background:var(--dark2); color:var(--accent); border-left-color:var(--accent); padding-left:30px; font-weight:700; }
+  .sb-link .ico { font-size:1.1rem; width:20px; text-align:center; flex-shrink:0; }
+  .sb-badge { margin-left:auto; background:var(--red); color:white; font-size:0.62rem; font-weight:800; padding:2px 7px; border-radius:50px; }
+  .sb-divider { height:1px; background:var(--dark3); margin:10px 0; }
+  .sb-footer { margin-top:auto; padding:20px 24px; border-top:1px solid var(--dark3); display:flex; align-items:center; gap:10px; }
+  .sb-avatar { width:36px; height:36px; border-radius:50%; background:linear-gradient(135deg,var(--accent),#00b4d8); display:flex; align-items:center; justify-content:center; font-size:1rem; font-weight:800; color:var(--dark); flex-shrink:0; }
+  .sb-user-name { font-size:0.85rem; font-weight:700; color:var(--text); }
+  .sb-user-role { font-size:0.7rem; color:var(--muted); }
+
+  /* MAIN */
+  .main { flex:1; margin-left:250px; display:flex; flex-direction:column; min-height:100vh; }
+
+  /* TOPBAR */
+  .topbar { background:white; height:66px; display:flex; align-items:center; justify-content:space-between; padding:0 32px; border-bottom:1px solid #e2e8f0; position:sticky; top:0; z-index:50; box-shadow:0 1px 8px rgba(0,0,0,0.05); }
+  .topbar-left h1 { font-size:1.35rem; font-weight:800; color:var(--dark); }
+  .topbar-left p { font-size:0.78rem; color:#64748b; margin-top:1px; }
+  .add-btn { background:linear-gradient(90deg,var(--accent),#00b4d8); color:var(--dark); border:none; border-radius:50px; padding:10px 22px; font-size:0.88rem; font-weight:800; cursor:pointer; display:flex; align-items:center; gap:8px; transition:opacity 0.2s,transform 0.15s; box-shadow:0 4px 14px rgba(0,255,204,0.3); }
+  .add-btn:hover { opacity:0.9; transform:translateY(-1px); }
+
+  /* CONTENT */
+  .content { padding:28px 32px; flex:1; }
+
+  /* STAT STRIP */
+  .stat-strip { display:grid; grid-template-columns:repeat(auto-fit,minmax(175px,1fr)); gap:16px; margin-bottom:26px; }
+  .mini-stat { background:white; border-radius:16px; padding:18px 20px; border:1.5px solid #e2e8f0; box-shadow:0 2px 8px rgba(0,0,0,0.04); display:flex; align-items:center; gap:14px; transition:transform 0.2s; }
+  .mini-stat:hover { transform:translateY(-3px); }
+  .mini-stat-ico { width:46px; height:46px; border-radius:12px; display:flex; align-items:center; justify-content:center; font-size:1.5rem; flex-shrink:0; }
+  .mini-stat-val { font-size:1.5rem; font-weight:900; color:var(--dark); }
+  .mini-stat-lbl { font-size:0.72rem; font-weight:600; color:#64748b; text-transform:uppercase; letter-spacing:0.05em; }
+  .mini-stat-sub { font-size:0.7rem; font-weight:600; margin-top:2px; }
+
+  /* TOOLBAR */
+  .toolbar { display:flex; align-items:center; justify-content:space-between; margin-bottom:20px; flex-wrap:wrap; gap:14px; }
+  .toolbar-left { display:flex; align-items:center; gap:10px; flex-wrap:wrap; }
+  .search-box { display:flex; align-items:center; gap:8px; background:white; border:1.5px solid #e2e8f0; border-radius:50px; padding:9px 18px; width:290px; transition:border-color 0.2s; }
+  .search-box:focus-within { border-color:var(--accent); }
+  .search-box input { border:none; outline:none; font-size:0.88rem; color:#0f172a; width:100%; }
+  .filter-wrap { display:flex; gap:8px; flex-wrap:wrap; }
+  .filter-btn { background:white; border:1.5px solid #e2e8f0; border-radius:50px; padding:8px 16px; font-size:0.78rem; font-weight:700; color:#475569; cursor:pointer; transition:all 0.15s; display:flex; align-items:center; gap:5px; }
+  .filter-btn:hover, .filter-btn.active { background:var(--dark); border-color:var(--dark); color:var(--accent); }
+  .filter-dot { width:8px; height:8px; border-radius:50%; }
+  .sort-select { border:1.5px solid #e2e8f0; border-radius:50px; padding:8px 16px; font-size:0.78rem; font-weight:700; color:#475569; outline:none; cursor:pointer; background:white; transition:border-color 0.2s; }
+  .sort-select:focus { border-color:var(--accent); }
+
+  /* TABLE */
+  .table-wrap { background:white; border-radius:20px; border:1.5px solid #e2e8f0; box-shadow:0 2px 12px rgba(0,0,0,0.05); overflow:hidden; }
+  .table-header { padding:16px 22px; border-bottom:1px solid #f1f5f9; display:flex; align-items:center; justify-content:space-between; }
+  .table-header-title { font-size:0.9rem; font-weight:800; color:var(--dark); }
+  .table-count { font-size:0.78rem; color:#94a3b8; font-weight:600; }
+  table { width:100%; border-collapse:collapse; }
+  thead { background:#f8fafc; }
+  th { padding:13px 18px; font-size:0.72rem; font-weight:800; color:#64748b; text-transform:uppercase; letter-spacing:0.07em; text-align:left; border-bottom:1.5px solid #f1f5f9; white-space:nowrap; }
+  th.sortable { cursor:pointer; user-select:none; }
+  th.sortable:hover { color:var(--dark); }
+  td { padding:14px 18px; font-size:0.85rem; color:#1e293b; border-bottom:1px solid #f8fafc; vertical-align:middle; }
+  tr:last-child td { border-bottom:none; }
+  tr:hover td { background:#fafbfc; }
+  .cust-cell { display:flex; align-items:center; gap:12px; }
+  .cust-avatar { width:38px; height:38px; border-radius:50%; display:flex; align-items:center; justify-content:center; font-size:0.9rem; font-weight:800; color:white; flex-shrink:0; }
+  .cust-name { font-size:0.88rem; font-weight:700; color:#0f172a; }
+  .cust-email { font-size:0.72rem; color:#94a3b8; margin-top:1px; }
+  .badge { display:inline-flex; align-items:center; gap:4px; padding:5px 11px; border-radius:50px; font-size:0.72rem; font-weight:700; white-space:nowrap; }
+  .badge.vip { background:#fef3c7; color:#92400e; }
+  .badge.regular { background:#dbeafe; color:#1e40af; }
+  .badge.new { background:#d1fae5; color:#065f46; }
+  .badge.inactive { background:#f1f5f9; color:#64748b; }
+  .orders-cell { font-size:0.88rem; font-weight:700; color:#0f172a; }
+  .orders-sub { font-size:0.72rem; color:#94a3b8; }
+  .spent-cell { font-size:0.9rem; font-weight:800; color:#0f172a; }
+  .last-visit { font-size:0.82rem; color:#64748b; font-weight:600; }
+  .action-wrap { display:flex; align-items:center; gap:6px; }
+  .act-btn { width:32px; height:32px; border-radius:8px; border:1.5px solid #e2e8f0; background:white; cursor:pointer; font-size:0.9rem; display:flex; align-items:center; justify-content:center; transition:all 0.15s; }
+  .act-btn:hover { transform:scale(1.1); }
+  .act-btn.view:hover { background:#d1fae5; border-color:#6ee7b7; }
+  .act-btn.edit:hover { background:#dbeafe; border-color:#93c5fd; }
+  .act-btn.msg:hover { background:#ede9fe; border-color:#c4b5fd; }
+  .act-btn.del:hover { background:#fee2e2; border-color:#fca5a5; }
+
+  /* EMPTY / PAGINATION */
+  .empty-state { text-align:center; padding:60px 20px; color:#94a3b8; }
+  .empty-state-icon { font-size:4rem; margin-bottom:16px; }
+  .empty-state h3 { font-size:1.1rem; font-weight:700; color:#475569; margin-bottom:8px; }
+  .pagination { display:flex; align-items:center; justify-content:space-between; padding:14px 22px; border-top:1px solid #f1f5f9; flex-wrap:wrap; gap:10px; }
+  .page-info { font-size:0.8rem; color:#64748b; font-weight:600; }
+  .page-btns { display:flex; gap:6px; }
+  .page-btn { width:32px; height:32px; border-radius:8px; border:1.5px solid #e2e8f0; background:white; cursor:pointer; font-size:0.82rem; font-weight:700; color:#475569; display:flex; align-items:center; justify-content:center; transition:all 0.15s; }
+  .page-btn:hover, .page-btn.active { background:var(--dark); border-color:var(--dark); color:var(--accent); }
+
+  /* FOOTER */
+  .footer { background:white; border-top:1px solid #e2e8f0; padding:16px 32px; display:flex; align-items:center; justify-content:space-between; font-size:0.78rem; color:#64748b; }
+  .footer span { color:var(--accent2); font-weight:700; }
+
+  /* MODAL */
+  .modal-overlay { position:fixed; inset:0; background:rgba(0,0,0,0.5); z-index:1000; display:none; align-items:center; justify-content:center; backdrop-filter:blur(4px); padding:20px; }
+  .modal-overlay.open { display:flex; }
+  .modal { background:white; border-radius:24px; padding:32px; width:100%; max-width:520px; max-height:90vh; overflow-y:auto; box-shadow:0 24px 60px rgba(0,0,0,0.2); animation:slideUp 0.25s ease; position:relative; }
+  .modal::-webkit-scrollbar { width:4px; }
+  .modal::-webkit-scrollbar-thumb { background:#e2e8f0; border-radius:4px; }
+  @keyframes slideUp { from{opacity:0;transform:translateY(20px);}to{opacity:1;transform:translateY(0);} }
+  .modal-close { position:absolute; top:16px; right:16px; width:32px; height:32px; border-radius:50%; background:#f1f5f9; border:none; font-size:1.1rem; cursor:pointer; display:flex; align-items:center; justify-content:center; }
+  .modal-close:hover { background:#e2e8f0; }
+  .modal-icon { font-size:2.8rem; margin-bottom:12px; }
+  .modal h2 { font-size:1.25rem; font-weight:800; color:#0f172a; margin-bottom:4px; }
+  .modal > p.sub { font-size:0.85rem; color:#64748b; margin-bottom:22px; }
+  .form-row { display:grid; grid-template-columns:1fr 1fr; gap:14px; }
+  .form-group { margin-bottom:16px; }
+  .form-group label { display:block; font-size:0.8rem; font-weight:700; color:#475569; margin-bottom:6px; }
+  .form-group input, .form-group select, .form-group textarea { width:100%; border:1.5px solid #e2e8f0; border-radius:10px; padding:10px 14px; font-size:0.88rem; color:#0f172a; outline:none; transition:border-color 0.2s; font-family:inherit; }
+  .form-group input:focus, .form-group select:focus, .form-group textarea:focus { border-color:var(--accent); }
+  .form-group textarea { resize:vertical; min-height:70px; }
+  .form-group input.error { border-color:var(--red); }
+  .error-msg { font-size:0.72rem; color:var(--red); font-weight:600; margin-top:4px; display:none; }
+  .error-msg.show { display:block; }
+  .modal-actions { display:flex; gap:10px; margin-top:24px; }
+  .btn-save { flex:1; background:linear-gradient(90deg,var(--accent),#00b4d8); color:var(--dark); border:none; border-radius:50px; padding:12px; font-size:0.9rem; font-weight:800; cursor:pointer; transition:opacity 0.2s; }
+  .btn-save:hover { opacity:0.88; }
+  .btn-cancel { background:white; color:#64748b; border:1.5px solid #e2e8f0; border-radius:50px; padding:12px 20px; font-size:0.88rem; font-weight:700; cursor:pointer; }
+  .btn-cancel:hover { background:#f1f5f9; }
+  .btn-danger { background:#fee2e2; color:var(--red); border:1.5px solid #fecaca; border-radius:50px; padding:12px 20px; font-size:0.88rem; font-weight:700; cursor:pointer; }
+  .btn-danger:hover { background:#fecaca; }
+  .success-banner { border-radius:10px; padding:10px 14px; font-size:0.82rem; font-weight:600; margin-bottom:14px; display:none; align-items:center; gap:8px; background:#d1fae5; border:1.5px solid #6ee7b7; color:#065f46; }
+  .success-banner.show { display:flex; }
+
+  /* DETAIL VIEW */
+  .profile-header { display:flex; align-items:center; gap:16px; margin-bottom:22px; padding:18px; background:#f8fafc; border-radius:16px; }
+  .profile-avatar-lg { width:64px; height:64px; border-radius:50%; display:flex; align-items:center; justify-content:center; font-size:1.6rem; font-weight:800; color:white; flex-shrink:0; }
+  .profile-name { font-size:1.2rem; font-weight:800; color:#0f172a; margin-bottom:4px; }
+  .profile-email { font-size:0.82rem; color:#64748b; margin-bottom:6px; }
+  .detail-grid { display:grid; grid-template-columns:1fr 1fr; gap:12px; margin-bottom:16px; }
+  .detail-box { background:#f8fafc; border-radius:12px; padding:14px; }
+  .detail-box .d-lbl { font-size:0.7rem; font-weight:700; color:#94a3b8; text-transform:uppercase; letter-spacing:0.06em; margin-bottom:4px; }
+  .detail-box .d-val { font-size:0.95rem; font-weight:800; color:#0f172a; }
+
+  /* ORDER HISTORY */
+  .order-history { background:#f8fafc; border-radius:12px; padding:14px; margin-bottom:16px; }
+  .oh-title { font-size:0.78rem; font-weight:800; color:#64748b; text-transform:uppercase; letter-spacing:0.06em; margin-bottom:10px; }
+  .oh-item { display:flex; align-items:center; justify-content:space-between; padding:8px 0; border-bottom:1px solid #f1f5f9; font-size:0.82rem; }
+  .oh-item:last-child { border-bottom:none; }
+  .oh-id { font-weight:700; color:#0f172a; }
+  .oh-date { color:#94a3b8; font-size:0.75rem; }
+  .oh-amt { font-weight:800; color:#0f172a; }
+
+  /* MESSAGE MODAL */
+  .msg-badge { display:inline-flex; gap:8px; margin-bottom:16px; flex-wrap:wrap; }
+  .quick-msg { background:#f1f5f9; border:1.5px solid #e2e8f0; border-radius:50px; padding:6px 14px; font-size:0.78rem; font-weight:600; color:#475569; cursor:pointer; transition:all 0.15s; }
+  .quick-msg:hover { background:var(--accent); border-color:var(--accent); color:var(--dark); }
+
+  /* TOAST */
+  .toast { position:fixed; bottom:24px; right:24px; background:#0f172a; color:#00ffcc; padding:12px 22px; border-radius:50px; font-size:0.85rem; font-weight:700; box-shadow:0 8px 24px rgba(0,0,0,0.2); z-index:9999; animation:slideUp 0.25s ease; }
+
+  @media (max-width:900px) { .sidebar{display:none;} .main{margin-left:0;} }
+  @media (max-width:640px) { .content{padding:20px 16px;} .topbar{padding:0 16px;} .form-row{grid-template-columns:1fr;} }
+</style>
+</head>
+<body>
+
+<!-- SIDEBAR -->
+<aside class="sidebar">
+  <div class="sb-logo">
+    <div class="sb-logo-icon">💊</div>
+    <div><div class="sb-logo-name">Med it Easy</div><div class="sb-logo-sub">Admin Panel</div></div>
+  </div>
+  <div class="sb-section-label">Main Menu</div>
+  <a href="admin.html" class="sb-link"><span class="ico">🏠</span> Dashboard</a>
+  <a href="product.html" class="sb-link"><span class="ico">💊</span> Products</a>
+  <a href="purchases.html" class="sb-link"><span class="ico">🛒</span> Purchases</a>
+  <a href="customer.html" class="sb-link active"><span class="ico">👥</span> Customers <span class="sb-badge">12</span></a>
+  <a href="cashier.html" class="sb-link"><span class="ico">💳</span> Cashier</a>
+  <div class="sb-divider"></div>
+  <div class="sb-section-label">Management</div>
+  <a href="staff.html" class="sb-link"><span class="ico">👨‍⚕️</span> Staff</a>
+  <a href="stock.html" class="sb-link"><span class="ico">📦</span> Stock <span class="sb-badge">5</span></a>
+  <a href="logs.html" class="sb-link"><span class="ico">📋</span> Logs</a>
+  <div class="sb-divider"></div>
+  <div class="sb-section-label">Store</div>
+  <a href="ordersonline.html" class="sb-link"><span class="ico">🌐</span> Online Orders</a>
+  <a href="onlinepharmacy.html" class="sb-link"><span class="ico">🏥</span> Online Pharmacy</a>
+  <a href="qrcode.html" class="sb-link"><span class="ico">📷</span> QR Code</a>
+  <div class="sb-footer">
+    <div class="sb-avatar">A</div>
+    <div><div class="sb-user-name">Admin User</div><div class="sb-user-role">Super Admin</div></div>
+  </div>
+</aside>
+
+<!-- MAIN -->
+<div class="main">
+  <div class="topbar">
+    <div class="topbar-left">
+      <h1>👥 Customers</h1>
+      <p>Manage your customer database &amp; CRM</p>
+    </div>
+    <button class="add-btn" onclick="openAddModal()">+ Add Customer</button>
+  </div>
+
+  <div class="content">
+
+    <!-- STAT STRIP -->
+    <div class="stat-strip">
+      <div class="mini-stat">
+        <div class="mini-stat-ico" style="background:#dbeafe">👥</div>
+        <div><div class="mini-stat-val" id="sTotal">0</div><div class="mini-stat-lbl">Total Customers</div><div class="mini-stat-sub" style="color:#3b82f6" id="sTotalSub"></div></div>
+      </div>
+      <div class="mini-stat">
+        <div class="mini-stat-ico" style="background:#fef3c7">⭐</div>
+        <div><div class="mini-stat-val" id="sVip">0</div><div class="mini-stat-lbl">VIP Members</div><div class="mini-stat-sub" style="color:#f59e0b">Top spenders</div></div>
+      </div>
+      <div class="mini-stat">
+        <div class="mini-stat-ico" style="background:#d1fae5">🆕</div>
+        <div><div class="mini-stat-val" id="sNew">0</div><div class="mini-stat-lbl">New (30 days)</div><div class="mini-stat-sub" style="color:#10b981">Recently joined</div></div>
+      </div>
+      <div class="mini-stat">
+        <div class="mini-stat-ico" style="background:#ede9fe">💰</div>
+        <div><div class="mini-stat-val" id="sRevenue">₹0</div><div class="mini-stat-lbl">Total Revenue</div><div class="mini-stat-sub" style="color:#8b5cf6">All time</div></div>
+      </div>
+    </div>
+
+    <!-- TOOLBAR -->
+    <div class="toolbar">
+      <div class="toolbar-left">
+        <div class="search-box">🔍
+          <input type="text" id="searchInput" placeholder="Search by name, phone, email..." oninput="applyFilters()" />
+        </div>
+        <select class="sort-select" id="sortSelect" onchange="applyFilters()">
+          <option value="name">Sort: Name A-Z</option>
+          <option value="orders">Sort: Most Orders</option>
+          <option value="spent">Sort: Highest Spend</option>
+          <option value="joined">Sort: Recently Joined</option>
+        </select>
+      </div>
+      <div class="filter-wrap">
+        <button class="filter-btn active" onclick="setFilter('all',this)"><span class="filter-dot" style="background:#94a3b8"></span>All</button>
+        <button class="filter-btn" onclick="setFilter('vip',this)"><span class="filter-dot" style="background:#f59e0b"></span>VIP</button>
+        <button class="filter-btn" onclick="setFilter('regular',this)"><span class="filter-dot" style="background:#3b82f6"></span>Regular</button>
+        <button class="filter-btn" onclick="setFilter('new',this)"><span class="filter-dot" style="background:#10b981"></span>New</button>
+        <button class="filter-btn" onclick="setFilter('inactive',this)"><span class="filter-dot" style="background:#94a3b8"></span>Inactive</button>
+      </div>
+    </div>
+
+    <!-- TABLE -->
+    <div class="table-wrap">
+      <div class="table-header">
+        <div class="table-header-title">📊 Customer Database</div>
+        <div class="table-count" id="tableCount">Loading...</div>
+      </div>
+      <table>
+        <thead>
+          <tr>
+            <th>Customer</th>
+            <th>Phone</th>
+            <th class="sortable" onclick="sortByCol('orders')">Orders ↕</th>
+            <th class="sortable" onclick="sortByCol('spent')">Total Spent ↕</th>
+            <th class="sortable" onclick="sortByCol('joined')">Joined ↕</th>
+            <th>Last Visit</th>
+            <th>Type</th>
+            <th>Actions</th>
+          </tr>
+        </thead>
+        <tbody id="custBody"></tbody>
+      </table>
+      <div id="emptyState" class="empty-state" style="display:none">
+        <div class="empty-state-icon">🔍</div>
+        <h3>No customers found</h3>
+        <p>Try adjusting your search or filters, or add a new customer.</p>
+      </div>
+      <div class="pagination">
+        <div class="page-info" id="pageInfo">Showing 0 of 0</div>
+        <div class="page-btns" id="pageBtns"></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="footer">
+    <span>© 2026 Med it Easy</span>
+    <span>Admin Panel v2.0 — Customer CRM</span>
+  </div>
+</div>
+
+<!-- ===== ADD / EDIT CUSTOMER MODAL ===== -->
+<div class="modal-overlay" id="custModal">
+  <div class="modal">
+    <button class="modal-close" onclick="closeModal('custModal')">&#215;</button>
+    <div class="modal-icon" id="mIcon">👤</div>
+    <h2 id="mTitle">Add New Customer</h2>
+    <p class="sub" id="mSub">Fill in the customer details below</p>
+    <div class="success-banner" id="formSuccess"></div>
+
+    <div class="form-row">
+      <div class="form-group">
+        <label>First Name *</label>
+        <input type="text" id="fFirst" placeholder="e.g. Priya" />
+        <div class="error-msg" id="fFirstErr">First name required</div>
+      </div>
+      <div class="form-group">
+        <label>Last Name *</label>
+        <input type="text" id="fLast" placeholder="e.g. Sharma" />
+        <div class="error-msg" id="fLastErr">Last name required</div>
+      </div>
+    </div>
+    <div class="form-row">
+      <div class="form-group">
+        <label>Phone Number *</label>
+        <input type="tel" id="fPhone" placeholder="+91 98765 43210" />
+        <div class="error-msg" id="fPhoneErr">Phone number required</div>
+      </div>
+      <div class="form-group">
+        <label>Email Address</label>
+        <input type="email" id="fEmail" placeholder="priya@email.com" />
+      </div>
+    </div>
+    <div class="form-row">
+      <div class="form-group">
+        <label>Date of Birth</label>
+        <input type="date" id="fDob" />
+      </div>
+      <div class="form-group">
+        <label>Gender</label>
+        <select id="fGender">
+          <option value="">Select</option>
+          <option>Male</option>
+          <option>Female</option>
+          <option>Other</option>
+        </select>
+      </div>
+    </div>
+    <div class="form-group">
+      <label>Address</label>
+      <input type="text" id="fAddress" placeholder="Street address, city..." />
+    </div>
+    <div class="form-row">
+      <div class="form-group">
+        <label>Customer Type</label>
+        <select id="fType">
+          <option value="new">🆕 New</option>
+          <option value="regular">Regular</option>
+          <option value="vip">⭐ VIP</option>
+          <option value="inactive">Inactive</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label>Prescription on File?</label>
+        <select id="fPrescription">
+          <option value="no">No</option>
+          <option value="yes">Yes</option>
+        </select>
+      </div>
+    </div>
+    <div class="form-group">
+      <label>Medical Notes / Allergies</label>
+      <textarea id="fNotes" placeholder="Any known allergies or chronic conditions..."></textarea>
+    </div>
+    <input type="hidden" id="fEditId" />
+    <div class="modal-actions">
+      <button class="btn-cancel" onclick="closeModal('custModal')">Cancel</button>
+      <button class="btn-save" id="saveBtn" onclick="saveCustomer()">💾 Save Customer</button>
+    </div>
+  </div>
+</div>
+
+<!-- ===== VIEW CUSTOMER MODAL ===== -->
+<div class="modal-overlay" id="viewModal">
+  <div class="modal" style="max-width:560px">
+    <button class="modal-close" onclick="closeModal('viewModal')">&#215;</button>
+    <div class="profile-header">
+      <div class="profile-avatar-lg" id="vAvatar"></div>
+      <div>
+        <div class="profile-name" id="vName"></div>
+        <div class="profile-email" id="vEmail"></div>
+        <div id="vBadge"></div>
+      </div>
+    </div>
+    <div class="detail-grid">
+      <div class="detail-box"><div class="d-lbl">Phone</div><div class="d-val" id="vPhone"></div></div>
+      <div class="detail-box"><div class="d-lbl">Total Orders</div><div class="d-val" id="vOrders"></div></div>
+      <div class="detail-box"><div class="d-lbl">Total Spent</div><div class="d-val" id="vSpent"></div></div>
+      <div class="detail-box"><div class="d-lbl">Joined</div><div class="d-val" id="vJoined"></div></div>
+      <div class="detail-box"><div class="d-lbl">Last Visit</div><div class="d-val" id="vLast"></div></div>
+      <div class="detail-box"><div class="d-lbl">Prescription</div><div class="d-val" id="vPrescription"></div></div>
+      <div class="detail-box"><div class="d-lbl">Gender</div><div class="d-val" id="vGender"></div></div>
+      <div class="detail-box"><div class="d-lbl">Date of Birth</div><div class="d-val" id="vDob"></div></div>
+    </div>
+    <div class="form-group">
+      <label>Address</label>
+      <div id="vAddress" style="background:#f8fafc;border-radius:10px;padding:12px;font-size:0.85rem;color:#475569;"></div>
+    </div>
+    <div class="form-group">
+      <label>Medical Notes / Allergies</label>
+      <div id="vNotes" style="background:#fff7ed;border:1px solid #fed7aa;border-radius:10px;padding:12px;font-size:0.85rem;color:#92400e;"></div>
+    </div>
+    <div class="order-history">
+      <div class="oh-title">📋 Recent Orders</div>
+      <div id="vOrderHistory"></div>
+    </div>
+    <div class="modal-actions">
+      <button class="btn-cancel" onclick="closeModal('viewModal')">Close</button>
+      <button style="background:#ede9fe;color:#5b21b6;border:1.5px solid #c4b5fd;border-radius:50px;padding:12px 18px;font-size:0.85rem;font-weight:700;cursor:pointer;" id="vMsgBtn">💬 Message</button>
+      <button class="btn-save" id="vEditBtn">✏️ Edit</button>
+    </div>
+  </div>
+</div>
+
+<!-- ===== MESSAGE MODAL ===== -->
+<div class="modal-overlay" id="msgModal">
+  <div class="modal" style="max-width:460px">
+    <button class="modal-close" onclick="closeModal('msgModal')">&#215;</button>
+    <div class="modal-icon">💬</div>
+    <h2>Send Message</h2>
+    <p class="sub" id="msgTo">To: Customer</p>
+    <div class="success-banner" id="msgSuccess">✅ Message sent successfully!</div>
+    <div class="msg-badge" id="quickMsgs">
+      <span class="quick-msg" onclick="setQuickMsg('Your prescription is ready for pickup!')">Prescription Ready</span>
+      <span class="quick-msg" onclick="setQuickMsg('Your order has been dispatched. Expected delivery in 2 days.')">Order Dispatched</span>
+      <span class="quick-msg" onclick="setQuickMsg('Special offer! Get 20% off on your next purchase. Use code MEDI20.')">Special Offer</span>
+      <span class="quick-msg" onclick="setQuickMsg('Reminder: Please renew your prescription before it expires.')">Prescription Reminder</span>
+    </div>
+    <div class="form-group">
+      <label>Message Type</label>
+      <select id="msgType">
+        <option>SMS</option>
+        <option>WhatsApp</option>
+        <option>Email</option>
+        <option>In-App</option>
+      </select>
+    </div>
+    <div class="form-group">
+      <label>Message *</label>
+      <textarea id="msgText" rows="4" placeholder="Type your message here..."></textarea>
+    </div>
+    <div class="modal-actions">
+      <button class="btn-cancel" onclick="closeModal('msgModal')">Cancel</button>
+      <button class="btn-save" onclick="sendMessage()">📨 Send Message</button>
+    </div>
+  </div>
+</div>
+
+<!-- ===== DELETE MODAL ===== -->
+<div class="modal-overlay" id="deleteModal">
+  <div class="modal" style="max-width:400px;text-align:center">
+    <button class="modal-close" onclick="closeModal('deleteModal')">&#215;</button>
+    <div style="font-size:3.5rem;margin-bottom:12px">🗑️</div>
+    <h2 style="margin-bottom:8px">Delete Customer?</h2>
+    <p id="deleteMsg" style="color:#64748b;margin-bottom:24px"></p>
+    <div style="background:#fff7ed;border:1.5px solid #fed7aa;border-radius:12px;padding:12px;margin-bottom:20px;font-size:0.82rem;color:#92400e;font-weight:600;">
+      ⚠️ All order history and medical records for this customer will be permanently removed.
+    </div>
+    <div class="modal-actions" style="justify-content:center">
+      <button class="btn-cancel" onclick="closeModal('deleteModal')">Cancel</button>
+      <button class="btn-danger" onclick="confirmDelete()">🗑️ Delete Customer</button>
+    </div>
+  </div>
+</div>
+
+<!-- ===== UPGRADE TYPE MODAL ===== -->
+<div class="modal-overlay" id="typeModal">
+  <div class="modal" style="max-width:400px">
+    <button class="modal-close" onclick="closeModal('typeModal')">&#215;</button>
+    <div class="modal-icon">⭐</div>
+    <h2>Update Customer Type</h2>
+    <p class="sub" id="typeLabel">Change membership level</p>
+    <div class="success-banner" id="typeSuccess">✅ Customer type updated!</div>
+    <div class="form-group" style="margin-top:8px">
+      <label>New Customer Type</label>
+      <select id="newType" style="border:1.5px solid #e2e8f0;border-radius:10px;padding:10px 14px;font-size:0.88rem;color:#0f172a;outline:none;width:100%;font-family:inherit;">
+        <option value="new">🆕 New Customer</option>
+        <option value="regular">🔵 Regular Customer</option>
+        <option value="vip">⭐ VIP Member</option>
+        <option value="inactive">⏸️ Inactive</option>
+      </select>
+    </div>
+    <div class="form-group">
+      <label>Reason / Note</label>
+      <input type="text" id="typeNote" placeholder="e.g. Upgraded due to loyalty" />
+    </div>
+    <div class="modal-actions">
+      <button class="btn-cancel" onclick="closeModal('typeModal')">Cancel</button>
+      <button class="btn-save" onclick="confirmTypeUpdate()">Update Type</button>
+    </div>
+  </div>
+</div>
+
+<script>
+  // ─── AVATAR COLORS ───
+  const avatarColors = ['#6366f1','#10b981','#f59e0b','#ef4444','#8b5cf6','#06b6d4','#ec4899','#f97316','#14b8a6','#84cc16'];
+  function getColor(name) { let h=0; for(let c of name) h=(h+c.charCodeAt(0))%avatarColors.length; return avatarColors[h]; }
+  function initials(name) { return name.split(' ').map(w=>w[0]).join('').slice(0,2).toUpperCase(); }
+  function fmtDate(d) { if(!d) return '—'; const [y,m,day]=d.split('-'); const mn=['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec']; return `${mn[parseInt(m)-1]} ${day}, ${y}`; }
+  function fmtAmt(n) { return '₹'+Number(n).toLocaleString('en-IN'); }
+
+  // ─── DATA ───
+  let customers = [
+    { id:1,  first:'Priya',   last:'Sharma',  phone:'+91 98765 43210', email:'priya.sharma@gmail.com',   dob:'1990-04-15', gender:'Female', address:'12 MG Road, Bengaluru, KA 560001',   type:'vip',      orders:24, spent:12400, joined:'2024-01-10', lastVisit:'2026-03-18', prescription:'yes', notes:'Diabetic. Avoid NSAIDs. Regular Metformin user.' },
+    { id:2,  first:'Ravi',    last:'Kumar',   phone:'+91 87654 32109', email:'ravi.kumar@yahoo.com',       dob:'1985-08-22', gender:'Male',   address:'45 Park Street, Chennai, TN 600002',  type:'regular',  orders:18, spent:8900,  joined:'2024-03-05', lastVisit:'2026-03-17', prescription:'no',  notes:'Hypertension patient. On regular BP medication.' },
+    { id:3,  first:'Anita',   last:'Desai',   phone:'+91 76543 21098', email:'anita.desai@hotmail.com',   dob:'1995-12-30', gender:'Female', address:'78 Civil Lines, Pune, MH 411001',     type:'new',      orders:5,  spent:2100,  joined:'2026-02-14', lastVisit:'2026-03-16', prescription:'no',  notes:'' },
+    { id:4,  first:'Suresh',  last:'Nair',    phone:'+91 65432 10987', email:'suresh.nair@gmail.com',     dob:'1978-06-11', gender:'Male',   address:'23 Connaught Place, Delhi, DL 110001', type:'vip',      orders:31, spent:18750, joined:'2023-11-20', lastVisit:'2026-03-15', prescription:'yes', notes:'Heart patient. Monthly medication refills.' },
+    { id:5,  first:'Meera',   last:'Joshi',   phone:'+91 54321 09876', email:'meera.joshi@gmail.com',     dob:'1992-09-05', gender:'Female', address:'56 Brigade Road, Bengaluru, KA 560025', type:'regular', orders:9,  spent:4320,  joined:'2024-07-18', lastVisit:'2026-03-14', prescription:'no',  notes:'Asthmatic. Avoid beta-blockers.' },
+    { id:6,  first:'Karan',   last:'Singh',   phone:'+91 43210 98765', email:'karan.singh@outlook.com',   dob:'1999-03-28', gender:'Male',   address:'90 Sector 17, Chandigarh, CH 160017',  type:'new',      orders:2,  spent:850,   joined:'2026-03-01', lastVisit:'2026-03-13', prescription:'no',  notes:'' },
+    { id:7,  first:'Lakshmi', last:'Reddy',   phone:'+91 32109 87654', email:'lakshmi.reddy@gmail.com',   dob:'1982-07-14', gender:'Female', address:'34 Tank Bund, Hyderabad, TS 500080',  type:'vip',      orders:28, spent:15600, joined:'2023-08-12', lastVisit:'2026-03-12', prescription:'yes', notes:'Thyroid patient. Regular Thyroxine refills.' },
+    { id:8,  first:'Arjun',   last:'Mehta',   phone:'+91 21098 76543', email:'arjun.mehta@gmail.com',     dob:'1988-11-19', gender:'Male',   address:'67 Marine Drive, Mumbai, MH 400020',   type:'regular',  orders:12, spent:5800,  joined:'2024-05-30', lastVisit:'2026-03-10', prescription:'no',  notes:'Cholesterol management medication.' },
+    { id:9,  first:'Deepa',   last:'Pillai',  phone:'+91 10987 65432', email:'deepa.pillai@yahoo.com',    dob:'1975-02-08', gender:'Female', address:'11 Nehru Street, Kochi, KL 682016',   type:'inactive', orders:3,  spent:1200,  joined:'2023-12-01', lastVisit:'2025-10-05', prescription:'no',  notes:'' },
+    { id:10, first:'Vikram',  last:'Patel',   phone:'+91 09876 54321', email:'vikram.patel@gmail.com',    dob:'1993-05-25', gender:'Male',   address:'89 CG Road, Ahmedabad, GJ 380006',    type:'regular',  orders:7,  spent:3400,  joined:'2025-01-15', lastVisit:'2026-03-08', prescription:'yes', notes:'Arthritis patient. Regular pain management.' },
+    { id:11, first:'Nisha',   last:'Gupta',   phone:'+91 98654 32100', email:'nisha.gupta@gmail.com',     dob:'1997-10-12', gender:'Female', address:'22 Rajpur Road, Dehradun, UK 248001',  type:'new',      orders:1,  spent:420,   joined:'2026-03-10', lastVisit:'2026-03-10', prescription:'no',  notes:'' },
+    { id:12, first:'Rohan',   last:'Verma',   phone:'+91 87543 21900', email:'rohan.verma@outlook.com',   dob:'1986-01-30', gender:'Male',   address:'55 Ring Road, Jaipur, RJ 302001',     type:'regular',  orders:14, spent:6700,  joined:'2024-04-20', lastVisit:'2026-03-06', prescription:'no',  notes:'Migraine patient. Sumatriptan prescription.' },
+  ];
+
+  const orderHistories = {
+    1:[{id:'#ORD-1042',date:'18 Mar 2026',amt:420},{id:'#ORD-1038',date:'10 Mar 2026',amt:850},{id:'#ORD-1031',date:'28 Feb 2026',amt:1200}],
+    2:[{id:'#ORD-1041',date:'17 Mar 2026',amt:320},{id:'#ORD-1035',date:'05 Mar 2026',amt:640}],
+    4:[{id:'#ORD-1040',date:'15 Mar 2026',amt:1800},{id:'#ORD-1033',date:'01 Mar 2026',amt:2400},{id:'#ORD-1025',date:'14 Feb 2026',amt:980}],
+    7:[{id:'#ORD-1039',date:'12 Mar 2026',amt:1100},{id:'#ORD-1032',date:'28 Feb 2026',amt:780}],
+  };
+
+  let nextId = 13;
+  let currentFilter = 'all';
+  let sortKey = 'name';
+  let sortAsc = true;
+  let currentPage = 1;
+  const perPage = 8;
+  let deleteTargetId = null;
+  let typeTargetId   = null;
+  let msgTargetId    = null;
+
+  // ─── STATS ───
+  function updateStats() {
+    const total   = customers.length;
+    const vip     = customers.filter(c=>c.type==='vip').length;
+    const newC    = customers.filter(c=>c.type==='new').length;
+    const revenue = customers.reduce((a,c)=>a+c.spent,0);
+    document.getElementById('sTotal').textContent   = total;
+    document.getElementById('sTotalSub').textContent= `${customers.filter(c=>c.type!=='inactive').length} active`;
+    document.getElementById('sVip').textContent     = vip;
+    document.getElementById('sNew').textContent     = newC;
+    document.getElementById('sRevenue').textContent = fmtAmt(revenue);
+  }
+
+  // ─── FILTER / RENDER ───
+  function getFiltered() {
+    const q = document.getElementById('searchInput').value.toLowerCase();
+    return customers.filter(c=>{
+      const name = `${c.first} ${c.last}`.toLowerCase();
+      const mQ   = !q || name.includes(q) || c.phone.includes(q) || c.email.toLowerCase().includes(q);
+      const mF   = currentFilter==='all' || c.type===currentFilter;
+      return mQ && mF;
+    });
+  }
+
+  function renderTable() {
+    updateStats();
+    let filtered = getFiltered();
+    const sk = document.getElementById('sortSelect').value;
+    filtered.sort((a,b)=>{
+      if(sk==='name')   return sortAsc ? `${a.first}${a.last}`.localeCompare(`${b.first}${b.last}`) : `${b.first}${b.last}`.localeCompare(`${a.first}${a.last}`);
+      if(sk==='orders') return sortAsc ? a.orders-b.orders : b.orders-a.orders;
+      if(sk==='spent')  return sortAsc ? a.spent-b.spent   : b.spent-a.spent;
+      if(sk==='joined') return sortAsc ? a.joined.localeCompare(b.joined) : b.joined.localeCompare(a.joined);
+      return 0;
+    });
+
+    const total      = filtered.length;
+    const totalPages = Math.max(1,Math.ceil(total/perPage));
+    if(currentPage>totalPages) currentPage=1;
+    const start = (currentPage-1)*perPage;
+    const paged = filtered.slice(start,start+perPage);
+
+    document.getElementById('tableCount').textContent = `${total} customer${total!==1?'s':''}`;
+    document.getElementById('pageInfo').textContent   = `Showing ${total?start+1:0}–${Math.min(start+perPage,total)} of ${total} customers`;
+
+    let btns='';
+    for(let i=1;i<=Math.min(totalPages,5);i++) btns+=`<button class="page-btn${i===currentPage?' active':''}" onclick="goPage(${i})">${i}</button>`;
+    document.getElementById('pageBtns').innerHTML=btns;
+
+    const tbody=document.getElementById('custBody');
+    const empty=document.getElementById('emptyState');
+    if(!paged.length){tbody.innerHTML='';empty.style.display='block';return;}
+    empty.style.display='none';
+
+    const typeBadge={vip:'<span class="badge vip">⭐ VIP</span>',regular:'<span class="badge regular">🔵 Regular</span>',new:'<span class="badge new">🆕 New</span>',inactive:'<span class="badge inactive">⏸ Inactive</span>'};
+
+    tbody.innerHTML=paged.map(c=>{
+      const col  = getColor(`${c.first}${c.last}`);
+      const init = initials(`${c.first} ${c.last}`);
+      return `<tr>
+        <td><div class="cust-cell">
+          <div class="cust-avatar" style="background:${col}">${init}</div>
+          <div><div class="cust-name">${c.first} ${c.last}</div><div class="cust-email">${c.email}</div></div>
+        </div></td>
+        <td style="font-size:0.85rem;font-weight:600;color:#475569">${c.phone}</td>
+        <td><div class="orders-cell">${c.orders}</div><div class="orders-sub">total orders</div></td>
+        <td><div class="spent-cell">${fmtAmt(c.spent)}</div></td>
+        <td><div class="last-visit">${fmtDate(c.joined)}</div></td>
+        <td><div class="last-visit">${fmtDate(c.lastVisit)}</div></td>
+        <td>${typeBadge[c.type]||''}</td>
+        <td><div class="action-wrap">
+          <button class="act-btn view" title="View Profile"   onclick="openView(${c.id})">👁️</button>
+          <button class="act-btn edit" title="Edit Customer"  onclick="openEdit(${c.id})">✏️</button>
+          <button class="act-btn msg"  title="Send Message"   onclick="openMsg(${c.id})">💬</button>
+          <button class="act-btn del"  title="Delete"         onclick="openDelete(${c.id})">🗑️</button>
+        </div></td>
+      </tr>`;
+    }).join('');
+  }
+
+  function goPage(p){currentPage=p;renderTable();}
+  function applyFilters(){currentPage=1;renderTable();}
+  function setFilter(f,btn){
+    currentFilter=f;
+    document.querySelectorAll('.filter-btn').forEach(b=>b.classList.remove('active'));
+    btn.classList.add('active');
+    applyFilters();
+  }
+  function sortByCol(key){
+    if(sortKey===key) sortAsc=!sortAsc; else{sortKey=key;sortAsc=false;}
+    renderTable();
+  }
+
+  // ─── ADD ───
+  function openAddModal(){
+    clearForm();
+    document.getElementById('mIcon').textContent  = '👤';
+    document.getElementById('mTitle').textContent = 'Add New Customer';
+    document.getElementById('mSub').textContent   = 'Fill in the customer details below';
+    document.getElementById('saveBtn').textContent= '💾 Save Customer';
+    document.getElementById('fEditId').value      = '';
+    document.getElementById('fType').value        = 'new';
+    document.getElementById('formSuccess').classList.remove('show');
+    openModal('custModal');
+  }
+
+  // ─── EDIT ───
+  function openEdit(id){
+    const c=customers.find(x=>x.id===id); if(!c) return;
+    clearForm();
+    document.getElementById('mIcon').textContent   = '✏️';
+    document.getElementById('mTitle').textContent  = 'Edit Customer';
+    document.getElementById('mSub').textContent    = `Editing: ${c.first} ${c.last}`;
+    document.getElementById('saveBtn').textContent = '💾 Update Customer';
+    document.getElementById('fEditId').value       = id;
+    document.getElementById('fFirst').value        = c.first;
+    document.getElementById('fLast').value         = c.last;
+    document.getElementById('fPhone').value        = c.phone;
+    document.getElementById('fEmail').value        = c.email;
+    document.getElementById('fDob').value          = c.dob||'';
+    document.getElementById('fGender').value       = c.gender||'';
+    document.getElementById('fAddress').value      = c.address||'';
+    document.getElementById('fType').value         = c.type;
+    document.getElementById('fPrescription').value = c.prescription||'no';
+    document.getElementById('fNotes').value        = c.notes||'';
+    document.getElementById('formSuccess').classList.remove('show');
+    openModal('custModal');
+  }
+
+  // ─── SAVE ───
+  function saveCustomer(){
+    const first = document.getElementById('fFirst').value.trim();
+    const last  = document.getElementById('fLast').value.trim();
+    const phone = document.getElementById('fPhone').value.trim();
+    const email = document.getElementById('fEmail').value.trim();
+    const editId= document.getElementById('fEditId').value;
+
+    let valid=true;
+    const setErr=(id,errId,cond)=>{ document.getElementById(id).classList.toggle('error',cond); document.getElementById(errId).classList.toggle('show',cond); if(cond)valid=false; };
+    setErr('fFirst','fFirstErr',!first);
+    setErr('fLast', 'fLastErr', !last);
+    setErr('fPhone','fPhoneErr',!phone);
+    if(!valid) return;
+
+    const data={
+      first, last, phone, email,
+      dob:         document.getElementById('fDob').value,
+      gender:      document.getElementById('fGender').value,
+      address:     document.getElementById('fAddress').value.trim(),
+      type:        document.getElementById('fType').value,
+      prescription:document.getElementById('fPrescription').value,
+      notes:       document.getElementById('fNotes').value.trim(),
+    };
+
+    const b=document.getElementById('formSuccess');
+    if(editId){
+      const c=customers.find(x=>x.id===parseInt(editId));
+      if(c) Object.assign(c,data);
+      b.textContent='✅ Customer updated successfully!'; b.classList.add('show');
+      showToast(`✅ ${first} ${last} updated!`);
+    } else {
+      const today=new Date().toISOString().split('T')[0];
+      customers.unshift({id:nextId++,...data,orders:0,spent:0,joined:today,lastVisit:today});
+      b.textContent=`✅ ${first} ${last} added!`; b.classList.add('show');
+      showToast(`✅ ${first} ${last} added to CRM!`);
+    }
+    renderTable();
+    setTimeout(()=>closeModal('custModal'),1200);
+  }
+
+  // ─── VIEW ───
+  function openView(id){
+    const c=customers.find(x=>x.id===id); if(!c) return;
+    const col=getColor(`${c.first}${c.last}`);
+    const init=initials(`${c.first} ${c.last}`);
+    const typeBadge={vip:'<span class="badge vip">⭐ VIP</span>',regular:'<span class="badge regular">🔵 Regular</span>',new:'<span class="badge new">🆕 New</span>',inactive:'<span class="badge inactive">⏸ Inactive</span>'};
+    document.getElementById('vAvatar').style.background=col;
+    document.getElementById('vAvatar').textContent=init;
+    document.getElementById('vName').textContent=`${c.first} ${c.last}`;
+    document.getElementById('vEmail').textContent=c.email||'No email on file';
+    document.getElementById('vBadge').innerHTML=typeBadge[c.type]||'';
+    document.getElementById('vPhone').textContent=c.phone;
+    document.getElementById('vOrders').textContent=`${c.orders} orders`;
+    document.getElementById('vSpent').textContent=fmtAmt(c.spent);
+    document.getElementById('vJoined').textContent=fmtDate(c.joined);
+    document.getElementById('vLast').textContent=fmtDate(c.lastVisit);
+    document.getElementById('vPrescription').textContent=c.prescription==='yes'?'✅ On File':'❌ None';
+    document.getElementById('vGender').textContent=c.gender||'—';
+    document.getElementById('vDob').textContent=fmtDate(c.dob)||'—';
+    document.getElementById('vAddress').textContent=c.address||'No address on file';
+    document.getElementById('vNotes').textContent=c.notes||'No medical notes recorded.';
+    const hist=orderHistories[id];
+    document.getElementById('vOrderHistory').innerHTML=hist
+      ? hist.map(o=>`<div class="oh-item"><span class="oh-id">${o.id}</span><span class="oh-date">${o.date}</span><span class="oh-amt">${fmtAmt(o.amt)}</span></div>`).join('')
+      : '<div style="font-size:0.82rem;color:#94a3b8;padding:8px 0">No order history available.</div>';
+    document.getElementById('vEditBtn').onclick=()=>{closeModal('viewModal');openEdit(id);};
+    document.getElementById('vMsgBtn').onclick=()=>{closeModal('viewModal');openMsg(id);};
+    openModal('viewModal');
+  }
+
+  // ─── MESSAGE ───
+  function openMsg(id){
+    const c=customers.find(x=>x.id===id); if(!c) return;
+    msgTargetId=id;
+    document.getElementById('msgTo').textContent=`To: ${c.first} ${c.last} (${c.phone})`;
+    document.getElementById('msgText').value='';
+    document.getElementById('msgSuccess').classList.remove('show');
+    openModal('msgModal');
+  }
+  function setQuickMsg(msg){ document.getElementById('msgText').value=msg; }
+  function sendMessage(){
+    const txt=document.getElementById('msgText').value.trim();
+    if(!txt){ document.getElementById('msgText').style.borderColor='#ef4444'; return; }
+    document.getElementById('msgText').style.borderColor='#e2e8f0';
+    document.getElementById('msgSuccess').classList.add('show');
+    const c=customers.find(x=>x.id===msgTargetId);
+    showToast(`💬 Message sent to ${c?c.first+' '+c.last:'Customer'}!`);
+    setTimeout(()=>closeModal('msgModal'),1200);
+  }
+
+  // ─── DELETE ───
+  function openDelete(id){
+    deleteTargetId=id;
+    const c=customers.find(x=>x.id===id);
+    document.getElementById('deleteMsg').textContent=`Are you sure you want to delete "${c.first} ${c.last}"? This cannot be undone.`;
+    openModal('deleteModal');
+  }
+  function confirmDelete(){
+    const c=customers.find(x=>x.id===deleteTargetId);
+    const name=c?`${c.first} ${c.last}`:'';
+    customers=customers.filter(x=>x.id!==deleteTargetId);
+    closeModal('deleteModal');
+    renderTable();
+    showToast(`🗑️ "${name}" removed from CRM`);
+    deleteTargetId=null;
+  }
+
+  // ─── FORM HELPERS ───
+  function clearForm(){
+    ['fFirst','fLast','fPhone','fEmail','fDob','fAddress','fNotes'].forEach(id=>{
+      const el=document.getElementById(id); if(el){el.value='';el.classList.remove('error');}
+    });
+    ['fFirstErr','fLastErr','fPhoneErr'].forEach(id=>{ const el=document.getElementById(id); if(el) el.classList.remove('show'); });
+  }
+
+  // ─── MODAL ───
+  function openModal(id){document.getElementById(id).classList.add('open');}
+  function closeModal(id){document.getElementById(id).classList.remove('open');}
+  document.querySelectorAll('.modal-overlay').forEach(o=>{
+    o.addEventListener('click',e=>{if(e.target===o) o.classList.remove('open');});
+  });
+
+  // ─── TOAST ───
+  function showToast(msg){
+    const ex=document.querySelector('.toast'); if(ex) ex.remove();
+    const t=document.createElement('div'); t.className='toast'; t.textContent=msg;
+    document.body.appendChild(t);
+    setTimeout(()=>t.remove(),3000);
+  }
+
+  // ─── INIT ───
+  renderTable();
+</script>
+</body>
+</html>

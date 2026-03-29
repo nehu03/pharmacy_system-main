@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"><title>QR Code | Med it Easy</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<style>
+  *,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+  :root{--dark:#0f172a;--dark2:#1e293b;--dark3:#334155;--accent:#00ffcc;--red:#ef4444;--text:#f1f5f9;--muted:#94a3b8;}
+  body{font-family:"Segoe UI",sans-serif;background:#f0f4f8;display:flex;min-height:100vh;}
+  .sidebar{width:250px;background:var(--dark);display:flex;flex-direction:column;position:fixed;top:0;left:0;height:100vh;overflow-y:auto;z-index:100;}
+  .sb-logo{display:flex;align-items:center;gap:12px;padding:28px 24px 24px;border-bottom:1px solid var(--dark3);}
+  .sb-logo-icon{font-size:2rem;} .sb-logo-name{font-size:1.3rem;font-weight:900;color:var(--accent);} .sb-logo-sub{font-size:0.68rem;color:var(--muted);margin-top:1px;}
+  .sb-section-label{font-size:0.65rem;font-weight:800;letter-spacing:0.12em;text-transform:uppercase;color:#475569;padding:20px 24px 8px;}
+  .sb-link{display:flex;align-items:center;gap:12px;padding:11px 24px;color:var(--muted);text-decoration:none;font-size:0.88rem;border-left:3px solid transparent;transition:all 0.15s;}
+  .sb-link:hover,.sb-link.active{background:var(--dark2);color:var(--accent);border-left-color:var(--accent);padding-left:30px;font-weight:700;}
+  .sb-link .ico{font-size:1.1rem;width:20px;text-align:center;flex-shrink:0;}
+  .sb-badge{margin-left:auto;background:var(--red);color:white;font-size:0.62rem;font-weight:800;padding:2px 7px;border-radius:50px;}
+  .sb-divider{height:1px;background:var(--dark3);margin:10px 0;}
+  .sb-footer{margin-top:auto;padding:20px 24px;border-top:1px solid var(--dark3);display:flex;align-items:center;gap:10px;}
+  .sb-avatar{width:36px;height:36px;border-radius:50%;background:linear-gradient(135deg,var(--accent),#00b4d8);display:flex;align-items:center;justify-content:center;font-size:1rem;font-weight:800;color:var(--dark);}
+  .sb-user-name{font-size:0.85rem;font-weight:700;color:var(--text);} .sb-user-role{font-size:0.7rem;color:var(--muted);}
+  .main{flex:1;margin-left:250px;display:flex;flex-direction:column;}
+  .topbar{background:white;height:66px;display:flex;align-items:center;justify-content:space-between;padding:0 32px;border-bottom:1px solid #e2e8f0;position:sticky;top:0;z-index:50;box-shadow:0 1px 8px rgba(0,0,0,0.05);}
+  .topbar-left h1{font-size:1.35rem;font-weight:800;color:var(--dark);} .topbar-left p{font-size:0.78rem;color:#64748b;}
+  .content{padding:30px 32px;flex:1;display:grid;grid-template-columns:1fr 1fr;gap:24px;align-items:start;}
+  .panel{background:white;border-radius:20px;border:1.5px solid #e2e8f0;padding:28px;box-shadow:0 2px 12px rgba(0,0,0,0.05);}
+  .panel-title{font-size:1rem;font-weight:800;color:#0f172a;margin-bottom:20px;display:flex;align-items:center;gap:8px;}
+  label{display:block;font-size:0.82rem;font-weight:700;color:#475569;margin-bottom:6px;}
+  input,select{width:100%;border:1.5px solid #e2e8f0;border-radius:10px;padding:10px 14px;font-size:0.88rem;color:#0f172a;outline:none;margin-bottom:14px;transition:border-color 0.2s;}
+  input:focus,select:focus{border-color:var(--accent);}
+  .gen-btn{width:100%;background:linear-gradient(90deg,var(--accent),#00b4d8);color:var(--dark);border:none;border-radius:50px;padding:13px;font-size:0.95rem;font-weight:900;cursor:pointer;}
+  .gen-btn:hover{opacity:0.88;}
+  .qr-display{text-align:center;padding:20px 0;}
+  .qr-box{width:180px;height:180px;background:#f8fafc;border:2px dashed #e2e8f0;border-radius:16px;display:flex;align-items:center;justify-content:center;margin:0 auto 16px;font-size:5rem;}
+  .qr-box.generated{background:white;border:2px solid var(--accent);}
+  .qr-label{font-size:0.82rem;color:#64748b;margin-bottom:16px;}
+  .dl-btn{background:var(--dark);color:white;border:none;border-radius:50px;padding:10px 24px;font-size:0.82rem;font-weight:700;cursor:pointer;}
+  .dl-btn:hover{background:var(--dark2);}
+  .footer{background:white;border-top:1px solid #e2e8f0;padding:16px 32px;font-size:0.78rem;color:#64748b;display:flex;justify-content:space-between;grid-column:1/-1;}
+</style>
+</head>
+<body>
+<aside class="sidebar">
+  <div class="sb-logo"><div class="sb-logo-icon">💊</div><div><div class="sb-logo-name">Med it Easy</div><div class="sb-logo-sub">Admin Panel</div></div></div>
+  <div class="sb-section-label">Main Menu</div>
+  <a href="admin.html" class="sb-link"><span class="ico">🏠</span> Dashboard</a>
+  <a href="product.html" class="sb-link"><span class="ico">💊</span> Products</a>
+  <a href="purchases.html" class="sb-link"><span class="ico">🛒</span> Purchases</a>
+  <a href="customer.html" class="sb-link"><span class="ico">👥</span> Customers <span class="sb-badge">12</span></a>
+  <a href="cashier.html" class="sb-link"><span class="ico">💳</span> Cashier</a>
+  <div class="sb-divider"></div>
+  <div class="sb-section-label">Management</div>
+  <a href="staff.html" class="sb-link"><span class="ico">👨‍⚕️</span> Staff</a>
+  <a href="stock.html" class="sb-link"><span class="ico">📦</span> Stock <span class="sb-badge">5</span></a>
+  <a href="logs.html" class="sb-link"><span class="ico">📋</span> Logs</a>
+  <div class="sb-divider"></div>
+  <div class="sb-section-label">Store</div>
+  <a href="ordersonline.html" class="sb-link"><span class="ico">🌐</span> Online Orders</a>
+  <a href="onlinepharmacy.html" class="sb-link"><span class="ico">🏥</span> Online Pharmacy</a>
+  <a href="qrcode.html" class="sb-link active"><span class="ico">📷</span> QR Code</a>
+  <div class="sb-footer"><div class="sb-avatar">A</div><div><div class="sb-user-name">Admin User</div><div class="sb-user-role">Super Admin</div></div></div>
+</aside>
+<div class="main">
+  <div class="topbar"><div class="topbar-left"><h1>📷 QR Code</h1><p>Generate & scan product QR codes</p></div></div>
+  <div class="content">
+    <div class="panel">
+      <div class="panel-title">⚙️ Generate QR Code</div>
+      <label>Select Product</label>
+      <select id="prodSelect">
+        <option>Paracetamol 500mg — ₹25</option>
+        <option>Amoxicillin 250mg — ₹85</option>
+        <option>Vitamin C 500mg — ₹120</option>
+        <option>Ibuprofen 400mg — ₹45</option>
+        <option>Cetirizine 10mg — ₹55</option>
+        <option>Metformin 500mg — ₹65</option>
+      </select>
+      <label>Batch Number</label>
+      <input type="text" id="batchNo" placeholder="e.g. BATCH-2026-001" />
+      <label>Expiry Date</label>
+      <input type="date" id="expiry" />
+      <label>Quantity</label>
+      <input type="number" id="qty" placeholder="e.g. 100" min="1" />
+      <button class="gen-btn" onclick="generateQR()">📷 Generate QR Code</button>
+    </div>
+    <div class="panel">
+      <div class="panel-title">📍 QR Code Preview</div>
+      <div class="qr-display">
+        <div class="qr-box" id="qrBox">📷</div>
+        <div class="qr-label" id="qrLabel">Fill in the form and click Generate</div>
+        <button class="dl-btn" onclick="alert('QR Code downloaded!')">&#8595; Download QR</button>
+      </div>
+    </div>
+  </div>
+</div>
+<script>
+function generateQR(){
+  const prod=document.getElementById('prodSelect').value;
+  const batch=document.getElementById('batchNo').value||'BATCH-001';
+  const expiry=document.getElementById('expiry').value||'N/A';
+  const qty=document.getElementById('qty').value||'1';
+  const box=document.getElementById('qrBox');
+  box.innerHTML='🟩';
+  box.classList.add('generated');
+  box.style.fontSize='6rem';
+  document.getElementById('qrLabel').innerHTML='<strong>'+prod+'</strong><br>Batch: '+batch+' | Expiry: '+expiry+'<br>Qty: '+qty+' units';
+  setTimeout(()=>{box.innerHTML=`<svg viewBox="0 0 100 100" width="160" height="160" xmlns="http://www.w3.org/2000/svg"><rect width="100" height="100" fill="white"/><g fill="#0f172a"><rect x="10" y="10" width="30" height="30" rx="4"/><rect x="15" y="15" width="20" height="20" fill="white" rx="2"/><rect x="18" y="18" width="14" height="14" rx="1"/><rect x="60" y="10" width="30" height="30" rx="4"/><rect x="65" y="15" width="20" height="20" fill="white" rx="2"/><rect x="68" y="18" width="14" height="14" rx="1"/><rect x="10" y="60" width="30" height="30" rx="4"/><rect x="15" y="65" width="20" height="20" fill="white" rx="2"/><rect x="18" y="68" width="14" height="14" rx="1"/><rect x="60" y="60" width="6" height="6"/><rect x="70" y="60" width="6" height="6"/><rect x="80" y="60" width="10" height="6"/><rect x="60" y="70" width="10" height="6"/><rect x="74" y="70" width="6" height="6"/><rect x="84" y="70" width="6" height="6"/><rect x="60" y="80" width="6" height="10"/><rect x="70" y="80" width="10" height="10"/><rect x="84" y="80" width="6" height="10"/><rect x="42" y="10" width="6" height="6"/><rect x="50" y="10" width="6" height="6"/><rect x="42" y="20" width="10" height="6"/><rect x="42" y="30" width="6" height="6"/><rect x="50" y="28" width="6" height="8"/><rect x="10" y="42" width="6" height="6"/><rect x="20" y="42" width="10" height="6"/><rect x="10" y="50" width="6" height="6"/><rect x="20" y="50" width="6" height="6"/><rect x="30" y="42" width="6" height="14"/></g></svg>`;box.style.fontSize='';},400);
+}
+</script>
+</body></html>

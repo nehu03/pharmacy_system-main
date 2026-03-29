@@ -1,0 +1,1046 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Login | Med it Easy</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --dark:#0a0f1e;--dark2:#111827;--dark3:#1f2937;--dark4:#374151;
+  --accent:#00ffcc;--accent2:#00d4aa;--blue:#3b82f6;
+  --red:#ef4444;--green:#10b981;--purple:#8b5cf6;
+  --text:#f1f5f9;--muted:#9ca3af;
+}
+html,body{height:100%}
+body{
+  font-family:'Segoe UI',system-ui,sans-serif;
+  background:var(--dark);
+  display:flex;align-items:center;justify-content:center;
+  min-height:100vh;
+  overflow-y:auto;
+  position:relative;
+}
+
+/* Animated BG */
+.bg-circles{position:fixed;inset:0;overflow:hidden;z-index:0;pointer-events:none}
+.bg-circle{
+  position:absolute;border-radius:50%;
+  animation:float 8s ease-in-out infinite;
+}
+.bg-circle:nth-child(1){width:500px;height:500px;background:radial-gradient(circle,rgba(0,255,204,0.08),transparent 70%);top:-150px;left:-150px;animation-delay:0s}
+.bg-circle:nth-child(2){width:400px;height:400px;background:radial-gradient(circle,rgba(59,130,246,0.08),transparent 70%);bottom:-100px;right:-100px;animation-delay:3s}
+.bg-circle:nth-child(3){width:300px;height:300px;background:radial-gradient(circle,rgba(139,92,246,0.07),transparent 70%);top:40%;left:50%;animation-delay:5s}
+@keyframes float{0%,100%{transform:translateY(0) scale(1)}50%{transform:translateY(-30px) scale(1.05)}}
+
+.bg-grid{
+  position:fixed;inset:0;z-index:0;
+  background-image:linear-gradient(rgba(0,255,204,0.03) 1px,transparent 1px),linear-gradient(90deg,rgba(0,255,204,0.03) 1px,transparent 1px);
+  background-size:40px 40px;
+  pointer-events:none;
+}
+
+/* WRAPPER */
+.wrapper{
+  position:relative;z-index:10;
+  width:100%;max-width:480px;
+  padding:24px 20px;
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+}
+
+/* LOGO */
+.logo-bar{
+  text-align:center;
+  margin-bottom:28px;
+}
+.logo-icon{font-size:3rem;display:block;margin-bottom:10px;animation:pulse 2s ease-in-out infinite}
+@keyframes pulse{0%,100%{transform:scale(1)}50%{transform:scale(1.08)}}
+.logo-name{font-size:2.2rem;font-weight:900;color:var(--accent);letter-spacing:-0.02em}
+.logo-tag{font-size:0.82rem;color:var(--muted);margin-top:4px;letter-spacing:0.05em}
+
+/* CARD */
+.card{
+  background:var(--dark2);
+  border:1px solid var(--dark4);
+  border-radius:24px;
+  padding:36px;
+  width:100%;
+  position:relative;
+  overflow:hidden;
+  transition:border-color 0.3s,box-shadow 0.3s;
+  animation:slideUp 0.45s ease;
+}
+@keyframes slideUp{from{opacity:0;transform:translateY(28px)}to{opacity:1;transform:translateY(0)}}
+.card::before{
+  content:'';position:absolute;top:0;left:0;right:0;height:3px;
+  border-radius:24px 24px 0 0;
+  transition:background 0.4s;
+}
+.card.theme-admin::before{background:linear-gradient(90deg,var(--blue),var(--purple))}
+.card.theme-customer::before{background:linear-gradient(90deg,var(--accent),var(--blue))}
+
+/* ROLE DROPDOWN */
+.role-dropdown-wrap{
+  margin-bottom:24px;
+}
+.role-dropdown-wrap label{
+  display:block;font-size:0.75rem;font-weight:700;
+  color:var(--muted);margin-bottom:8px;
+  letter-spacing:0.07em;text-transform:uppercase;
+}
+.role-select-box{
+  position:relative;
+}
+.role-select-box::after{
+  content:'▼';
+  position:absolute;right:14px;top:50%;
+  transform:translateY(-50%);
+  font-size:0.7rem;color:var(--muted);
+  pointer-events:none;
+}
+.role-select{
+  width:100%;
+  background:var(--dark3);
+  border:1.5px solid var(--dark4);
+  border-radius:12px;
+  padding:12px 40px 12px 16px;
+  font-size:0.95rem;
+  font-weight:700;
+  color:var(--text);
+  outline:none;
+  cursor:pointer;
+  appearance:none;
+  -webkit-appearance:none;
+  transition:border-color 0.2s,box-shadow 0.2s;
+}
+.role-select:focus{
+  border-color:var(--accent);
+  box-shadow:0 0 0 3px rgba(0,255,204,0.1);
+}
+.role-select option{
+  background:var(--dark3);
+  color:var(--text);
+  font-weight:600;
+  padding:10px;
+}
+
+/* ROLE BADGE */
+.role-badge{
+  display:inline-flex;align-items:center;gap:6px;
+  background:rgba(0,255,204,0.08);
+  border:1px solid rgba(0,255,204,0.2);
+  border-radius:50px;
+  padding:4px 14px;
+  font-size:0.75rem;font-weight:700;
+  color:var(--accent);
+  margin-bottom:20px;
+  transition:all 0.3s;
+}
+.role-badge.admin-badge{
+  background:rgba(59,130,246,0.1);
+  border-color:rgba(59,130,246,0.3);
+  color:#93c5fd;
+}
+
+/* TABS inside card */
+.card-tabs{
+  display:flex;gap:0;margin-bottom:24px;
+  background:var(--dark3);border-radius:12px;padding:4px;
+}
+.tab-btn{
+  flex:1;padding:9px;text-align:center;
+  font-size:0.82rem;font-weight:700;
+  cursor:pointer;border:none;background:transparent;
+  color:var(--muted);border-radius:10px;
+  transition:all 0.2s;
+}
+.tab-btn.active{background:var(--dark4);color:var(--text)}
+
+/* FORM */
+.form-panel{display:none}
+.form-panel.active{display:block}
+
+.form-group{margin-bottom:16px}
+.form-group label{
+  display:block;font-size:0.75rem;font-weight:700;
+  color:var(--muted);margin-bottom:6px;letter-spacing:0.05em;
+  text-transform:uppercase;
+}
+.inp-wrap{position:relative}
+.inp-wrap .inp-icon{
+  position:absolute;left:14px;top:50%;
+  transform:translateY(-50%);
+  font-size:1rem;pointer-events:none;
+}
+.inp-wrap input{
+  width:100%;background:var(--dark3);
+  border:1.5px solid var(--dark4);
+  border-radius:12px;padding:11px 14px 11px 40px;
+  font-size:0.88rem;color:var(--text);
+  outline:none;transition:border-color 0.2s,box-shadow 0.2s;
+}
+.inp-wrap input:focus{
+  border-color:var(--accent);
+  box-shadow:0 0 0 3px rgba(0,255,204,0.1);
+}
+.inp-wrap input::placeholder{color:#4b5563}
+.inp-wrap .eye-btn{
+  position:absolute;right:12px;top:50%;
+  transform:translateY(-50%);
+  background:none;border:none;cursor:pointer;
+  font-size:0.9rem;color:var(--muted);padding:4px;
+}
+.inp-wrap .eye-btn:hover{color:var(--text)}
+
+.two-col{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+
+/* Error */
+.field-err{font-size:0.72rem;color:var(--red);margin-top:5px;display:none}
+.field-err.show{display:block}
+
+/* Alert */
+.form-alert{
+  border-radius:10px;padding:10px 14px;
+  font-size:0.82rem;font-weight:600;
+  margin-bottom:16px;display:none;
+  align-items:center;gap:8px;
+}
+.form-alert.show{display:flex}
+.form-alert.success{background:rgba(16,185,129,0.1);border:1px solid rgba(16,185,129,0.3);color:#34d399}
+.form-alert.error{background:rgba(239,68,68,0.1);border:1px solid rgba(239,68,68,0.3);color:#f87171}
+
+/* Submit btn */
+.submit-btn{
+  width:100%;padding:13px;
+  border:none;border-radius:50px;
+  font-size:0.95rem;font-weight:900;
+  cursor:pointer;
+  transition:all 0.2s;
+  display:flex;align-items:center;justify-content:center;gap:8px;
+  margin-top:8px;
+  position:relative;overflow:hidden;
+}
+.submit-btn.admin-btn{
+  background:linear-gradient(135deg,var(--blue),var(--purple));
+  color:white;box-shadow:0 4px 16px rgba(59,130,246,0.3);
+}
+.submit-btn.admin-btn:hover{transform:translateY(-2px);box-shadow:0 8px 24px rgba(59,130,246,0.4)}
+.submit-btn.cust-btn{
+  background:linear-gradient(135deg,var(--accent),#00b4d8);
+  color:var(--dark);box-shadow:0 4px 16px rgba(0,255,204,0.3);
+}
+.submit-btn.cust-btn:hover{transform:translateY(-2px);box-shadow:0 8px 24px rgba(0,255,204,0.4)}
+.submit-btn.ghost{
+  background:transparent;border:1.5px solid var(--dark4);
+  color:var(--muted);box-shadow:none;
+}
+.submit-btn.ghost:hover{border-color:var(--muted);color:var(--text)}
+.submit-btn.accent-ghost{
+  background:transparent;border:1.5px solid var(--accent);
+  color:var(--accent);box-shadow:none;
+}
+.submit-btn.loading{opacity:0.7;cursor:not-allowed;pointer-events:none}
+
+/* Or divider */
+.or-divider{
+  display:flex;align-items:center;gap:12px;
+  margin:14px 0;font-size:0.75rem;color:#4b5563;
+}
+.or-divider::before,.or-divider::after{content:'';flex:1;height:1px;background:var(--dark4)}
+
+/* Password strength */
+.pwd-strength{margin-top:6px;display:none}
+.pwd-strength.show{display:block}
+.pwd-bar{height:4px;background:var(--dark4);border-radius:4px;overflow:hidden;margin-bottom:4px}
+.pwd-bar-fill{height:100%;border-radius:4px;transition:width 0.3s,background 0.3s}
+.pwd-label{font-size:0.68rem;color:var(--muted)}
+
+/* Checkbox */
+.check-group{
+  display:flex;align-items:flex-start;gap:8px;
+  font-size:0.78rem;color:var(--muted);cursor:pointer;
+}
+.check-group input{width:16px;height:16px;margin-top:1px;accent-color:var(--accent);cursor:pointer}
+.check-group a{color:var(--accent);text-decoration:none}
+.check-group a:hover{text-decoration:underline}
+
+/* Creds hint */
+.creds-badge{
+  background:rgba(59,130,246,0.1);
+  border:1px solid rgba(59,130,246,0.25);
+  border-radius:10px;padding:10px 14px;
+  margin-bottom:16px;
+  font-size:0.75rem;color:#93c5fd;line-height:1.7;
+}
+.creds-badge strong{color:#60a5fa}
+
+/* Footer */
+.footer-note{
+  text-align:center;margin-top:24px;
+  font-size:0.78rem;color:#4b5563;
+}
+.footer-note a{color:var(--muted);text-decoration:none;transition:color 0.2s}
+.footer-note a:hover{color:var(--accent)}
+
+/* TOAST */
+.toast{
+  position:fixed;bottom:28px;right:28px;
+  background:var(--dark2);border:1px solid var(--dark4);
+  border-radius:16px;padding:14px 20px;
+  font-size:0.85rem;font-weight:600;
+  box-shadow:0 12px 36px rgba(0,0,0,0.4);
+  z-index:9999;
+  display:flex;align-items:center;gap:10px;
+  animation:toastIn 0.3s ease;
+  max-width:320px;
+}
+@keyframes toastIn{from{opacity:0;transform:translateY(20px)}to{opacity:1;transform:translateY(0)}}
+.toast.success{border-color:rgba(16,185,129,0.4);color:#34d399}
+.toast.error{border-color:rgba(239,68,68,0.4);color:#f87171}
+.toast.info{border-color:rgba(0,255,204,0.4);color:var(--accent)}
+
+@keyframes spin{to{transform:rotate(360deg)}}
+.spinner{
+  width:16px;height:16px;
+  border:2px solid rgba(255,255,255,0.3);
+  border-top-color:white;
+  border-radius:50%;
+  animation:spin 0.7s linear infinite;
+  display:inline-block;
+}
+
+/* Scrollbar styling */
+::-webkit-scrollbar{width:6px}
+::-webkit-scrollbar-track{background:var(--dark2)}
+::-webkit-scrollbar-thumb{background:var(--dark4);border-radius:6px}
+::-webkit-scrollbar-thumb:hover{background:#4b5563}
+
+@media(max-width:500px){
+  .card{padding:24px 18px}
+  .logo-name{font-size:1.8rem}
+  .two-col{grid-template-columns:1fr}
+}
+</style>
+</head>
+<body>
+
+<div class="bg-grid"></div>
+<div class="bg-circles">
+  <div class="bg-circle"></div>
+  <div class="bg-circle"></div>
+  <div class="bg-circle"></div>
+</div>
+
+<div class="wrapper">
+
+  <!-- LOGO -->
+  <div class="logo-bar">
+    <span class="logo-icon">💊</span>
+    <div class="logo-name">Med it Easy</div>
+    <div class="logo-tag">ONLINE PHARMACY &amp; HEALTHCARE</div>
+  </div>
+
+  <!-- CARD -->
+  <div class="card theme-customer" id="mainCard">
+
+    <!-- ROLE DROPDOWN -->
+    <div class="role-dropdown-wrap">
+      <label>Select Your Role</label>
+      <div class="role-select-box">
+        <select class="role-select" id="roleSelect" onchange="onRoleChange()">
+          <option value="customer">🛍️  Customer &mdash; Shop &amp; Order Medicines</option>
+          <option value="admin">🛡️  Admin &mdash; Dashboard &amp; System Control</option>
+        </select>
+      </div>
+    </div>
+
+    <!-- ROLE BADGE -->
+    <div class="role-badge" id="roleBadge">🛍️ Customer Portal</div>
+
+    <!-- TABS -->
+    <div class="card-tabs">
+      <button class="tab-btn active" id="tab-login" onclick="switchTab('login')">🔐 Login</button>
+      <button class="tab-btn" id="tab-register" onclick="switchTab('register')">✏️ Sign Up</button>
+    </div>
+
+    <!-- ── LOGIN PANEL ── -->
+    <div class="form-panel active" id="panel-login">
+
+      <!-- Admin creds hint (hidden by default) -->
+      <div class="creds-badge" id="adminCredsHint" style="display:none">
+        <strong>Default Admin Credentials:</strong><br>
+        Username: <strong>admin</strong> &nbsp;&bull;&nbsp; Password: <strong>admin123</strong>
+      </div>
+
+      <div class="form-alert" id="login-alert"><span id="login-alert-msg"></span></div>
+
+      <div class="form-group" id="field-username-wrap">
+        <label>Username or Email</label>
+        <div class="inp-wrap">
+          <span class="inp-icon">👤</span>
+          <input type="text" id="login-username" placeholder="Enter username or email..." autocomplete="username">
+        </div>
+        <div class="field-err" id="login-username-err">Username or email is required</div>
+      </div>
+
+      <div class="form-group" id="field-email-wrap" style="display:none">
+        <label>Email Address</label>
+        <div class="inp-wrap">
+          <span class="inp-icon">📧</span>
+          <input type="email" id="login-email" placeholder="Enter your email..." autocomplete="email">
+        </div>
+        <div class="field-err" id="login-email-err">Valid email is required</div>
+      </div>
+
+      <div class="form-group">
+        <label>Password</label>
+        <div class="inp-wrap">
+          <span class="inp-icon">🔒</span>
+          <input type="password" id="login-password" placeholder="Enter your password..." autocomplete="current-password">
+          <button class="eye-btn" onclick="togglePwd('login-password',this)">👁️</button>
+        </div>
+        <div class="field-err" id="login-password-err">Password is required</div>
+      </div>
+
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px">
+        <label class="check-group">
+          <input type="checkbox" id="login-remember"> Remember me
+        </label>
+        <a href="#" style="font-size:0.78rem;color:var(--accent);text-decoration:none" onclick="showForgot()">Forgot password?</a>
+      </div>
+
+      <button class="submit-btn cust-btn" id="login-btn" onclick="doLogin()">
+        🛍️ Login &amp; Shop Now
+      </button>
+      <div class="or-divider">New here?</div>
+      <button class="submit-btn accent-ghost" onclick="switchTab('register')">
+        ✏️ Create Free Account
+      </button>
+    </div>
+
+    <!-- ── REGISTER PANEL ── -->
+    <div class="form-panel" id="panel-register">
+      <div class="form-alert" id="reg-alert"><span id="reg-alert-msg"></span></div>
+
+      <!-- Customer fields -->
+      <div id="cust-fields">
+        <div class="two-col">
+          <div class="form-group" style="margin-bottom:0">
+            <label>First Name</label>
+            <div class="inp-wrap">
+              <span class="inp-icon">👤</span>
+              <input type="text" id="creg-fname" placeholder="First name">
+            </div>
+            <div class="field-err" id="creg-fname-err">Required</div>
+          </div>
+          <div class="form-group" style="margin-bottom:0">
+            <label>Last Name</label>
+            <div class="inp-wrap">
+              <span class="inp-icon">👤</span>
+              <input type="text" id="creg-lname" placeholder="Last name">
+            </div>
+            <div class="field-err" id="creg-lname-err">Required</div>
+          </div>
+        </div>
+        <div class="form-group" style="margin-top:12px">
+          <label>Email Address</label>
+          <div class="inp-wrap">
+            <span class="inp-icon">📧</span>
+            <input type="email" id="creg-email" placeholder="Enter email address...">
+          </div>
+          <div class="field-err" id="creg-email-err">Valid email is required</div>
+        </div>
+        <div class="form-group">
+          <label>Phone Number</label>
+          <div class="inp-wrap">
+            <span class="inp-icon">📱</span>
+            <input type="tel" id="creg-phone" placeholder="+91 XXXXX XXXXX">
+          </div>
+          <div class="field-err" id="creg-phone-err">Valid 10-digit phone is required</div>
+        </div>
+        <div class="form-group">
+          <label>Password</label>
+          <div class="inp-wrap">
+            <span class="inp-icon">🔒</span>
+            <input type="password" id="creg-password" placeholder="Create password..." oninput="checkStrength('creg-password','creg-str')">
+            <button class="eye-btn" onclick="togglePwd('creg-password',this)">👁️</button>
+          </div>
+          <div class="pwd-strength" id="creg-str">
+            <div class="pwd-bar"><div class="pwd-bar-fill" id="creg-str-bar"></div></div>
+            <div class="pwd-label" id="creg-str-label">Strength: --</div>
+          </div>
+          <div class="field-err" id="creg-password-err">Min 6 characters required</div>
+        </div>
+        <label class="check-group" style="margin-bottom:16px">
+          <input type="checkbox" id="creg-terms"> I agree to the <a href="#">Terms &amp; Conditions</a> &amp; <a href="#">Privacy Policy</a>
+        </label>
+      </div>
+
+      <!-- Admin fields -->
+      <div id="admin-fields" style="display:none">
+        <div class="form-group">
+          <label>Full Name</label>
+          <div class="inp-wrap">
+            <span class="inp-icon">👤</span>
+            <input type="text" id="areg-name" placeholder="Your full name...">
+          </div>
+          <div class="field-err" id="areg-name-err">Name is required</div>
+        </div>
+        <div class="form-group">
+          <label>Username</label>
+          <div class="inp-wrap">
+            <span class="inp-icon">🆔</span>
+            <input type="text" id="areg-username" placeholder="Choose a username...">
+          </div>
+          <div class="field-err" id="areg-username-err">Min 4 characters required</div>
+        </div>
+        <div class="form-group">
+          <label>Email</label>
+          <div class="inp-wrap">
+            <span class="inp-icon">📧</span>
+            <input type="email" id="areg-email" placeholder="Admin email address...">
+          </div>
+          <div class="field-err" id="areg-email-err">Valid email is required</div>
+        </div>
+        <div class="form-group">
+          <label>Password</label>
+          <div class="inp-wrap">
+            <span class="inp-icon">🔒</span>
+            <input type="password" id="areg-password" placeholder="Create strong password..." oninput="checkStrength('areg-password','areg-str')">
+            <button class="eye-btn" onclick="togglePwd('areg-password',this)">👁️</button>
+          </div>
+          <div class="pwd-strength" id="areg-str">
+            <div class="pwd-bar"><div class="pwd-bar-fill" id="areg-str-bar"></div></div>
+            <div class="pwd-label" id="areg-str-label">Strength: --</div>
+          </div>
+          <div class="field-err" id="areg-password-err">Min 6 characters required</div>
+        </div>
+        <div class="form-group">
+          <label>Admin Secret Key</label>
+          <div class="inp-wrap">
+            <span class="inp-icon">🔑</span>
+            <input type="password" id="areg-secret" placeholder="Enter secret key to register as admin...">
+          </div>
+          <div class="field-err" id="areg-secret-err">Incorrect secret key</div>
+        </div>
+        <label class="check-group" style="margin-bottom:16px">
+          <input type="checkbox" id="areg-terms"> I agree to the <a href="#">Terms &amp; Conditions</a>
+        </label>
+      </div>
+
+      <button class="submit-btn cust-btn" id="register-btn" onclick="doRegister()">
+        🎉 Create My Account
+      </button>
+      <div class="or-divider">Already have an account?</div>
+      <button class="submit-btn ghost" onclick="switchTab('login')">
+        ← Back to Login
+      </button>
+    </div>
+
+  </div><!-- /card -->
+
+  <div class="footer-note">
+    🔒 Secured with 256-bit encryption &nbsp;&bull;&nbsp;
+    <a href="admin.html">Admin Dashboard</a> &nbsp;&bull;&nbsp;
+    <a href="onlinepharmacy.html">Online Pharmacy</a>
+  </div>
+
+</div><!-- /wrapper -->
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
+<script src="js/supabase-config.js"></script>
+<script src="js/supabase-client.js"></script>
+<script src="js/medit-auth.js"></script>
+
+<script>
+const ADMIN_KEY   = 'meditAdmins';
+const CUST_KEY    = 'meditCustomers';
+const SESSION_KEY = 'meditSession';
+let currentRole   = 'customer';
+let currentTab    = 'login';
+
+
+
+// ── DEFAULT ADMIN (local demo only — skipped when Supabase is configured) ──
+(function(){
+  if (typeof MeditSupabase === 'function' && MeditSupabase()) return;
+  let admins = JSON.parse(localStorage.getItem(ADMIN_KEY) || '[]');
+  if (!admins.find(a => a.username === 'admin')) {
+    admins.push({ id:'admin-001', name:'Super Admin', username:'admin',
+      email:'admin@meditEasy.com', password:'admin123',
+      role:'admin', createdAt: new Date().toISOString() });
+    localStorage.setItem(ADMIN_KEY, JSON.stringify(admins));
+  }
+})();
+
+function sessionRedirectHref(s) {
+  if (!s || !s.role) return null;
+  if (s.role === 'admin' || s.role === 'staff') return 'admin.html';
+  if (s.role === 'cashier') return 'cashier.html';
+  return 'onlinepharmacy.html';
+}
+
+// ── CHECK EXISTING SESSION ──
+(function(){
+  function go() {
+    const s = JSON.parse(sessionStorage.getItem(SESSION_KEY) || localStorage.getItem(SESSION_KEY) || 'null');
+    if (s) { location.href = sessionRedirectHref(s); }
+  }
+  if (typeof MeditSupabase === 'function' && MeditSupabase()) {
+    MeditAuthHydrateSession().then(go).catch(go);
+  } else {
+    go();
+  }
+})();
+
+// ── ROLE CHANGE ──
+function onRoleChange() {
+  currentRole = document.getElementById('roleSelect').value;
+  const card  = document.getElementById('mainCard');
+  const badge = document.getElementById('roleBadge');
+  const hint  = document.getElementById('adminCredsHint');
+  const loginBtn = document.getElementById('login-btn');
+  const regBtn   = document.getElementById('register-btn');
+
+  if (currentRole === 'admin') {
+    card.className  = 'card theme-admin';
+    badge.className = 'role-badge admin-badge';
+    badge.innerHTML = '🛡️ Admin Portal';
+    hint.style.display = 'block';
+    // Switch login field to username
+    document.getElementById('field-username-wrap').style.display = 'block';
+    document.getElementById('field-email-wrap').style.display    = 'none';
+    loginBtn.className = 'submit-btn admin-btn';
+    loginBtn.innerHTML = '🔓 Login to Dashboard';
+    regBtn.className   = 'submit-btn admin-btn';
+    regBtn.innerHTML   = '✅ Create Admin Account';
+    document.getElementById('cust-fields').style.display  = 'none';
+    document.getElementById('admin-fields').style.display = 'block';
+  } else {
+    card.className  = 'card theme-customer';
+    badge.className = 'role-badge';
+    badge.innerHTML = '🛍️ Customer Portal';
+    hint.style.display = 'none';
+    document.getElementById('field-username-wrap').style.display = 'none';
+    document.getElementById('field-email-wrap').style.display    = 'block';
+    loginBtn.className = 'submit-btn cust-btn';
+    loginBtn.innerHTML = '🛍️ Login &amp; Shop Now';
+    regBtn.className   = 'submit-btn cust-btn';
+    regBtn.innerHTML   = '🎉 Create My Account';
+    document.getElementById('cust-fields').style.display  = 'block';
+    document.getElementById('admin-fields').style.display = 'none';
+  }
+  if (typeof updateSupabaseHints === 'function') updateSupabaseHints();
+  clearAlerts();
+}
+
+// initial call to set up correct fields
+onRoleChange();
+
+// ── TABS ──
+function switchTab(tab) {
+  currentTab = tab;
+  document.getElementById('panel-login').classList.toggle('active', tab === 'login');
+  document.getElementById('panel-register').classList.toggle('active', tab === 'register');
+  document.getElementById('tab-login').classList.toggle('active', tab === 'login');
+  document.getElementById('tab-register').classList.toggle('active', tab === 'register');
+  clearAlerts();
+}
+
+// ── HELPERS ──
+function togglePwd(id, btn) {
+  const inp = document.getElementById(id);
+  inp.type  = inp.type === 'password' ? 'text' : 'password';
+  btn.textContent = inp.type === 'password' ? '👁️' : '🙈';
+}
+
+function checkStrength(inputId, strId) {
+  const val = document.getElementById(inputId).value;
+  const bar = document.getElementById(strId + '-bar');
+  const lbl = document.getElementById(strId + '-label');
+  document.getElementById(strId).classList.add('show');
+  let s = 0;
+  if (val.length >= 6)  s++;
+  if (val.length >= 10) s++;
+  if (/[A-Z]/.test(val))      s++;
+  if (/[0-9]/.test(val))      s++;
+  if (/[^A-Za-z0-9]/.test(val)) s++;
+  const lvls = [
+    { w:'20%',c:'#ef4444',t:'Very Weak' },
+    { w:'40%',c:'#f97316',t:'Weak' },
+    { w:'60%',c:'#f59e0b',t:'Fair' },
+    { w:'80%',c:'#3b82f6',t:'Strong' },
+    { w:'100%',c:'#10b981',t:'Very Strong' }
+  ];
+  const lv = val.length > 0 ? lvls[Math.min(s - 1, 4)] : null;
+  bar.style.width      = lv ? lv.w : '0';
+  bar.style.background = lv ? lv.c : '';
+  lbl.textContent      = lv ? 'Strength: ' + lv.t : 'Strength: --';
+}
+
+function showAlert(id, msgId, msg, type) {
+  const el = document.getElementById(id);
+  el.className = 'form-alert show ' + type;
+  document.getElementById(msgId).textContent = msg;
+}
+function clearAlerts() {
+  document.querySelectorAll('.form-alert').forEach(e => e.className = 'form-alert');
+  document.querySelectorAll('.field-err').forEach(e => e.classList.remove('show'));
+}
+function showErr(id) { document.getElementById(id).classList.add('show'); }
+
+function setLoading(id, on, txt) {
+  const b = document.getElementById(id);
+  if (on) { b.classList.add('loading'); b.innerHTML = '<span class="spinner"></span> Please wait...'; }
+  else { b.classList.remove('loading'); b.innerHTML = txt; }
+}
+
+function showToast(msg, type) {
+  const ex = document.querySelector('.toast');
+  if (ex) ex.remove();
+  const t = document.createElement('div');
+  t.className = 'toast ' + (type || 'info');
+  t.textContent = msg;
+  document.body.appendChild(t);
+  setTimeout(() => { t.style.opacity='0'; t.style.transition='opacity 0.3s'; setTimeout(()=>t.remove(),300); }, 3000);
+}
+
+function createSession(user, remember) {
+  const s = { id:user.id, name:user.name||(user.username), email:user.email,
+    role:user.role, username:user.username||'', loginTime:new Date().toISOString() };
+  sessionStorage.setItem(SESSION_KEY, JSON.stringify(s));
+  if (remember) localStorage.setItem(SESSION_KEY, JSON.stringify(s));
+}
+
+function updateSupabaseHints() {
+  const sb = typeof MeditSupabase === 'function' && MeditSupabase();
+  const hint = document.getElementById('adminCredsHint');
+  const uLab = document.querySelector('#field-username-wrap label');
+  if (!hint || !uLab) return;
+  if (sb && currentRole === 'admin') {
+    uLab.textContent = 'Email (Supabase)';
+    document.getElementById('login-username').placeholder = 'you@example.com';
+    hint.innerHTML = 'Use the <strong>email</strong> you registered with. Password is managed by Supabase Auth.';
+    hint.style.display = 'block';
+  } else if (currentRole === 'admin') {
+    uLab.textContent = 'Username or Email';
+    document.getElementById('login-username').placeholder = 'Enter username or email...';
+    hint.innerHTML = 'Demo: <strong>admin</strong> / <strong>admin123</strong>';
+    hint.style.display = 'block';
+  }
+}
+
+async function doLoginSupabase(sb) {
+  const password = document.getElementById('login-password').value;
+  const remember = document.getElementById('login-remember').checked;
+  let email = '';
+
+  if (currentRole === 'admin') {
+    email = document.getElementById('login-username').value.trim();
+    if (!email) { showErr('login-username-err'); return; }
+    if (!/^[^@]+@[^@]+\.[^@]+$/.test(email)) {
+      showErr('login-username-err');
+      showAlert('login-alert','login-alert-msg','With Supabase, sign in using your email address.','error');
+      return;
+    }
+  } else {
+    email = document.getElementById('login-email').value.trim();
+    if (!email || !/^[^@]+@[^@]+\.[^@]+$/.test(email)) { showErr('login-email-err'); return; }
+  }
+  if (!password) { showErr('login-password-err'); return; }
+
+  setLoading('login-btn', true);
+  const { data, error } = await sb.auth.signInWithPassword({ email, password });
+  if (error) {
+    setLoading('login-btn', false, currentRole === 'admin' ? '🔓 Login to Dashboard' : '🛍️ Login &amp; Shop Now');
+    showAlert('login-alert','login-alert-msg','❌ ' + (error.message || 'Login failed'), 'error');
+    return;
+  }
+  const user = data.user;
+  const { data: profRow, error: pErr } = await sb.from('profiles').select('*').eq('id', user.id).maybeSingle();
+  if (pErr || !profRow) {
+    await sb.auth.signOut();
+    setLoading('login-btn', false, currentRole === 'admin' ? '🔓 Login to Dashboard' : '🛍️ Login &amp; Shop Now');
+    showAlert('login-alert','login-alert-msg','❌ Profile not found. Complete sign up first.','error');
+    return;
+  }
+  const pr = profRow.role;
+  if (currentRole === 'admin' && pr === 'customer') {
+    await sb.auth.signOut();
+    setLoading('login-btn', false, '🔓 Login to Dashboard');
+    showAlert('login-alert','login-alert-msg','❌ This account is not an admin. Use Customer portal.','error');
+    return;
+  }
+  if (currentRole === 'customer' && pr !== 'customer') {
+    await sb.auth.signOut();
+    setLoading('login-btn', false, '🛍️ Login &amp; Shop Now');
+    showAlert('login-alert','login-alert-msg','❌ Staff accounts must use the Admin portal.','error');
+    return;
+  }
+
+  MeditAuth.persistSession(MeditAuth.mapProfileToSession(user, profRow), remember);
+  showAlert('login-alert','login-alert-msg','✅ Login successful! Redirecting...','success');
+  showToast('Welcome back! 👋', 'success');
+  setTimeout(() => { location.href = sessionRedirectHref({ role: pr }); }, 800);
+}
+
+// ── LOGIN ──
+function doLogin() {
+  clearAlerts();
+  const password = document.getElementById('login-password').value;
+  const sb = typeof MeditSupabase === 'function' && MeditSupabase();
+  if (sb) {
+    doLoginSupabase(sb).catch(function (e) {
+      console.error(e);
+      setLoading('login-btn', false, currentRole === 'admin' ? '🔓 Login to Dashboard' : '🛍️ Login &amp; Shop Now');
+      showAlert('login-alert','login-alert-msg','❌ Something went wrong. Try again.','error');
+    });
+    return;
+  }
+
+  let valid = true;
+
+  if (currentRole === 'admin') {
+    const username = document.getElementById('login-username').value.trim();
+    if (!username) { showErr('login-username-err'); valid = false; }
+    if (!password) { showErr('login-password-err'); valid = false; }
+    if (!valid) return;
+    setLoading('login-btn', true);
+    setTimeout(() => {
+      const admins = JSON.parse(localStorage.getItem(ADMIN_KEY) || '[]');
+      const admin  = admins.find(a =>
+        (a.username === username || a.email === username) && a.password === password
+      );
+      if (admin) {
+        createSession(admin, document.getElementById('login-remember').checked);
+        showAlert('login-alert','login-alert-msg','✅ Login successful! Redirecting to dashboard...','success');
+        showToast('Welcome back, ' + (admin.name||admin.username) + '! 👋', 'success');
+        setTimeout(() => location.href = 'admin.html', 1200);
+      } else {
+        setLoading('login-btn', false, '🔓 Login to Dashboard');
+        showAlert('login-alert','login-alert-msg','❌ Invalid credentials. Try: admin / admin123','error');
+      }
+    }, 800);
+  } else {
+    const email = document.getElementById('login-email').value.trim();
+    if (!email || !/^[^@]+@[^@]+\.[^@]+$/.test(email)) { showErr('login-email-err'); valid = false; }
+    if (!password) { showErr('login-password-err'); valid = false; }
+    if (!valid) return;
+    setLoading('login-btn', true);
+    setTimeout(() => {
+      const customers = JSON.parse(localStorage.getItem(CUST_KEY) || '[]');
+      const cust = customers.find(c => c.email === email && c.password === password);
+      if (cust) {
+        createSession(cust, document.getElementById('login-remember').checked);
+        showAlert('login-alert','login-alert-msg','✅ Login successful! Redirecting to pharmacy...','success');
+        showToast('Welcome back, ' + cust.name + '! 🛍️', 'success');
+        setTimeout(() => location.href = 'onlinepharmacy.html', 1200);
+      } else {
+        setLoading('login-btn', false, '🛍️ Login &amp; Shop Now');
+        showAlert('login-alert','login-alert-msg','❌ Email or password is incorrect. Please sign up first.','error');
+      }
+    }, 800);
+  }
+}
+
+async function doRegisterSupabase(sb) {
+  let valid = true;
+  if (currentRole === 'admin') {
+    const name     = document.getElementById('areg-name').value.trim();
+    const username = document.getElementById('areg-username').value.trim();
+    const email    = document.getElementById('areg-email').value.trim();
+    const password = document.getElementById('areg-password').value;
+    const secret   = document.getElementById('areg-secret').value;
+    const terms    = document.getElementById('areg-terms').checked;
+    if (!name)                                           { showErr('areg-name-err');     valid = false; }
+    if (!username || username.length < 4)                { showErr('areg-username-err'); valid = false; }
+    if (!email || !/^[^@]+@[^@]+\.[^@]+$/.test(email))  { showErr('areg-email-err');    valid = false; }
+    if (!password || password.length < 6)                { showErr('areg-password-err'); valid = false; }
+    if (secret !== 'meditadmin2024')                     { showErr('areg-secret-err');   valid = false; }
+    if (!valid) return;
+    if (!terms) { showAlert('reg-alert','reg-alert-msg','⚠️ Please accept Terms & Conditions','error'); return; }
+    setLoading('register-btn', true);
+    const { data, error } = await sb.auth.signUp({
+      email,
+      password,
+      options: {
+        data: { full_name: name, username: username, phone: '' }
+      }
+    });
+    if (error) {
+      setLoading('register-btn', false, '✅ Create Admin Account');
+      showAlert('reg-alert','reg-alert-msg','❌ ' + (error.message || 'Sign up failed'), 'error');
+      return;
+    }
+    if (!data.session) {
+      setLoading('register-btn', false, '✅ Create Admin Account');
+      showAlert('reg-alert','reg-alert-msg','📧 Check your email to confirm, then run claim_admin_role from SQL or disable email confirm in Supabase Auth settings.', 'success');
+      return;
+    }
+    const { error: rpcErr } = await sb.rpc('claim_admin_role', { secret: secret });
+    if (rpcErr) {
+      await sb.auth.signOut();
+      setLoading('register-btn', false, '✅ Create Admin Account');
+      showAlert('reg-alert','reg-alert-msg','❌ ' + (rpcErr.message || 'Could not grant admin role'), 'error');
+      return;
+    }
+    const user = data.session.user;
+    const { data: profRow } = await sb.from('profiles').select('*').eq('id', user.id).single();
+    MeditAuth.persistSession(MeditAuth.mapProfileToSession(user, profRow), false);
+    showAlert('reg-alert','reg-alert-msg','🎉 Admin account created! Redirecting...','success');
+    showToast('Welcome, ' + name + '! 🎉', 'success');
+    setTimeout(() => { location.href = 'admin.html'; }, 1200);
+  } else {
+    const fname    = document.getElementById('creg-fname').value.trim();
+    const lname    = document.getElementById('creg-lname').value.trim();
+    const email    = document.getElementById('creg-email').value.trim();
+    const phone    = document.getElementById('creg-phone').value.trim();
+    const password = document.getElementById('creg-password').value;
+    const terms    = document.getElementById('creg-terms').checked;
+    if (!fname)                                          { showErr('creg-fname-err');    valid = false; }
+    if (!lname)                                          { showErr('creg-lname-err');    valid = false; }
+    if (!email || !/^[^@]+@[^@]+\.[^@]+$/.test(email))  { showErr('creg-email-err');    valid = false; }
+    if (!phone || phone.replace(/\D/g,'').length < 10)   { showErr('creg-phone-err');    valid = false; }
+    if (!password || password.length < 6)                { showErr('creg-password-err'); valid = false; }
+    if (!valid) return;
+    if (!terms) { showAlert('reg-alert','reg-alert-msg','⚠️ Please accept Terms & Conditions','error'); return; }
+    setLoading('register-btn', true);
+    const { data, error } = await sb.auth.signUp({
+      email,
+      password,
+      options: {
+        data: {
+          full_name: fname + ' ' + lname,
+          phone: phone,
+          username: ''
+        }
+      }
+    });
+    if (error) {
+      setLoading('register-btn', false, '🎉 Create My Account');
+      showAlert('reg-alert','reg-alert-msg','❌ ' + (error.message || 'Sign up failed'), 'error');
+      return;
+    }
+    if (!data.session) {
+      setLoading('register-btn', false, '🎉 Create My Account');
+      showAlert('reg-alert','reg-alert-msg','📧 Confirm your email, then log in.', 'success');
+      return;
+    }
+    const user = data.session.user;
+    const { data: profRow } = await sb.from('profiles').select('*').eq('id', user.id).single();
+    MeditAuth.persistSession(MeditAuth.mapProfileToSession(user, profRow), false);
+    showAlert('reg-alert','reg-alert-msg','🎉 Account created! Redirecting to pharmacy...','success');
+    showToast('Welcome to Med it Easy, ' + fname + '! 💊', 'success');
+    setTimeout(() => { location.href = 'onlinepharmacy.html'; }, 1200);
+  }
+}
+
+// ── REGISTER ──
+function doRegister() {
+  clearAlerts();
+  const sb = typeof MeditSupabase === 'function' && MeditSupabase();
+  if (sb) {
+    doRegisterSupabase(sb).catch(function (e) {
+      console.error(e);
+      setLoading('register-btn', false, currentRole === 'admin' ? '✅ Create Admin Account' : '🎉 Create My Account');
+      showAlert('reg-alert','reg-alert-msg','❌ Something went wrong. Try again.','error');
+    });
+    return;
+  }
+
+  let valid = true;
+
+  if (currentRole === 'admin') {
+    const name     = document.getElementById('areg-name').value.trim();
+    const username = document.getElementById('areg-username').value.trim();
+    const email    = document.getElementById('areg-email').value.trim();
+    const password = document.getElementById('areg-password').value;
+    const secret   = document.getElementById('areg-secret').value;
+    const terms    = document.getElementById('areg-terms').checked;
+    if (!name)                                           { showErr('areg-name-err');     valid = false; }
+    if (!username || username.length < 4)                { showErr('areg-username-err'); valid = false; }
+    if (!email || !/^[^@]+@[^@]+\.[^@]+$/.test(email))  { showErr('areg-email-err');    valid = false; }
+    if (!password || password.length < 6)                { showErr('areg-password-err'); valid = false; }
+    if (secret !== 'meditadmin2024')                     { showErr('areg-secret-err');   valid = false; }
+    if (!valid) return;
+    if (!terms) { showAlert('reg-alert','reg-alert-msg','⚠️ Please accept Terms & Conditions','error'); return; }
+    setLoading('register-btn', true);
+    setTimeout(() => {
+      const admins = JSON.parse(localStorage.getItem(ADMIN_KEY) || '[]');
+      if (admins.find(a => a.username === username)) {
+        setLoading('register-btn', false, '✅ Create Admin Account');
+        showAlert('reg-alert','reg-alert-msg','❌ Username already taken.','error'); return;
+      }
+      if (admins.find(a => a.email === email)) {
+        setLoading('register-btn', false, '✅ Create Admin Account');
+        showAlert('reg-alert','reg-alert-msg','❌ Email already registered.','error'); return;
+      }
+      const newAdmin = { id:'admin-'+Date.now(), name, username, email, password, role:'admin', createdAt:new Date().toISOString() };
+      admins.push(newAdmin);
+      localStorage.setItem(ADMIN_KEY, JSON.stringify(admins));
+      createSession(newAdmin, false);
+      showAlert('reg-alert','reg-alert-msg','🎉 Admin account created! Redirecting...','success');
+      showToast('Welcome, ' + name + '! 🎉', 'success');
+      setTimeout(() => location.href = 'admin.html', 1400);
+    }, 900);
+  } else {
+    const fname    = document.getElementById('creg-fname').value.trim();
+    const lname    = document.getElementById('creg-lname').value.trim();
+    const email    = document.getElementById('creg-email').value.trim();
+    const phone    = document.getElementById('creg-phone').value.trim();
+    const password = document.getElementById('creg-password').value;
+    const terms    = document.getElementById('creg-terms').checked;
+    if (!fname)                                          { showErr('creg-fname-err');    valid = false; }
+    if (!lname)                                          { showErr('creg-lname-err');    valid = false; }
+    if (!email || !/^[^@]+@[^@]+\.[^@]+$/.test(email))  { showErr('creg-email-err');    valid = false; }
+    if (!phone || phone.replace(/\D/g,'').length < 10)   { showErr('creg-phone-err');    valid = false; }
+    if (!password || password.length < 6)                { showErr('creg-password-err'); valid = false; }
+    if (!valid) return;
+    if (!terms) { showAlert('reg-alert','reg-alert-msg','⚠️ Please accept Terms & Conditions','error'); return; }
+    setLoading('register-btn', true);
+    setTimeout(() => {
+      const customers = JSON.parse(localStorage.getItem(CUST_KEY) || '[]');
+      if (customers.find(c => c.email === email)) {
+        setLoading('register-btn', false, '🎉 Create My Account');
+        showAlert('reg-alert','reg-alert-msg','❌ Email already registered. Please login.','error'); return;
+      }
+      const newCust = { id:'cust-'+Date.now(), name:fname+' '+lname,
+        firstName:fname, lastName:lname, email, phone, password,
+        role:'customer', joinDate:new Date().toISOString(), orders:[], totalSpent:0 };
+      customers.push(newCust);
+      localStorage.setItem(CUST_KEY, JSON.stringify(customers));
+      createSession(newCust, false);
+      showAlert('reg-alert','reg-alert-msg','🎉 Account created! Redirecting to pharmacy...','success');
+      showToast('Welcome to Med it Easy, ' + fname + '! 💊', 'success');
+      setTimeout(() => location.href = 'onlinepharmacy.html', 1400);
+    }, 900);
+  }
+}
+
+// ── FORGOT PASSWORD ──
+function showForgot() {
+  const email = currentRole === 'admin'
+    ? document.getElementById('login-username').value.trim()
+    : document.getElementById('login-email').value.trim();
+  if (!email) { showToast('Enter your email first, then click Forgot Password', 'error'); return; }
+  const key   = currentRole === 'admin' ? ADMIN_KEY : CUST_KEY;
+  const users = JSON.parse(localStorage.getItem(key) || '[]');
+  const found = users.find(u => u.email === email || u.username === email);
+  if (found) {
+    showAlert('login-alert','login-alert-msg','📧 Password reset link sent to ' + email + '. Check your inbox.','success');
+  } else {
+    showAlert('login-alert','login-alert-msg','❌ No account found with this email.','error');
+  }
+}
+
+// Enter key support
+document.addEventListener('keydown', function(e) {
+  if (e.key !== 'Enter') return;
+  if (currentTab === 'login') doLogin();
+  else doRegister();
+});
+</script>
+</body>
+</html>

@@ -1,0 +1,10 @@
+# Local Supabase keys (use js/supabase-config.example.js as template)
+pharmacy_system-main/js/supabase-config.js
+
+# OS / editor
+Thumbs.db
+Desktop.ini
+.DS_Store
+*.swp
+.idea/
+.vscode/

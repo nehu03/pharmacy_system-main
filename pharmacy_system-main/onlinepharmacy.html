@@ -1,0 +1,900 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Med it Easy — Online Pharmacy</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<style>
+  *,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+  :root{--dark:#0f172a;--dark2:#1e293b;--accent:#00ffcc;--accent2:#00d4aa;--muted:#94a3b8;}
+  body{font-family:"Segoe UI",sans-serif;background:#f0f4f8;}
+
+  /* HEADER */
+  .header{background:var(--dark);height:66px;display:flex;align-items:center;justify-content:space-between;padding:0 28px;position:sticky;top:0;z-index:200;box-shadow:0 2px 16px rgba(0,0,0,0.3);}
+  .brand{display:flex;align-items:center;gap:10px;text-decoration:none;}
+  .brand-icon{font-size:2rem;}
+  .brand-name{font-size:1.4rem;font-weight:900;color:var(--accent);letter-spacing:0.05em;}
+  .brand-sub{font-size:0.68rem;color:var(--muted);}
+  .search-wrap{flex:1;max-width:480px;margin:0 28px;position:relative;}
+  .search-wrap input{width:100%;background:#1e293b;border:1.5px solid #334155;border-radius:50px;padding:10px 48px 10px 20px;color:#f1f5f9;font-size:0.9rem;outline:none;transition:border-color 0.2s;}
+  .search-wrap input:focus{border-color:var(--accent);}
+  .search-wrap input::placeholder{color:#64748b;}
+  .search-btn{position:absolute;right:6px;top:50%;transform:translateY(-50%);background:var(--accent);border:none;border-radius:50px;padding:6px 14px;font-size:0.82rem;font-weight:700;color:var(--dark);cursor:pointer;}
+  .hdr-right{display:flex;align-items:center;gap:10px;}
+  .hdr-btn{width:40px;height:40px;border-radius:50%;background:#1e293b;border:1.5px solid #334155;color:#f1f5f9;font-size:1.1rem;display:flex;align-items:center;justify-content:center;cursor:pointer;position:relative;transition:all 0.2s;}
+  .hdr-btn:hover{background:var(--accent);color:var(--dark);border-color:var(--accent);}
+  .cart-badge{position:absolute;top:-3px;right:-3px;background:#ef4444;color:white;font-size:0.6rem;font-weight:800;width:17px;height:17px;border-radius:50%;display:flex;align-items:center;justify-content:center;}
+
+  /* TOP NAV */
+  .top-nav{background:white;border-bottom:2px solid #e2e8f0;display:flex;justify-content:center;gap:4px;padding:0 20px;overflow-x:auto;box-shadow:0 1px 4px rgba(0,0,0,0.04);}
+  .nav-tab{background:none;border:none;border-bottom:3px solid transparent;padding:14px 18px;font-size:0.85rem;font-weight:600;color:#475569;cursor:pointer;white-space:nowrap;transition:all 0.15s;text-decoration:none;display:flex;align-items:center;gap:6px;}
+  .nav-tab:hover{color:#0f172a;border-bottom-color:#00d4aa;background:#f8fafc;}
+
+  /* HERO */
+  .hero{background:linear-gradient(135deg,#0f172a 0%,#1e293b 50%,#0f2a1e 100%);padding:48px 32px;display:flex;align-items:center;justify-content:space-between;gap:24px;position:relative;overflow:hidden;}
+  .hero::before{content:'';position:absolute;top:-60px;right:-60px;width:320px;height:320px;background:radial-gradient(circle,rgba(0,255,204,0.12) 0%,transparent 70%);border-radius:50%;}
+  .hero-text{max-width:500px;position:relative;z-index:1;}
+  .hero-badge{display:inline-flex;align-items:center;gap:6px;background:rgba(0,255,204,0.12);border:1px solid rgba(0,255,204,0.3);border-radius:50px;padding:6px 14px;font-size:0.75rem;font-weight:700;color:var(--accent);letter-spacing:0.08em;text-transform:uppercase;margin-bottom:16px;}
+  .hero h1{font-size:2.4rem;font-weight:900;color:white;line-height:1.2;margin-bottom:12px;}
+  .hero h1 span{color:var(--accent);}
+  .hero p{font-size:0.95rem;color:#94a3b8;line-height:1.7;margin-bottom:24px;}
+  .hero-btns{display:flex;gap:12px;flex-wrap:wrap;}
+  .btn-primary{background:var(--accent);color:var(--dark);border:none;border-radius:50px;padding:12px 28px;font-size:0.9rem;font-weight:800;cursor:pointer;transition:transform 0.15s,opacity 0.2s;text-decoration:none;display:inline-flex;align-items:center;gap:6px;}
+  .btn-primary:hover{transform:translateY(-2px);opacity:0.92;}
+  .btn-outline{background:transparent;color:white;border:1.5px solid #475569;border-radius:50px;padding:12px 28px;font-size:0.9rem;font-weight:700;cursor:pointer;transition:border-color 0.2s,background 0.2s;text-decoration:none;display:inline-flex;align-items:center;gap:6px;}
+  .btn-outline:hover{border-color:var(--accent);background:rgba(0,255,204,0.07);}
+  .hero-stats{display:flex;gap:14px;position:relative;z-index:1;flex-shrink:0;}
+  .hero-stat{background:rgba(255,255,255,0.06);border:1px solid rgba(255,255,255,0.1);border-radius:16px;padding:18px 20px;text-align:center;}
+  .hero-stat .num{font-size:1.8rem;font-weight:900;color:var(--accent);}
+  .hero-stat .lbl{font-size:0.72rem;color:#94a3b8;margin-top:3px;}
+
+  /* TRUST BAR */
+  .trust-bar{background:white;border-bottom:1px solid #e2e8f0;padding:14px 32px;display:flex;align-items:center;justify-content:center;gap:36px;flex-wrap:wrap;}
+  .trust-item{display:flex;align-items:center;gap:7px;font-size:0.8rem;font-weight:600;color:#475569;}
+  .trust-item span:first-child{font-size:1.1rem;}
+
+  /* CONTENT */
+  .content{max-width:1200px;margin:32px auto;padding:0 20px;}
+
+  /* SECTION TITLE */
+  .sec-title{font-size:1.2rem;font-weight:800;color:#0f172a;margin-bottom:20px;display:flex;align-items:center;gap:8px;}
+
+  /* PROMO STRIP */
+  .promo-strip{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:36px;}
+  .promo-card{border-radius:18px;padding:24px 28px;display:flex;align-items:center;justify-content:space-between;gap:12px;overflow:hidden;position:relative;cursor:pointer;transition:transform 0.2s;}
+  .promo-card:hover{transform:translateY(-3px);}
+  .promo-card.p1{background:linear-gradient(135deg,#0f172a,#1e3a5f);border:1px solid #1e4a7a;}
+  .promo-card.p2{background:linear-gradient(135deg,#1a0f2e,#2e1a4a);border:1px solid #4a2a7a;}
+  .promo-card h3{font-size:1.15rem;font-weight:800;color:white;margin-bottom:4px;}
+  .promo-card h3 em{color:var(--accent);font-style:normal;}
+  .promo-card p{font-size:0.78rem;color:#94a3b8;margin-bottom:12px;}
+  .promo-emoji{font-size:3.2rem;flex-shrink:0;}
+  .promo-btn{background:var(--accent);color:var(--dark);border:none;border-radius:50px;padding:8px 20px;font-size:0.8rem;font-weight:800;cursor:pointer;transition:opacity 0.2s;display:inline-block;text-decoration:none;}
+  .promo-btn:hover{opacity:0.88;}
+
+  /* CATEGORY GRID */
+  .cat-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(210px,1fr));gap:18px;margin-bottom:40px;}
+  .cat-card{background:white;border-radius:20px;border:1.5px solid #e2e8f0;overflow:hidden;text-decoration:none;display:flex;flex-direction:column;transition:transform 0.22s,box-shadow 0.22s,border-color 0.22s;box-shadow:0 2px 12px rgba(0,0,0,0.05);position:relative;}
+  .cat-card::after{content:'';position:absolute;bottom:0;left:0;right:0;height:3px;background:linear-gradient(90deg,var(--accent),#00b4d8);opacity:0;transition:opacity 0.2s;}
+  .cat-card:hover{transform:translateY(-6px);box-shadow:0 14px 36px rgba(0,0,0,0.12);border-color:#cbd5e1;}
+  .cat-card:hover::after{opacity:1;}
+  .cat-img{height:130px;display:flex;align-items:center;justify-content:center;font-size:3.8rem;}
+  .cat-c1{background:linear-gradient(135deg,#fff0f5,#ffe4ee);}
+  .cat-c2{background:linear-gradient(135deg,#f0fdf4,#dcfce7);}
+  .cat-c3{background:linear-gradient(135deg,#f0fdf4,#ecfdf5);}
+  .cat-c4{background:linear-gradient(135deg,#faf5ff,#f3e8ff);}
+  .cat-c5{background:linear-gradient(135deg,#fff7ed,#ffedd5);}
+  .cat-c6{background:linear-gradient(135deg,#eff6ff,#dbeafe);}
+  .cat-c7{background:linear-gradient(135deg,#eef2ff,#e0e7ff);}
+  .cat-c8{background:linear-gradient(135deg,#f0f9ff,#e0f2fe);}
+  .cat-count{position:absolute;top:10px;right:10px;background:rgba(0,0,0,0.1);border-radius:50px;font-size:0.65rem;font-weight:700;padding:3px 8px;color:#475569;}
+  .cat-body{padding:14px 16px 8px;flex:1;}
+  .cat-name{font-size:0.95rem;font-weight:800;color:#0f172a;margin-bottom:4px;}
+  .cat-desc{font-size:0.74rem;color:#64748b;line-height:1.5;}
+  .cat-foot{display:flex;align-items:center;justify-content:space-between;padding:9px 16px;border-top:1px solid #f1f5f9;font-size:0.78rem;font-weight:700;color:#475569;}
+  .cat-card:hover .cat-foot{color:#00897b;}
+  .cat-arrow{width:24px;height:24px;background:#f1f5f9;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:0.75rem;transition:background 0.2s,color 0.2s;}
+  .cat-card:hover .cat-arrow{background:var(--accent);color:var(--dark);}
+
+  /* FEATURES */
+  .features{display:grid;grid-template-columns:repeat(4,1fr);gap:16px;margin-bottom:40px;}
+  .feat-card{background:white;border:1.5px solid #e2e8f0;border-radius:16px;padding:22px 18px;text-align:center;transition:transform 0.2s,box-shadow 0.2s;}
+  .feat-card:hover{transform:translateY(-4px);box-shadow:0 8px 24px rgba(0,0,0,0.08);}
+  .feat-ico{font-size:2.2rem;margin-bottom:10px;}
+  .feat-title{font-size:0.9rem;font-weight:800;color:#0f172a;margin-bottom:4px;}
+  .feat-desc{font-size:0.75rem;color:#64748b;line-height:1.5;}
+
+  /* FOOTER */
+  .footer{background:var(--dark);color:#64748b;padding:32px;}
+  .footer-inner{max-width:1200px;margin:0 auto;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:16px;}
+  .footer-links{display:flex;gap:20px;flex-wrap:wrap;}
+  .footer-links a{color:#64748b;text-decoration:none;font-size:0.8rem;}
+  .footer-links a:hover{color:var(--accent);}
+  .footer-copy{font-size:0.78rem;text-align:center;color:#334155;padding-top:20px;border-top:1px solid #1e293b;margin-top:20px;max-width:1200px;margin-left:auto;margin-right:auto;}
+  .footer-copy span{color:var(--accent);}
+
+  /* CART DRAWER */
+  .cart-overlay{position:fixed;inset:0;background:rgba(0,0,0,0.5);z-index:400;display:none;}
+  .cart-overlay.open{display:block;}
+  .cart-drawer{position:fixed;top:0;right:-420px;width:400px;height:100vh;background:white;z-index:500;transition:right 0.3s;display:flex;flex-direction:column;box-shadow:-8px 0 32px rgba(0,0,0,0.15);}
+  .cart-drawer.open{right:0;}
+  .cart-hdr{padding:20px 22px;border-bottom:1px solid #f1f5f9;display:flex;align-items:center;justify-content:space-between;}
+  .cart-hdr h2{font-size:1rem;font-weight:800;color:#0f172a;}
+  .cart-close{background:none;border:none;font-size:1.3rem;cursor:pointer;color:#64748b;}
+  .cart-body{flex:1;overflow-y:auto;padding:12px 22px;}
+  .cart-empty-msg{text-align:center;padding:60px 20px;color:#94a3b8;}
+  .cart-empty-msg .ei{font-size:3.5rem;margin-bottom:12px;}
+  .cart-item-row{display:flex;align-items:center;gap:12px;padding:12px 0;border-bottom:1px solid #f8fafc;}
+  .cart-item-row:last-child{border-bottom:none;}
+  .ci-img{width:52px;height:52px;border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:1.6rem;flex-shrink:0;}
+  .ci-info{flex:1;}
+  .ci-name{font-size:0.82rem;font-weight:700;color:#0f172a;}
+  .ci-price{font-size:0.82rem;font-weight:800;color:#10b981;}
+  .ci-qty-row{display:flex;align-items:center;gap:6px;margin-top:4px;}
+  .qty-b{width:24px;height:24px;border-radius:50%;border:1.5px solid #e2e8f0;background:white;cursor:pointer;font-size:0.85rem;display:flex;align-items:center;justify-content:center;font-weight:800;transition:all 0.15s;}
+  .qty-b:hover{background:#0f172a;color:#00ffcc;border-color:#0f172a;}
+  .qty-n{font-size:0.85rem;font-weight:700;min-width:20px;text-align:center;}
+  .ci-del{background:none;border:none;cursor:pointer;color:#94a3b8;font-size:0.85rem;margin-left:auto;padding:3px;border-radius:50%;}
+  .ci-del:hover{background:#fee2e2;color:#ef4444;}
+  .cart-foot{padding:16px 22px;border-top:1px solid #f1f5f9;}
+  .cart-total-row{display:flex;justify-content:space-between;font-size:0.88rem;color:#64748b;margin-bottom:6px;}
+  .cart-total-row.big{font-size:1.1rem;font-weight:900;color:#0f172a;padding-top:8px;border-top:1.5px solid #f1f5f9;margin-top:8px;}
+  .checkout-btn{width:100%;background:linear-gradient(90deg,#00ffcc,#00b4d8);color:#0f172a;border:none;border-radius:50px;padding:14px;font-size:0.95rem;font-weight:900;cursor:pointer;margin-top:14px;transition:opacity 0.2s;}
+  .checkout-btn:hover{opacity:0.88;}
+  .checkout-btn:disabled{background:#e2e8f0;color:#94a3b8;cursor:not-allowed;}
+
+  /* PAYMENT MODAL */
+  .pay-overlay{position:fixed;inset:0;background:rgba(0,0,0,0.6);z-index:1000;display:none;align-items:center;justify-content:center;backdrop-filter:blur(4px);padding:16px;}
+  .pay-overlay.open{display:flex;}
+  .pay-modal{background:white;border-radius:24px;width:100%;max-width:520px;max-height:90vh;overflow-y:auto;box-shadow:0 24px 60px rgba(0,0,0,0.25);animation:slideUp 0.25s ease;}
+  .pay-modal::-webkit-scrollbar{width:4px;}
+  .pay-modal::-webkit-scrollbar-thumb{background:#e2e8f0;border-radius:4px;}
+  @keyframes slideUp{from{opacity:0;transform:translateY(20px);}to{opacity:1;transform:translateY(0);}}
+  .pay-header{padding:20px 24px 16px;border-bottom:1px solid #f1f5f9;display:flex;align-items:center;justify-content:space-between;}
+  .pay-header h3{font-size:1rem;font-weight:800;color:#0f172a;}
+  .pay-close{background:none;border:none;font-size:1.2rem;cursor:pointer;color:#64748b;width:32px;height:32px;border-radius:50%;background:#f1f5f9;display:flex;align-items:center;justify-content:center;}
+  .pay-close:hover{background:#e2e8f0;}
+  /* STEP INDICATOR */
+  .step-bar{display:flex;align-items:center;padding:16px 24px;border-bottom:1px solid #f1f5f9;}
+  .step-item{display:flex;align-items:center;gap:6px;}
+  .step-num{width:26px;height:26px;border-radius:50%;background:#f1f5f9;border:2px solid #e2e8f0;font-size:0.78rem;font-weight:800;color:#64748b;display:flex;align-items:center;justify-content:center;}
+  .step-num.active{background:#0f172a;border-color:#0f172a;color:#00ffcc;}
+  .step-num.done{background:#10b981;border-color:#10b981;color:white;}
+  .step-lbl{font-size:0.72rem;font-weight:700;color:#64748b;}
+  .step-lbl.active{color:#0f172a;}
+  .step-line{flex:1;height:2px;background:#e2e8f0;margin:0 8px;}
+  .step-line.done{background:#10b981;}
+  /* STEP CONTENT */
+  .pay-body{padding:20px 24px;}
+  .step-content{display:none;}
+  .step-content.active{display:block;}
+  /* ORDER SUMMARY */
+  .order-summary{background:#f8fafc;border-radius:14px;padding:16px;margin-bottom:16px;}
+  .os-title{font-size:0.8rem;font-weight:800;color:#64748b;text-transform:uppercase;letter-spacing:0.06em;margin-bottom:12px;}
+  .os-item{display:flex;justify-content:space-between;align-items:center;padding:8px 0;border-bottom:1px solid #f1f5f9;font-size:0.84rem;}
+  .os-item:last-child{border-bottom:none;}
+  .os-item .oi-name{font-weight:600;color:#0f172a;}
+  .os-item .oi-price{font-weight:800;color:#0f172a;}
+  .os-total{display:flex;justify-content:space-between;font-size:1rem;font-weight:900;color:#0f172a;padding-top:10px;margin-top:6px;border-top:2px solid #e2e8f0;}
+  /* FORM */
+  .pay-form .fg{margin-bottom:14px;}
+  .pay-form label{display:block;font-size:0.78rem;font-weight:700;color:#475569;margin-bottom:5px;}
+  .pay-form input,.pay-form select{width:100%;border:1.5px solid #e2e8f0;border-radius:10px;padding:10px 14px;font-size:0.88rem;color:#0f172a;outline:none;transition:border-color 0.2s;font-family:inherit;}
+  .pay-form input:focus,.pay-form select:focus{border-color:#00ffcc;}
+  .form-row-2{display:grid;grid-template-columns:1fr 1fr;gap:12px;}
+  /* PAYMENT METHOD TABS */
+  .pay-methods-tabs{display:flex;gap:8px;margin-bottom:18px;flex-wrap:wrap;}
+  .pm-tab{flex:1;min-width:80px;background:#f8fafc;border:2px solid #e2e8f0;border-radius:12px;padding:10px 8px;text-align:center;cursor:pointer;transition:all 0.15s;}
+  .pm-tab:hover,.pm-tab.active{background:#0f172a;border-color:#0f172a;}
+  .pm-tab:hover .pm-icon,.pm-tab.active .pm-icon{font-size:1.4rem;}
+  .pm-tab:hover .pm-name,.pm-tab.active .pm-name{color:#00ffcc;}
+  .pm-icon{font-size:1.4rem;margin-bottom:4px;}
+  .pm-name{font-size:0.68rem;font-weight:700;color:#475569;}
+  /* CARD INPUT */
+  .card-input-wrap{position:relative;}
+  .card-input-wrap input{padding-left:48px;letter-spacing:0.1em;}
+  .card-logo{position:absolute;left:14px;top:50%;transform:translateY(-50%);font-size:1.2rem;pointer-events:none;}
+  /* UPI */
+  .upi-wrap{text-align:center;}
+  .qr-box{width:160px;height:160px;background:#f8fafc;border:2px dashed #e2e8f0;border-radius:14px;margin:0 auto 14px;display:flex;align-items:center;justify-content:center;font-size:0.8rem;color:#94a3b8;}
+  .qr-box svg{width:140px;height:140px;}
+  .upi-apps{display:flex;justify-content:center;gap:16px;margin:14px 0;}
+  .upi-app{display:flex;flex-direction:column;align-items:center;gap:5px;cursor:pointer;}
+  .upi-app-ico{width:44px;height:44px;border-radius:12px;display:flex;align-items:center;justify-content:center;font-size:1.5rem;border:2px solid transparent;transition:border-color 0.15s;}
+  .upi-app:hover .upi-app-ico{border-color:#00ffcc;}
+  .upi-app span{font-size:0.65rem;font-weight:700;color:#475569;}
+  /* BANKS */
+  .bank-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:14px;}
+  .bank-btn{background:#f8fafc;border:1.5px solid #e2e8f0;border-radius:10px;padding:10px 12px;font-size:0.8rem;font-weight:700;color:#475569;cursor:pointer;text-align:left;display:flex;align-items:center;gap:8px;transition:all 0.15s;}
+  .bank-btn:hover,.bank-btn.selected{background:#0f172a;border-color:#0f172a;color:#00ffcc;}
+  /* OTP */
+  .otp-wrap{text-align:center;}
+  .otp-inputs{display:flex;gap:10px;justify-content:center;margin:20px 0;}
+  .otp-input{width:46px;height:52px;border:2px solid #e2e8f0;border-radius:10px;text-align:center;font-size:1.4rem;font-weight:800;color:#0f172a;outline:none;transition:border-color 0.2s;}
+  .otp-input:focus{border-color:#00ffcc;}
+  /* PROCESSING */
+  .processing-wrap{text-align:center;padding:30px 0;}
+  .spinner{width:64px;height:64px;border:4px solid #f1f5f9;border-top:4px solid #00ffcc;border-radius:50%;animation:spin 0.8s linear infinite;margin:0 auto 16px;}
+  @keyframes spin{to{transform:rotate(360deg);}}
+  /* SUCCESS */
+  .success-wrap{text-align:center;padding:20px 0;}
+  .success-icon{font-size:4.5rem;margin-bottom:12px;}
+  .success-title{font-size:1.3rem;font-weight:900;color:#0f172a;margin-bottom:6px;}
+  .success-sub{font-size:0.88rem;color:#64748b;margin-bottom:20px;}
+  .order-box{background:#f0fdf4;border:1.5px solid #86efac;border-radius:14px;padding:16px;margin-bottom:16px;}
+  .order-box .ob-id{font-size:1.1rem;font-weight:900;color:#065f46;margin-bottom:4px;}
+  .order-box .ob-detail{font-size:0.8rem;color:#047857;}
+  .delivery-timeline{display:flex;align-items:center;justify-content:center;gap:12px;margin:16px 0;flex-wrap:wrap;}
+  .dt-step{display:flex;flex-direction:column;align-items:center;gap:4px;}
+  .dt-ico{font-size:1.5rem;}
+  .dt-lbl{font-size:0.65rem;font-weight:700;color:#64748b;}
+  .dt-line{width:40px;height:2px;background:#e2e8f0;}
+  /* BUTTONS */
+  .pay-actions{display:flex;gap:10px;margin-top:18px;}
+  .pay-next-btn{flex:1;background:linear-gradient(90deg,#00ffcc,#00b4d8);color:#0f172a;border:none;border-radius:50px;padding:13px;font-size:0.95rem;font-weight:900;cursor:pointer;transition:opacity 0.2s;}
+  .pay-next-btn:hover{opacity:0.88;}
+  .pay-back-btn{background:white;color:#64748b;border:1.5px solid #e2e8f0;border-radius:50px;padding:13px 20px;font-size:0.88rem;font-weight:700;cursor:pointer;}
+  .pay-back-btn:hover{background:#f1f5f9;}
+  .cod-info{background:#fff7ed;border:1.5px solid #fed7aa;border-radius:12px;padding:14px;font-size:0.84rem;color:#92400e;line-height:1.6;}
+
+  /* NOTIFICATION TOAST */
+  .toast{position:fixed;bottom:24px;right:24px;background:#0f172a;color:#00ffcc;padding:12px 22px;border-radius:50px;font-size:0.85rem;font-weight:700;box-shadow:0 8px 24px rgba(0,0,0,0.2);z-index:9999;animation:slideUp 0.25s ease;}
+
+  /* SEARCH RESULTS */
+  .search-results{background:white;border-radius:0 0 16px 16px;border:1.5px solid #e2e8f0;border-top:none;position:absolute;top:100%;left:0;right:0;max-height:300px;overflow-y:auto;display:none;z-index:100;box-shadow:0 8px 24px rgba(0,0,0,0.1);}
+  .search-results.show{display:block;}
+  .sr-item{display:flex;align-items:center;gap:10px;padding:10px 16px;cursor:pointer;transition:background 0.15s;border-bottom:1px solid #f8fafc;}
+  .sr-item:hover{background:#f0fdf4;}
+  .sr-item:last-child{border-bottom:none;}
+  .sr-emoji{font-size:1.4rem;}
+  .sr-name{font-size:0.85rem;font-weight:600;color:#0f172a;}
+  .sr-cat{font-size:0.72rem;color:#94a3b8;}
+  .sr-price{font-size:0.85rem;font-weight:800;color:#10b981;margin-left:auto;}
+
+  @media(max-width:900px){.hero{flex-direction:column;padding:32px 20px;}.hero-stats{flex-wrap:wrap;justify-content:center;}.promo-strip{grid-template-columns:1fr;}.features{grid-template-columns:repeat(2,1fr);}.search-wrap{display:none;}}
+  @media(max-width:600px){.content{padding:0 14px;}.cat-grid{grid-template-columns:repeat(auto-fill,minmax(160px,1fr));}.trust-bar{gap:14px;}.features{grid-template-columns:repeat(2,1fr);}}
+</style>
+</head>
+<body>
+
+<!-- HEADER -->
+<header class="header">
+  <a class="brand" href="onlinepharmacy.html">
+    <div class="brand-icon">💊</div>
+    <div><div class="brand-name">Med it Easy</div><div class="brand-sub">Online Pharmacy</div></div>
+  </a>
+  <div class="search-wrap" id="searchWrap">
+    <input type="text" id="globalSearch" placeholder="Search medicines, baby care, vitamins..." oninput="doSearch()" autocomplete="off" />
+    <button class="search-btn" onclick="doSearch()">Search</button>
+    <div class="search-results" id="searchResults"></div>
+  </div>
+  <div class="hdr-right">
+    <div class="hdr-btn" onclick="openCartDrawer()" title="Cart">🛒<span class="cart-badge" id="cartBadgeGlobal">0</span></div>
+    <div class="hdr-btn" title="My Account">👤</div>
+  </div>
+</header>
+
+<!-- TOP NAV -->
+<nav class="top-nav">
+  <a class="nav-tab" href="mombaby.html">🍼 Mom &amp; Baby</a>
+  <a class="nav-tab" href="personalcare.html">🌿 Personal Care</a>
+  <a class="nav-tab" href="healthfitness.html">💪 Health &amp; Fitness</a>
+  <a class="nav-tab" href="selfcare.html">💜 Self Care</a>
+  <a class="nav-tab" href="petcare.html">🐾 Pet Care</a>
+  <a class="nav-tab" href="paperwipes.html">🧻 Paper &amp; Wipes</a>
+  <a class="nav-tab" href="homecare.html">🏠 Home Care</a>
+  <a class="nav-tab" href="orthobeltsupport.html">🦴 Ortho Support</a>
+</nav>
+
+<!-- HERO -->
+<section class="hero">
+  <div class="hero-text">
+    <div class="hero-badge">✦ Trusted by 50,000+ customers</div>
+    <h1>Your Health,<br><span>Our Priority</span></h1>
+    <p>Genuine medicines, vitamins &amp; wellness products delivered fast. Shop from 8 categories with best prices.</p>
+    <div class="hero-btns">
+      <a href="#categories" class="btn-primary">🛍️ Shop Now</a>
+      <a href="#" class="btn-outline" onclick="showToast('📋 Upload feature coming soon!')">📋 Upload Prescription</a>
+    </div>
+  </div>
+  <div class="hero-stats">
+    <div class="hero-stat"><div class="num">8+</div><div class="lbl">Categories</div></div>
+    <div class="hero-stat"><div class="num">500+</div><div class="lbl">Products</div></div>
+    <div class="hero-stat"><div class="num">24/7</div><div class="lbl">Support</div></div>
+  </div>
+</section>
+
+<!-- TRUST BAR -->
+<div class="trust-bar">
+  <div class="trust-item"><span>🚚</span><span>Free Delivery ₹499+</span></div>
+  <div class="trust-item"><span>✅</span><span>100% Genuine</span></div>
+  <div class="trust-item"><span>↩️</span><span>Easy Returns</span></div>
+  <div class="trust-item"><span>🔒</span><span>Secure Payments</span></div>
+  <div class="trust-item"><span>👨‍⚕️</span><span>Expert Pharmacists</span></div>
+</div>
+
+<div class="content">
+
+  <!-- PROMO STRIP -->
+  <div class="promo-strip" style="margin-top:8px">
+    <div class="promo-card p1" onclick="location.href='mombaby.html'">
+      <div>
+        <h3>Mom &amp; Baby <em>20% OFF</em></h3>
+        <p>Diapers, baby food &amp; skincare on sale</p>
+        <a href="mombaby.html" class="promo-btn">Shop Now →</a>
+      </div>
+      <div class="promo-emoji">🍼</div>
+    </div>
+    <div class="promo-card p2" onclick="location.href='healthfitness.html'">
+      <div>
+        <h3>Vitamins &amp; <em>Supplements</em></h3>
+        <p>Boost immunity with top-rated products</p>
+        <a href="healthfitness.html" class="promo-btn" style="background:#a855f7;color:white;">Explore →</a>
+      </div>
+      <div class="promo-emoji">💪</div>
+    </div>
+  </div>
+
+  <!-- CATEGORIES -->
+  <div id="categories">
+    <div class="sec-title">🗂️ Shop by Category</div>
+    <div class="cat-grid">
+      <a class="cat-card" href="mombaby.html">
+        <div class="cat-img cat-c1"><span>🍼</span><span class="cat-count">50+ items</span></div>
+        <div class="cat-body"><div class="cat-name">Mom &amp; Baby Care</div><div class="cat-desc">Diapers, feeding, skincare &amp; nursing</div></div>
+        <div class="cat-foot">Shop Now <div class="cat-arrow">→</div></div>
+      </a>
+      <a class="cat-card" href="personalcare.html">
+        <div class="cat-img cat-c2"><span>🌿</span><span class="cat-count">80+ items</span></div>
+        <div class="cat-body"><div class="cat-name">Personal Care</div><div class="cat-desc">Skincare, hair care &amp; daily essentials</div></div>
+        <div class="cat-foot">Shop Now <div class="cat-arrow">→</div></div>
+      </a>
+      <a class="cat-card" href="healthfitness.html">
+        <div class="cat-img cat-c3"><span>💪</span><span class="cat-count">60+ items</span></div>
+        <div class="cat-body"><div class="cat-name">Health &amp; Fitness</div><div class="cat-desc">Vitamins, protein &amp; sports nutrition</div></div>
+        <div class="cat-foot">Shop Now <div class="cat-arrow">→</div></div>
+      </a>
+      <a class="cat-card" href="selfcare.html">
+        <div class="cat-img cat-c4"><span>💜</span><span class="cat-count">70+ items</span></div>
+        <div class="cat-body"><div class="cat-name">Self Care</div><div class="cat-desc">Pain relief, eye care &amp; first aid</div></div>
+        <div class="cat-foot">Shop Now <div class="cat-arrow">→</div></div>
+      </a>
+      <a class="cat-card" href="petcare.html">
+        <div class="cat-img cat-c5"><span>🐾</span><span class="cat-count">45+ items</span></div>
+        <div class="cat-body"><div class="cat-name">Pet Care</div><div class="cat-desc">Food, grooming &amp; health for pets</div></div>
+        <div class="cat-foot">Shop Now <div class="cat-arrow">→</div></div>
+      </a>
+      <a class="cat-card" href="paperwipes.html">
+        <div class="cat-img cat-c6"><span>🧻</span><span class="cat-count">30+ items</span></div>
+        <div class="cat-body"><div class="cat-name">Paper &amp; Wipes</div><div class="cat-desc">Tissue, toilet paper &amp; disinfectant wipes</div></div>
+        <div class="cat-foot">Shop Now <div class="cat-arrow">→</div></div>
+      </a>
+      <a class="cat-card" href="homecare.html">
+        <div class="cat-img cat-c7"><span>🏠</span><span class="cat-count">55+ items</span></div>
+        <div class="cat-body"><div class="cat-name">Home Care</div><div class="cat-desc">Dishwashers, floor cleaners &amp; self care</div></div>
+        <div class="cat-foot">Shop Now <div class="cat-arrow">→</div></div>
+      </a>
+      <a class="cat-card" href="orthobelts.html">
+        <div class="cat-img cat-c8"><span>🦴</span><span class="cat-count">40+ items</span></div>
+        <div class="cat-body"><div class="cat-name">Ortho Support</div><div class="cat-desc">Knee, back, wrist &amp; elbow braces</div></div>
+        <div class="cat-foot">Shop Now <div class="cat-arrow">→</div></div>
+      </a>
+    </div>
+  </div>
+
+  <!-- WHY US -->
+  <div class="sec-title">⭐ Why Choose Med it Easy</div>
+  <div class="features">
+    <div class="feat-card"><div class="feat-ico">🏥</div><div class="feat-title">Genuine Products</div><div class="feat-desc">Sourced directly from certified manufacturers.</div></div>
+    <div class="feat-card"><div class="feat-ico">🚀</div><div class="feat-title">Fast Delivery</div><div class="feat-desc">Same-day delivery in select areas.</div></div>
+    <div class="feat-card"><div class="feat-ico">👨‍⚕️</div><div class="feat-title">Expert Advice</div><div class="feat-desc">Free consultation from certified pharmacists.</div></div>
+    <div class="feat-card"><div class="feat-ico">🔒</div><div class="feat-title">Secure Payments</div><div class="feat-desc">100% secure with multiple payment options.</div></div>
+  </div>
+</div>
+
+<!-- FOOTER -->
+<footer class="footer">
+  <div class="footer-inner">
+    <div style="display:flex;align-items:center;gap:10px;">
+      <div style="font-size:1.8rem">💊</div>
+      <div><div style="font-size:1.1rem;font-weight:800;color:#00ffcc;">Med it Easy</div><div style="font-size:0.72rem;color:#475569;">Your trusted online pharmacy</div></div>
+    </div>
+    <div class="footer-links">
+      <a href="mombaby.html">Mom &amp; Baby</a>
+      <a href="personalcare.html">Personal Care</a>
+      <a href="healthfitness.html">Health &amp; Fitness</a>
+      <a href="selfcare.html">Self Care</a>
+      <a href="petcare.html">Pet Care</a>
+      <a href="paperwipes.html">Paper &amp; Wipes</a>
+      <a href="homecare.html">Home Care</a>
+      <a href="orthobelts.html">Ortho Support</a>
+    </div>
+  </div>
+  <div class="footer-copy">&copy; 2026 <span>Med it Easy</span> — All rights reserved.</div>
+</footer>
+
+<!-- CART OVERLAY + DRAWER -->
+<div class="cart-overlay" id="cartOverlay" onclick="closeCartDrawer()"></div>
+<div class="cart-drawer" id="cartDrawer">
+  <div class="cart-hdr">
+    <h2>🛒 My Cart <span id="cartBadgeDrawer" style="background:#00ffcc;color:#0f172a;font-size:0.7rem;padding:2px 8px;border-radius:50px;font-weight:800;">0</span></h2>
+    <button class="cart-close" onclick="closeCartDrawer()">&#215;</button>
+  </div>
+  <div class="cart-body" id="cartBody">
+    <div class="cart-empty-msg"><div class="ei">🛒</div><p style="font-size:0.88rem;font-weight:600;color:#475569;">Your cart is empty</p><p style="font-size:0.78rem;color:#94a3b8;margin-top:4px;">Add products to start shopping</p></div>
+  </div>
+  <div class="cart-foot">
+    <div class="cart-total-row"><span>Subtotal</span><span id="cartSubtotal">₹0</span></div>
+    <div class="cart-total-row"><span>Delivery</span><span id="cartDelivery">FREE</span></div>
+    <div class="cart-total-row big"><span>Total</span><span id="cartTotal">₹0</span></div>
+    <button class="checkout-btn" id="checkoutBtnMain" onclick="openPayment()" disabled>Proceed to Checkout</button>
+  </div>
+</div>
+
+<!-- PAYMENT MODAL -->
+<div class="pay-overlay" id="payOverlay">
+  <div class="pay-modal">
+    <div class="pay-header">
+      <h3 id="payHeaderTitle">🛒 Checkout</h3>
+      <button class="pay-close" onclick="closePayment()">&#215;</button>
+    </div>
+    <!-- STEP INDICATOR -->
+    <div class="step-bar">
+      <div class="step-item"><div class="step-num active" id="si1">1</div><div class="step-lbl active" id="sl1">Review</div></div>
+      <div class="step-line" id="sline1"></div>
+      <div class="step-item"><div class="step-num" id="si2">2</div><div class="step-lbl" id="sl2">Address</div></div>
+      <div class="step-line" id="sline2"></div>
+      <div class="step-item"><div class="step-num" id="si3">3</div><div class="step-lbl" id="sl3">Payment</div></div>
+      <div class="step-line" id="sline3"></div>
+      <div class="step-item"><div class="step-num" id="si4">4</div><div class="step-lbl" id="sl4">Confirm</div></div>
+    </div>
+    <div class="pay-body">
+
+      <!-- STEP 1: ORDER REVIEW -->
+      <div class="step-content active" id="payStep1">
+        <div class="order-summary">
+          <div class="os-title">📋 Order Summary</div>
+          <div id="payOrderItems"></div>
+          <div class="os-total"><span>Total</span><span id="payOrderTotal">₹0</span></div>
+        </div>
+        <div class="pay-actions"><button class="pay-next-btn" onclick="goPayStep(2)">Continue to Address →</button></div>
+      </div>
+
+      <!-- STEP 2: DELIVERY ADDRESS -->
+      <div class="step-content" id="payStep2">
+        <div class="pay-form">
+          <div class="form-row-2">
+            <div class="fg"><label>First Name *</label><input type="text" id="addrFirst" placeholder="Priya" /></div>
+            <div class="fg"><label>Last Name *</label><input type="text" id="addrLast" placeholder="Sharma" /></div>
+          </div>
+          <div class="fg"><label>Phone Number *</label><input type="tel" id="addrPhone" placeholder="+91 98765 43210" /></div>
+          <div class="fg"><label>Email</label><input type="email" id="addrEmail" placeholder="priya@email.com" /></div>
+          <div class="fg"><label>Address Line 1 *</label><input type="text" id="addr1" placeholder="House No, Street, Area" /></div>
+          <div class="fg"><label>Address Line 2</label><input type="text" id="addr2" placeholder="Landmark (optional)" /></div>
+          <div class="form-row-2">
+            <div class="fg"><label>City *</label><input type="text" id="addrCity" placeholder="Mumbai" /></div>
+            <div class="fg"><label>PIN Code *</label><input type="text" id="addrPin" placeholder="400001" maxlength="6" /></div>
+          </div>
+          <div class="fg"><label>State *</label>
+            <select id="addrState">
+              <option value="">Select State</option>
+              <option>Maharashtra</option><option>Delhi</option><option>Karnataka</option>
+              <option>Tamil Nadu</option><option>Gujarat</option><option>Rajasthan</option>
+              <option>West Bengal</option><option>Uttar Pradesh</option><option>Kerala</option>
+              <option>Telangana</option><option>Andhra Pradesh</option><option>Punjab</option>
+            </select>
+          </div>
+        </div>
+        <div class="pay-actions">
+          <button class="pay-back-btn" onclick="goPayStep(1)">← Back</button>
+          <button class="pay-next-btn" onclick="validateAddress()">Continue to Payment →</button>
+        </div>
+      </div>
+
+      <!-- STEP 3: PAYMENT METHOD -->
+      <div class="step-content" id="payStep3">
+        <div class="pay-methods-tabs">
+          <div class="pm-tab active" onclick="selectPayMethod('card',this)"><div class="pm-icon">💳</div><div class="pm-name">Card</div></div>
+          <div class="pm-tab" onclick="selectPayMethod('upi',this)"><div class="pm-icon">📱</div><div class="pm-name">UPI</div></div>
+          <div class="pm-tab" onclick="selectPayMethod('netbanking',this)"><div class="pm-icon">🏦</div><div class="pm-name">Net Banking</div></div>
+          <div class="pm-tab" onclick="selectPayMethod('wallet',this)"><div class="pm-icon">💜</div><div class="pm-name">Wallets</div></div>
+          <div class="pm-tab" onclick="selectPayMethod('cod',this)"><div class="pm-icon">💵</div><div class="pm-name">COD</div></div>
+        </div>
+
+        <!-- CARD FORM -->
+        <div id="payCard" class="pay-form">
+          <div class="fg"><label>Card Number *</label>
+            <div class="card-input-wrap"><span class="card-logo" id="cardLogoDisplay">💳</span><input type="text" id="cardNum" placeholder="0000  0000  0000  0000" maxlength="19" oninput="formatCard(this)" /></div>
+          </div>
+          <div class="fg"><label>Cardholder Name *</label><input type="text" id="cardName" placeholder="PRIYA SHARMA" style="text-transform:uppercase" /></div>
+          <div class="form-row-2">
+            <div class="fg"><label>Expiry (MM/YY) *</label><input type="text" id="cardExpiry" placeholder="MM/YY" maxlength="5" oninput="formatExpiry(this)" /></div>
+            <div class="fg"><label>CVV *</label><input type="password" id="cardCvv" placeholder="•••" maxlength="3" /></div>
+          </div>
+          <div style="background:#f0fdf4;border:1px solid #86efac;border-radius:10px;padding:10px 14px;font-size:0.78rem;color:#065f46;margin-top:4px;">
+            🔒 Your card details are encrypted and secure. We use 256-bit SSL encryption.
+          </div>
+        </div>
+
+        <!-- UPI FORM -->
+        <div id="payUpi" style="display:none">
+          <div class="upi-wrap">
+            <div class="qr-box">
+              <svg viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg">
+                <rect width="200" height="200" fill="white"/>
+                <g fill="#0f172a">
+                  <rect x="20" y="20" width="60" height="60" rx="6"/><rect x="28" y="28" width="44" height="44" fill="white" rx="3"/><rect x="34" y="34" width="32" height="32" rx="2"/>
+                  <rect x="120" y="20" width="60" height="60" rx="6"/><rect x="128" y="28" width="44" height="44" fill="white" rx="3"/><rect x="134" y="34" width="32" height="32" rx="2"/>
+                  <rect x="20" y="120" width="60" height="60" rx="6"/><rect x="28" y="128" width="44" height="44" fill="white" rx="3"/><rect x="34" y="134" width="32" height="32" rx="2"/>
+                  <rect x="90" y="20" width="10" height="10"/><rect x="104" y="20" width="10" height="10"/><rect x="90" y="34" width="10" height="24"/>
+                  <rect x="104" y="34" width="10" height="10"/><rect x="118" y="34" width="10" height="10"/>
+                  <rect x="90" y="90" width="10" height="10"/><rect x="104" y="90" width="10" height="10"/><rect x="118" y="90" width="10" height="10"/>
+                  <rect x="120" y="104" width="10" height="10"/><rect x="134" y="104" width="10" height="10"/><rect x="148" y="104" width="10" height="10"/>
+                  <rect x="120" y="118" width="10" height="10"/><rect x="148" y="118" width="22" height="10"/>
+                  <rect x="120" y="132" width="10" height="18"/><rect x="134" y="132" width="10" height="10"/><rect x="134" y="146" width="36" height="10"/>
+                  <rect x="148" y="132" width="10" height="10"/><rect x="162" y="132" width="10" height="18"/>
+                  <rect x="90" y="104" width="10" height="10"/><rect x="90" y="118" width="24" height="10"/><rect x="90" y="132" width="10" height="38"/>
+                </g>
+              </svg>
+            </div>
+            <p style="font-size:0.8rem;color:#64748b;margin-bottom:14px;">Scan with any UPI app to pay</p>
+            <div class="upi-apps">
+              <div class="upi-app" onclick="selectUpiApp('gpay')"><div class="upi-app-ico" style="background:#e8f5e9;" id="upiGpay">G</div><span>GPay</span></div>
+              <div class="upi-app" onclick="selectUpiApp('paytm')"><div class="upi-app-ico" style="background:#e3f2fd;" id="upiPaytm">💰</div><span>Paytm</span></div>
+              <div class="upi-app" onclick="selectUpiApp('phonepe')"><div class="upi-app-ico" style="background:#ede7f6;" id="upiPhonepe">頃</div><span>PhonePe</span></div>
+              <div class="upi-app" onclick="selectUpiApp('bhim')"><div class="upi-app-ico" style="background:#fff3e0;" id="upiBhim">B</div><span>BHIM</span></div>
+            </div>
+            <p style="font-size:0.8rem;color:#64748b;margin-bottom:6px;">Or enter UPI ID</p>
+            <div class="pay-form"><div class="fg"><input type="text" id="upiId" placeholder="yourname@upi" /></div></div>
+          </div>
+        </div>
+
+        <!-- NET BANKING -->
+        <div id="payNetbanking" style="display:none">
+          <p style="font-size:0.82rem;color:#64748b;margin-bottom:12px;">Select your bank</p>
+          <div class="bank-grid">
+            <button class="bank-btn" onclick="selectBank(this)">🏦 SBI</button>
+            <button class="bank-btn" onclick="selectBank(this)">🏦 HDFC Bank</button>
+            <button class="bank-btn" onclick="selectBank(this)">🏦 ICICI Bank</button>
+            <button class="bank-btn" onclick="selectBank(this)">🏦 Axis Bank</button>
+            <button class="bank-btn" onclick="selectBank(this)">🏦 Kotak Bank</button>
+            <button class="bank-btn" onclick="selectBank(this)">🏦 Bank of Baroda</button>
+            <button class="bank-btn" onclick="selectBank(this)">🏦 Punjab National</button>
+            <button class="bank-btn" onclick="selectBank(this)">🏦 Canara Bank</button>
+          </div>
+          <div class="pay-form" style="margin-top:8px;">
+            <div class="fg"><label>Or select from all banks</label>
+              <select id="allBanks">
+                <option value="">Select Bank</option>
+                <option>State Bank of India</option><option>HDFC Bank</option><option>ICICI Bank</option>
+                <option>Axis Bank</option><option>Kotak Mahindra Bank</option><option>Yes Bank</option>
+                <option>IndusInd Bank</option><option>Federal Bank</option><option>Union Bank</option>
+              </select>
+            </div>
+          </div>
+        </div>
+
+        <!-- WALLETS -->
+        <div id="payWallet" style="display:none">
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:14px;">
+            <div class="bank-btn" onclick="this.classList.toggle('selected')" style="flex-direction:column;text-align:center;padding:14px;">
+              <span style="font-size:1.6rem;margin-bottom:4px;">💰</span>Paytm Wallet
+            </div>
+            <div class="bank-btn" onclick="this.classList.toggle('selected')" style="flex-direction:column;text-align:center;padding:14px;">
+              <span style="font-size:1.6rem;margin-bottom:4px;">頃</span>PhonePe
+            </div>
+            <div class="bank-btn" onclick="this.classList.toggle('selected')" style="flex-direction:column;text-align:center;padding:14px;">
+              <span style="font-size:1.6rem;margin-bottom:4px;">G</span>Google Pay
+            </div>
+            <div class="bank-btn" onclick="this.classList.toggle('selected')" style="flex-direction:column;text-align:center;padding:14px;">
+              <span style="font-size:1.6rem;margin-bottom:4px;">📦</span>Amazon Pay
+            </div>
+          </div>
+        </div>
+
+        <!-- COD -->
+        <div id="payCod" style="display:none">
+          <div class="cod-info">
+            <strong>💵 Cash on Delivery</strong><br>
+            Pay in cash when your order is delivered. A delivery fee of ₹50 applies for COD orders.<br><br>
+            • Please keep exact change ready<br>• Our delivery partner will collect payment
+          </div>
+        </div>
+
+        <div class="pay-actions" style="margin-top:16px;">
+          <button class="pay-back-btn" onclick="goPayStep(2)">← Back</button>
+          <button class="pay-next-btn" onclick="processPaymentStep()">🔒 Pay <span id="payAmtDisplay">₹0</span></button>
+        </div>
+      </div>
+
+      <!-- STEP 4: OTP -->
+      <div class="step-content" id="payStep4">
+        <div class="otp-wrap">
+          <div style="font-size:3rem;margin-bottom:8px;">📱</div>
+          <h3 style="font-size:1.1rem;font-weight:800;color:#0f172a;margin-bottom:6px;">Verify Payment</h3>
+          <p style="font-size:0.84rem;color:#64748b;margin-bottom:4px;">Enter the 6-digit OTP sent to <strong id="otpPhone">your phone</strong></p>
+          <p style="font-size:0.78rem;color:#94a3b8;">Valid for 10 minutes</p>
+          <div class="otp-inputs">
+            <input class="otp-input" type="text" maxlength="1" oninput="otpNext(this,0)" id="otp0">
+            <input class="otp-input" type="text" maxlength="1" oninput="otpNext(this,1)" id="otp1">
+            <input class="otp-input" type="text" maxlength="1" oninput="otpNext(this,2)" id="otp2">
+            <input class="otp-input" type="text" maxlength="1" oninput="otpNext(this,3)" id="otp3">
+            <input class="otp-input" type="text" maxlength="1" oninput="otpNext(this,4)" id="otp4">
+            <input class="otp-input" type="text" maxlength="1" oninput="otpNext(this,5)" id="otp5">
+          </div>
+          <p style="font-size:0.78rem;color:#94a3b8;">Didn't receive? <button onclick="showToast('OTP resent!')" style="background:none;border:none;color:#00d4aa;font-weight:700;cursor:pointer;font-size:0.78rem;">Resend OTP</button></p>
+        </div>
+        <div class="pay-actions">
+          <button class="pay-back-btn" onclick="goPayStep(3)">← Back</button>
+          <button class="pay-next-btn" onclick="verifyOtp()">Verify &amp; Pay</button>
+        </div>
+      </div>
+
+      <!-- PROCESSING -->
+      <div class="step-content" id="payProcessing">
+        <div class="processing-wrap">
+          <div class="spinner"></div>
+          <h3 style="font-size:1.1rem;font-weight:800;color:#0f172a;margin-bottom:6px;">Processing Payment...</h3>
+          <p style="font-size:0.85rem;color:#64748b;">Please do not close or refresh this page</p>
+        </div>
+      </div>
+
+      <!-- SUCCESS -->
+      <div class="step-content" id="paySuccess">
+        <div class="success-wrap">
+          <div class="success-icon">✅</div>
+          <div class="success-title">Payment Successful!</div>
+          <div class="success-sub">Your order has been placed successfully</div>
+          <div class="order-box">
+            <div class="ob-id" id="successOrderId">#ORD-00000</div>
+            <div class="ob-detail" id="successDetail">Paid ₹0 via Card</div>
+          </div>
+          <div class="delivery-timeline">
+            <div class="dt-step"><div class="dt-ico">✅</div><div class="dt-lbl">Confirmed</div></div>
+            <div class="dt-line"></div>
+            <div class="dt-step"><div class="dt-ico">📎</div><div class="dt-lbl">Packed</div></div>
+            <div class="dt-line"></div>
+            <div class="dt-step"><div class="dt-ico">🚚</div><div class="dt-lbl">Out for Delivery</div></div>
+            <div class="dt-line"></div>
+            <div class="dt-step"><div class="dt-ico">🏠</div><div class="dt-lbl">Delivered</div></div>
+          </div>
+          <p style="font-size:0.82rem;color:#64748b;">Estimated delivery: <strong id="estDelivery">2–3 business days</strong></p>
+          <p style="font-size:0.8rem;color:#94a3b8;margin-top:6px;">A confirmation will be sent to your email/SMS</p>
+        </div>
+        <div class="pay-actions">
+          <button class="pay-next-btn" onclick="closePaymentSuccess()">Continue Shopping</button>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+<script>
+  // ── GLOBAL CART ──
+  let cart = [];
+  let currentPayMethod = 'card';
+  let currentPayStep = 1;
+
+  // ── SEARCH DATA ──
+  const searchProducts = [
+    {name:'Pampers Premium Care Pants',cat:'Mom & Baby',price:'849',emoji:'🍼',page:'mombaby.html'},
+    {name:'Huggies Wonder Pants',cat:'Mom & Baby',price:'799',emoji:'👶',page:'mombaby.html'},
+    {name:'Johnson Baby Lotion 200ml',cat:'Mom & Baby',price:'220',emoji:'🧴',page:'mombaby.html'},
+    {name:'Paracetamol 500mg',cat:'Health & Fitness',price:'25',emoji:'💊',page:'healthfitness.html'},
+    {name:'Vitamin C 500mg',cat:'Health & Fitness',price:'120',emoji:'🍋',page:'healthfitness.html'},
+    {name:'Cetaphil Face Wash',cat:'Personal Care',price:'349',emoji:'🧴',page:'personalcare.html'},
+    {name:'Dettol Antiseptic Liquid',cat:'Self Care',price:'165',emoji:'🧾',page:'selfcare.html'},
+    {name:'Pedigree Adult Dog Food',cat:'Pet Care',price:'350',emoji:'🐶',page:'petcare.html'},
+    {name:'Mueller Knee Brace',cat:'Ortho Support',price:'1499',emoji:'🦴',page:'orthobelts.html'},
+  ];
+
+  function doSearch(){
+    const q = document.getElementById('globalSearch').value.toLowerCase().trim();
+    const res = document.getElementById('searchResults');
+    if(!q){res.classList.remove('show');return;}
+    const found = searchProducts.filter(p=>p.name.toLowerCase().includes(q)||p.cat.toLowerCase().includes(q));
+    if(!found.length){res.innerHTML='<div style="padding:14px;font-size:0.82rem;color:#94a3b8;text-align:center;">No results found</div>';res.classList.add('show');return;}
+    res.innerHTML=found.map(p=>`<div class="sr-item" onclick="location.href='${p.page}'"><span class="sr-emoji">${p.emoji}</span><div><div class="sr-name">${p.name}</div><div class="sr-cat">${p.cat}</div></div><span class="sr-price">₹${p.price}</span></div>`).join('');
+    res.classList.add('show');
+  }
+  document.addEventListener('click',e=>{if(!e.target.closest('#searchWrap')) document.getElementById('searchResults').classList.remove('show');});
+
+  // ── CART ──
+  function openCartDrawer(){document.getElementById('cartOverlay').classList.add('open');document.getElementById('cartDrawer').classList.add('open');}
+  function closeCartDrawer(){document.getElementById('cartOverlay').classList.remove('open');document.getElementById('cartDrawer').classList.remove('open');}
+
+  function renderCart(){
+    const total = cart.reduce((a,i)=>a+i.price*i.qty,0);
+    const totalQty = cart.reduce((a,i)=>a+i.qty,0);
+    document.getElementById('cartBadgeGlobal').textContent=totalQty;
+    document.getElementById('cartBadgeDrawer').textContent=totalQty+' items';
+    document.getElementById('cartSubtotal').textContent='₹'+total;
+    document.getElementById('cartDelivery').textContent=total>=499?'FREE':'₹50';
+    document.getElementById('cartTotal').textContent='₹'+(total+(total>=499?0:50));
+    document.getElementById('checkoutBtnMain').disabled=cart.length===0;
+    if(!cart.length){
+      document.getElementById('cartBody').innerHTML='<div class="cart-empty-msg"><div class="ei">🛒</div><p style="font-size:0.88rem;font-weight:600;color:#475569;">Your cart is empty</p><p style="font-size:0.78rem;color:#94a3b8;margin-top:4px;">Add products to start shopping</p></div>';
+      return;
+    }
+    document.getElementById('cartBody').innerHTML=cart.map(item=>`
+      <div class="cart-item-row">
+        <div class="ci-img" style="background:${item.color}">${item.emoji}</div>
+        <div class="ci-info">
+          <div class="ci-name">${item.name}</div>
+          <div class="ci-price">₹${item.price}</div>
+          <div class="ci-qty-row">
+            <button class="qty-b" onclick="changeCartQty('${item.id}',-1)">−</button>
+            <span class="qty-n">${item.qty}</span>
+            <button class="qty-b" onclick="changeCartQty('${item.id}',1)">+</button>
+          </div>
+        </div>
+        <button class="ci-del" onclick="removeCartItem('${item.id}')">✕</button>
+      </div>`);
+  }
+  function changeCartQty(id,d){
+    const item=cart.find(i=>i.id===id);
+    if(!item)return;
+    item.qty+=d;
+    if(item.qty<=0) cart=cart.filter(i=>i.id!==id);
+    renderCart();
+  }
+  function removeCartItem(id){cart=cart.filter(i=>i.id!==id);renderCart();}
+
+  // ── PAYMENT FLOW ──
+  function openPayment(){
+    if(!cart.length)return;
+    const total=cart.reduce((a,i)=>a+i.price*i.qty,0)+( cart.reduce((a,i)=>a+i.price*i.qty,0)>=499?0:50);
+    document.getElementById('payOrderItems').innerHTML=cart.map(i=>`<div class="os-item"><span class="oi-name">${i.name} x${i.qty}</span><span class="oi-price">₹${i.price*i.qty}</span></div>`).join('');
+    document.getElementById('payOrderTotal').textContent='₹'+total;
+    document.getElementById('payAmtDisplay').textContent='₹'+total;
+    closeCartDrawer();
+    currentPayStep=1;
+    goPayStep(1);
+    document.getElementById('payOverlay').classList.add('open');
+  }
+  function closePayment(){document.getElementById('payOverlay').classList.remove('open');}
+
+  function goPayStep(n){
+    for(let i=1;i<=4;i++){
+      const el=document.getElementById('payStep'+i);
+      if(el){el.classList.remove('active');el.style.display='none';}
+      const si=document.getElementById('si'+i),sl=document.getElementById('sl'+i);
+      if(si){si.classList.remove('active','done');if(i<n)si.classList.add('done');else if(i===n)si.classList.add('active');}
+      if(sl){sl.classList.remove('active');if(i===n)sl.classList.add('active');}
+      if(i<4){const line=document.getElementById('sline'+i);if(line)line.classList.toggle('done',i<n);}
+    }
+    document.getElementById('payProcessing').classList.remove('active');
+    document.getElementById('payProcessing').style.display='none';
+    document.getElementById('paySuccess').classList.remove('active');
+    document.getElementById('paySuccess').style.display='none';
+    const target=document.getElementById('payStep'+n);
+    if(target){target.classList.add('active');target.style.display='block';}
+    currentPayStep=n;
+  }
+
+  function validateAddress(){
+    const f=document.getElementById('addrFirst').value.trim();
+    const l=document.getElementById('addrLast').value.trim();
+    const p=document.getElementById('addrPhone').value.trim();
+    const a=document.getElementById('addr1').value.trim();
+    const c=document.getElementById('addrCity').value.trim();
+    const pin=document.getElementById('addrPin').value.trim();
+    const s=document.getElementById('addrState').value;
+    if(!f||!l||!p||!a||!c||!pin||!s){showToast('⚠️ Please fill all required fields');return;}
+    if(pin.length!==6){showToast('⚠️ PIN code must be 6 digits');return;}
+    goPayStep(3);
+  }
+
+  function selectPayMethod(method,btn){
+    currentPayMethod=method;
+    document.querySelectorAll('.pm-tab').forEach(b=>b.classList.remove('active'));
+    btn.classList.add('active');
+    document.getElementById('payCard').style.display=method==='card'?'block':'none';
+    document.getElementById('payUpi').style.display=method==='upi'?'block':'none';
+    document.getElementById('payNetbanking').style.display=method==='netbanking'?'block':'none';
+    document.getElementById('payWallet').style.display=method==='wallet'?'block':'none';
+    document.getElementById('payCod').style.display=method==='cod'?'block':'none';
+  }
+
+  function formatCard(el){
+    let v=el.value.replace(/\D/g,'').slice(0,16);
+    el.value=v.replace(/(\d{4})(?=\d)/g,'$1  ');
+    const logo=document.getElementById('cardLogoDisplay');
+    logo.textContent=v.startsWith('4')?'🟦':v.startsWith('5')?'🟥':v.startsWith('6')?'🟡':'💳';
+  }
+  function formatExpiry(el){
+    let v=el.value.replace(/\D/g,'').slice(0,4);
+    if(v.length>=2) v=v.slice(0,2)+'/'+v.slice(2);
+    el.value=v;
+  }
+
+  function selectBank(btn){document.querySelectorAll('.bank-btn').forEach(b=>b.classList.remove('selected'));btn.classList.add('selected');}
+  function selectUpiApp(app){document.querySelectorAll('.upi-app-ico').forEach(e=>e.style.border='2px solid transparent');document.getElementById('upi'+app.charAt(0).toUpperCase()+app.slice(1)).style.border='2px solid #00ffcc';}
+
+  function processPaymentStep(){
+    if(currentPayMethod==='card'){
+      const num=document.getElementById('cardNum').value.replace(/\s/g,'');
+      const name=document.getElementById('cardName').value.trim();
+      const exp=document.getElementById('cardExpiry').value;
+      const cvv=document.getElementById('cardCvv').value;
+      if(num.length<16||!name||exp.length<5||cvv.length<3){showToast('⚠️ Please fill all card details');return;}
+    } else if(currentPayMethod==='upi'){
+      const upiId=document.getElementById('upiId').value.trim();
+      // ok even if empty (using QR)
+    } else if(currentPayMethod==='netbanking'){
+      const bank=document.querySelectorAll('.bank-btn.selected').length||document.getElementById('allBanks').value;
+      if(!bank){showToast('⚠️ Please select a bank');return;}
+    }
+    // Show OTP step for card/upi, direct processing for others
+    if(currentPayMethod==='cod'){
+      showProcessing();
+    } else {
+      const phone=document.getElementById('addrPhone').value;
+      document.getElementById('otpPhone').textContent=phone||'+91 XXXXX XXXXX';
+      goPayStep(4);
+      document.getElementById('payStep4').style.display='block';
+    }
+  }
+
+  function otpNext(el,i){
+    if(el.value.length===1&&i<5) document.getElementById('otp'+(i+1)).focus();
+  }
+  function verifyOtp(){
+    const otp=[0,1,2,3,4,5].map(i=>document.getElementById('otp'+i).value).join('');
+    if(otp.length<6){showToast('⚠️ Please enter complete 6-digit OTP');return;}
+    showProcessing();
+  }
+
+  function showProcessing(){
+    for(let i=1;i<=4;i++){const el=document.getElementById('payStep'+i);if(el){el.classList.remove('active');el.style.display='none';}}
+    document.getElementById('payProcessing').classList.add('active');
+    document.getElementById('payProcessing').style.display='block';
+    setTimeout(showSuccess,2500);
+  }
+
+  function showSuccess(){
+    const total=cart.reduce((a,i)=>a+i.price*i.qty,0)+(cart.reduce((a,i)=>a+i.price*i.qty,0)>=499?0:50);
+    const orderId='#ORD-'+Math.floor(100000+Math.random()*900000);
+    const methods={card:'Credit/Debit Card',upi:'UPI',netbanking:'Net Banking',wallet:'Wallet',cod:'Cash on Delivery'};
+    document.getElementById('successOrderId').textContent=orderId;
+    document.getElementById('successDetail').textContent=`Paid ₹${total} via ${methods[currentPayMethod]}`;
+    const days=['Sun','Mon','Tue','Wed','Thu','Fri','Sat'];
+    const d=new Date(); d.setDate(d.getDate()+3);
+    document.getElementById('estDelivery').textContent=`${days[d.getDay()]}, ${d.toLocaleDateString('en-IN',{day:'numeric',month:'short',year:'numeric'})}`;
+    document.getElementById('payProcessing').classList.remove('active');
+    document.getElementById('payProcessing').style.display='none';
+    document.getElementById('paySuccess').classList.add('active');
+    document.getElementById('paySuccess').style.display='block';
+    cart=[]; renderCart();
+    showToast('✅ Order placed successfully!');
+  }
+
+  function closePaymentSuccess(){
+    closePayment();
+    goPayStep(1);
+  }
+
+  function showToast(msg){
+    const ex=document.querySelector('.toast');if(ex)ex.remove();
+    const t=document.createElement('div');t.className='toast';t.textContent=msg;
+    document.body.appendChild(t);
+    setTimeout(()=>t.remove(),3000);
+  }
+
+  // Initialize payment section displays
+  selectPayMethod('card',document.querySelector('.pm-tab'));
+</script>
+<script src="js/supabase-config.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
+<script src="js/supabase-client.js"></script>
+<script src="js/medit-auth.js"></script>
+<script>
+  document.addEventListener('DOMContentLoaded', async function () {
+    if (typeof MeditSupabase === 'function' && MeditSupabase()) {
+      await MeditAuthHydrateSession();
+    }
+  });
+</script>
+</body>
+</html>

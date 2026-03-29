@@ -1,0 +1,332 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Home Care</title>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    body { font-family: "Segoe UI", sans-serif; background: #f0f4ff; color: #0d1a37; }
+    .app { min-height: 100vh; display: flex; flex-direction: column; }
+    .header { background: linear-gradient(135deg, #e8eaf6 0%, #fce4ec 60%, #e3f2fd 100%); border-bottom: 2px solid #5c6bc0; }
+    .header-content { max-width: 1200px; margin: 0 auto; padding: 20px 24px; }
+    .header-top { display: flex; align-items: center; gap: 16px; justify-content: space-between; }
+    .logo { font-size: 2.4rem; }
+    .header-text { text-align: center; flex: 1; }
+    .site-title { font-size: 2.2rem; font-weight: 800; letter-spacing: 0.14em; color: #1a237e; text-transform: uppercase; }
+    .site-tagline { font-size: 0.95rem; color: #3949ab; margin-top: 4px; }
+    .cart-icon { font-size: 1.5rem; cursor: pointer; background: white; border: 2px solid #5c6bc0; border-radius: 50px; padding: 6px 14px; display: flex; align-items: center; gap: 6px; user-select: none; }
+    .cart-icon:hover { background: #e8eaf6; }
+    .cart-count { font-size: 1rem; font-weight: 700; color: #1a237e; }
+
+    /* Top Nav */
+    .top-nav { background: #e8eaf6; border-bottom: 2px solid #9fa8da; display: flex; flex-wrap: wrap; justify-content: center; padding: 0 16px; overflow-x: auto; }
+    .nav-btn { background: none; border: none; border-bottom: 3px solid transparent; padding: 14px 40px; font-size: 1rem; font-weight: 700; color: #283593; cursor: pointer; white-space: nowrap; transition: color 0.2s, border-color 0.2s, background 0.2s; letter-spacing: 0.04em; }
+    .nav-btn:hover { color: #1a237e; background: #c5cae9; }
+    .nav-btn.active { color: #1a237e; border-bottom-color: #1a237e; background: #c5cae9; }
+
+    /* Body Layout */
+    .body-layout { flex: 1; display: flex; max-width: 1200px; margin: 24px auto; width: 100%; padding: 0 16px; gap: 24px; }
+
+    /* Sidebar */
+    .sidebar { width: 230px; flex-shrink: 0; background: white; border-radius: 16px; border: 1.5px solid #9fa8da; padding: 20px 0; height: fit-content; box-shadow: 0 2px 12px rgba(26,35,126,0.07); }
+    .sidebar-title { font-size: 0.78rem; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; color: #3949ab; padding: 0 20px 12px; border-bottom: 1.5px solid #9fa8da; margin-bottom: 8px; }
+    .sidebar-list { list-style: none; }
+    .sidebar-group-label { font-size: 0.72rem; font-weight: 800; letter-spacing: 0.08em; text-transform: uppercase; color: #9fa8da; padding: 12px 20px 4px; }
+    .sidebar-btn { display: block; width: 100%; background: none; border: none; border-left: 3px solid transparent; text-align: left; padding: 10px 20px; font-size: 0.9rem; color: #283593; cursor: pointer; transition: background 0.15s, color 0.15s, padding-left 0.15s; }
+    .sidebar-btn:hover { background: #e8eaf6; color: #1a237e; padding-left: 26px; }
+    .sidebar-btn.active { background: #c5cae9; color: #1a237e; font-weight: 700; border-left-color: #1a237e; padding-left: 26px; }
+
+    /* Main Content */
+    .main-content { flex: 1; min-width: 0; }
+    .section-header { margin-bottom: 20px; display: flex; align-items: baseline; gap: 12px; flex-wrap: wrap; }
+    .section-title { font-size: 1.5rem; font-weight: 800; color: #1a237e; }
+    .section-subtitle { font-size: 0.85rem; color: #3949ab; }
+
+    /* Products Grid */
+    .products-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 20px; }
+    .product-card { background: white; border-radius: 16px; border: 1.5px solid #9fa8da; overflow: hidden; box-shadow: 0 2px 10px rgba(26,35,126,0.07); display: flex; flex-direction: column; transition: transform 0.2s, box-shadow 0.2s; }
+    .product-card:hover { transform: translateY(-4px); box-shadow: 0 8px 24px rgba(26,35,126,0.15); }
+    .product-img { height: 130px; display: flex; align-items: center; justify-content: center; }
+    .product-img.dishwasher-bg { background: linear-gradient(135deg, #e8eaf6 0%, #e3f2fd 100%); }
+    .product-img.selfcare-bg  { background: linear-gradient(135deg, #fce4ec 0%, #f3e5f5 100%); }
+    .product-emoji { font-size: 3.2rem; user-select: none; }
+    .product-info { padding: 14px 14px 8px; flex: 1; }
+    .product-name { font-size: 0.88rem; font-weight: 600; color: #0d1a37; line-height: 1.4; margin-bottom: 6px; }
+    .product-price { font-size: 1rem; font-weight: 800; color: #1a237e; }
+    .add-to-cart-btn { margin: 0 14px 14px; padding: 9px 0; background: linear-gradient(90deg, #3949ab, #1e88e5); color: white; border: none; border-radius: 50px; font-size: 0.85rem; font-weight: 700; cursor: pointer; transition: opacity 0.2s, transform 0.1s, background 0.3s; }
+    .add-to-cart-btn:hover { opacity: 0.9; transform: scale(1.02); }
+    .add-to-cart-btn.added { background: linear-gradient(90deg, #66bb6a, #43a047); }
+
+    /* Footer */
+    .footer { background: #e8eaf6; border-top: 1.5px solid #9fa8da; text-align: center; padding: 18px; font-size: 0.85rem; color: #3949ab; }
+
+    /* Responsive */
+    @media (max-width: 768px) {
+      .site-title { font-size: 1.4rem; }
+      .body-layout { flex-direction: column; margin: 16px auto; }
+      .sidebar { width: 100%; }
+      .sidebar-list { display: flex; flex-wrap: wrap; gap: 4px; padding: 0 12px 12px; }
+      .sidebar-group-label { display: none; }
+      .sidebar-btn { width: auto; border: 1.5px solid #9fa8da; border-left: 1.5px solid #9fa8da; border-radius: 50px; padding: 7px 16px; font-size: 0.82rem; }
+      .sidebar-btn.active { padding-left: 16px; border-color: #1a237e; }
+      .products-grid { grid-template-columns: repeat(auto-fill, minmax(160px, 1fr)); gap: 14px; }
+      .nav-btn { padding: 12px 20px; font-size: 0.9rem; }
+    }
+  </style>
+</head>
+<body>
+<div class="app">
+  <header class="header">
+    <div class="header-content">
+      <div class="header-top">
+        <div class="logo">🏠</div>
+        <div class="header-text">
+          <h1 class="site-title">HOME CARE</h1>
+          <p class="site-tagline">Clean home, fresh life — everything in one place</p>
+        </div>
+        <div class="cart-icon">🛒 <span class="cart-count" id="cartCount">0</span></div>
+      </div>
+    </div>
+  </header>
+
+  <nav class="top-nav" id="topNav"></nav>
+
+  <div class="body-layout">
+    <aside class="sidebar">
+      <h3 class="sidebar-title" id="sidebarTitle">Categories</h3>
+      <ul class="sidebar-list" id="sidebarList"></ul>
+    </aside>
+    <main class="main-content">
+      <div class="section-header">
+        <h2 class="section-title" id="sectionTitle"></h2>
+        <p class="section-subtitle" id="sectionSubtitle"></p>
+      </div>
+      <div class="products-grid" id="productsGrid"></div>
+    </main>
+  </div>
+
+  <footer class="footer"><p>&copy; 2026 Home Care. Built with 💙</p></footer>
+</div>
+
+<script>
+  const data = {
+    "Dishwashers": {
+      _groups: null,
+      "Dishwasher Tablets": {
+        emoji: "🍽️", bg: "dishwasher-bg",
+        products: [
+          { name: "Finish All-in-1 Max Dishwasher Tablets 60ct", price: "$18.99" },
+          { name: "Cascade Platinum ActionPacs Dishwasher Pods 62ct", price: "$21.99" },
+          { name: "Somat Excellence Dishwasher Tabs 40ct", price: "$16.49" },
+          { name: "Fairy Platinum Dishwasher Tablets 30ct", price: "$14.99" },
+          { name: "Ecover Zero Dishwasher Tablets 25ct", price: "$12.99" }
+        ]
+      },
+      "Dishwasher Liquid": {
+        emoji: "🍽️", bg: "dishwasher-bg",
+        products: [
+          { name: "Finish Quantum Max Dishwasher Liquid 780ml", price: "$11.99" },
+          { name: "Cascade Complete Liquid Dishwasher Detergent 75oz", price: "$13.49" },
+          { name: "Dawn Platinum Dishwashing Liquid 54.8oz", price: "$10.99" },
+          { name: "Pril Professional Dishwasher Liquid 5L", price: "$15.99" },
+          { name: "Vim Dishwasher Liquid Lemon 1L", price: "$6.99" }
+        ]
+      },
+      "Dishwasher Powder": {
+        emoji: "🍽️", bg: "dishwasher-bg",
+        products: [
+          { name: "Finish Powder Dishwasher Detergent 1kg", price: "$9.99" },
+          { name: "Cascade Complete Powder Dishwasher Detergent 75oz", price: "$11.49" },
+          { name: "Seventh Generation Dishwasher Powder Free & Clear 45oz", price: "$13.99" },
+          { name: "Grab Green Automatic Dishwasher Detergent 60oz", price: "$14.49" },
+          { name: "Method Dish Detergent Powder Clementine 700g", price: "$10.49" }
+        ]
+      },
+      "Dishwasher Salt": {
+        emoji: "🍽️", bg: "dishwasher-bg",
+        products: [
+          { name: "Finish Dishwasher Salt 1.5kg", price: "$5.99" },
+          { name: "Somat Dishwasher Salt 1.2kg", price: "$5.49" },
+          { name: "Fairy Dishwasher Salt 1kg", price: "$4.99" },
+          { name: "Calgon Dishwasher Salt 2kg", price: "$7.99" },
+          { name: "Ecover Dishwasher Salt 1kg", price: "$6.49" }
+        ]
+      },
+      "Rinse Aid": {
+        emoji: "🍽️", bg: "dishwasher-bg",
+        products: [
+          { name: "Finish Rinse Aid Shine & Protect 400ml", price: "$7.99" },
+          { name: "Cascade Platinum Power Dry Rinse Aid 30oz", price: "$9.49" },
+          { name: "Fairy Rinse Aid Original 400ml", price: "$6.99" },
+          { name: "Somat Excellence Rinse Aid 400ml", price: "$7.49" },
+          { name: "Ecover Rinse Aid Rinse Agent 500ml", price: "$8.49" }
+        ]
+      }
+    },
+    "Self Care": {
+      _groups: {
+        "🚽 Toilet Seat Sanitizer": ["Spray Sanitizers", "Foam Sanitizers", "Sanitizer Wipes", "Toilet Fresheners"],
+        "🧖 Face Mask": ["Sheet Masks", "Clay & Mud Masks", "Peel-Off Masks", "Overnight Masks"]
+      },
+      "Spray Sanitizers": {
+        emoji: "🚽", bg: "selfcare-bg",
+        products: [
+          { name: "Pee Safe Toilet Seat Sanitizer Spray 270ml", price: "$8.99" },
+          { name: "Savlon Toilet Seat Sanitizer Spray 200ml", price: "$7.49" },
+          { name: "Dettol Toilet Hygiene Liquid Spray 225ml", price: "$6.99" },
+          { name: "Hygiene Times Toilet Seat Sanitizer 100ml", price: "$5.99" },
+          { name: "Godrej Protekt Toilet Seat Sanitizer 75ml", price: "$4.99" }
+        ]
+      },
+      "Foam Sanitizers": {
+        emoji: "🚽", bg: "selfcare-bg",
+        products: [
+          { name: "Pee Safe Foaming Toilet Seat Sanitizer 75ml", price: "$6.99" },
+          { name: "CleanEasy Foam Toilet Sanitizer 100ml", price: "$7.49" },
+          { name: "Pristine Foaming Seat Sanitizer 120ml", price: "$8.49" },
+          { name: "HygienePlus Toilet Foam Cleanser 90ml", price: "$6.49" },
+          { name: "SafeSeat Foam Sanitizer Travel Pack 50ml", price: "$4.99" }
+        ]
+      },
+      "Sanitizer Wipes": {
+        emoji: "🚽", bg: "selfcare-bg",
+        products: [
+          { name: "Pee Safe Toilet Seat Sanitizer Wipes 10ct", price: "$4.99" },
+          { name: "Dettol Toilet Hygiene Wipes 20ct", price: "$5.49" },
+          { name: "Lysol Disinfecting Toilet Wipes 30ct", price: "$6.99" },
+          { name: "Pristine Toilet Seat Wipes Travel Pack 15ct", price: "$4.49" },
+          { name: "SafeFlush Antibacterial Toilet Wipes 25ct", price: "$5.99" }
+        ]
+      },
+      "Toilet Fresheners": {
+        emoji: "🚽", bg: "selfcare-bg",
+        products: [
+          { name: "Harpic Power Plus Toilet Rim Block Lavender 45g", price: "$3.99" },
+          { name: "Domestos Zero Limescale Rim Block 36g", price: "$4.49" },
+          { name: "Bloo Colour Active Ocean Fresh Rim Block 50g", price: "$3.49" },
+          { name: "Toilet Duck Fresh Discs Lavender 6ct", price: "$5.99" },
+          { name: "Febreze Toilet Freshener Clip Cotton Fresh", price: "$5.49" }
+        ]
+      },
+      "Sheet Masks": {
+        emoji: "🧖", bg: "selfcare-bg",
+        products: [
+          { name: "Garnier Moisture Bomb Hyaluronic Acid Sheet Mask", price: "$3.99" },
+          { name: "The Face Shop Real Nature Aloe Sheet Mask", price: "$2.99" },
+          { name: "Neutrogena Hydro Boost Hydrating Sheet Mask", price: "$4.49" },
+          { name: "L'Oreal Pure Clay Mask Glow Sheet Mask", price: "$4.99" },
+          { name: "Innisfree My Real Squeeze Mask Green Tea", price: "$3.49" }
+        ]
+      },
+      "Clay & Mud Masks": {
+        emoji: "🧖", bg: "selfcare-bg",
+        products: [
+          { name: "L'Oreal Pure Clay Mask Detox & Brighten 50ml", price: "$11.99" },
+          { name: "Himalaya Purifying Neem Pack 100g", price: "$6.99" },
+          { name: "Aztec Secret Indian Healing Clay 454g", price: "$14.99" },
+          { name: "Multani Mitti Powder Face Pack 200g", price: "$4.99" },
+          { name: "Kiehl's Rare Earth Deep Pore Cleansing Mask 125ml", price: "$38.99" }
+        ]
+      },
+      "Peel-Off Masks": {
+        emoji: "🧖", bg: "selfcare-bg",
+        products: [
+          { name: "Glamglow Gravitymud Firming Treatment 50g", price: "$22.99" },
+          { name: "Lakme Blush & Glow Peel Off Mask Strawberry 120ml", price: "$7.49" },
+          { name: "Vivel Peel Off Mask Charcoal 60g", price: "$5.99" },
+          { name: "Boscia Luminizing Black Charcoal Mask 100ml", price: "$34.99" },
+          { name: "WOW Skin Science Vitamin C Peel-Off Mask 100ml", price: "$12.49" }
+        ]
+      },
+      "Overnight Masks": {
+        emoji: "🧖", bg: "selfcare-bg",
+        products: [
+          { name: "Laneige Water Sleeping Mask Lavender 70ml", price: "$29.99" },
+          { name: "Clinique Moisture Surge Overnight Mask 100ml", price: "$44.99" },
+          { name: "The Body Shop Drops of Youth Bouncy Sleep Mask 75ml", price: "$19.99" },
+          { name: "Plum E-Luminence Simply Supple Sleep Mask 50g", price: "$14.49" },
+          { name: "Neutrogena Hydro Boost Gel-Cream Overnight Mask 50ml", price: "$16.99" }
+        ]
+      }
+    }
+  };
+
+  const topCategories = Object.keys(data);
+  let activeCategory = topCategories[0];
+  let activeSub = Object.keys(data[activeCategory]).filter(k => k !== '_groups')[0];
+  let cartCount = 0;
+
+  const catEmoji = { "Dishwashers": "🍽️", "Self Care": "🌸" };
+
+  function getSubs(cat) {
+    return Object.keys(data[cat]).filter(k => k !== '_groups');
+  }
+
+  function render() {
+    // Top Nav
+    document.getElementById('topNav').innerHTML = topCategories.map(cat =>
+      `<button class="nav-btn${activeCategory === cat ? ' active' : ''}" onclick="selectCategory('${cat}')">
+        ${catEmoji[cat]} ${cat}
+      </button>`
+    ).join('');
+
+    // Sidebar
+    const groups = data[activeCategory]._groups;
+    const subs = getSubs(activeCategory);
+    let sidebarHTML = '';
+
+    if (groups) {
+      Object.entries(groups).forEach(([groupLabel, groupSubs]) => {
+        sidebarHTML += `<li class="sidebar-group-label">${groupLabel}</li>`;
+        groupSubs.forEach(sub => {
+          sidebarHTML += `<li><button class="sidebar-btn${activeSub === sub ? ' active' : ''}" onclick="selectSub('${sub.replace(/'/g, "\\'")}')">${sub}</button></li>`;
+        });
+      });
+    } else {
+      subs.forEach(sub => {
+        sidebarHTML += `<li><button class="sidebar-btn${activeSub === sub ? ' active' : ''}" onclick="selectSub('${sub.replace(/'/g, "\\'")}')">${sub}</button></li>`;
+      });
+    }
+
+    document.getElementById('sidebarList').innerHTML = sidebarHTML;
+
+    // Products
+    const subData = data[activeCategory][activeSub];
+    document.getElementById('sectionTitle').textContent = activeSub;
+    document.getElementById('sectionSubtitle').textContent = subData.products.length + ' products found';
+    document.getElementById('productsGrid').innerHTML = subData.products.map((p, i) =>
+      `<div class="product-card">
+        <div class="product-img ${subData.bg}"><span class="product-emoji">${subData.emoji}</span></div>
+        <div class="product-info"><p class="product-name">${p.name}</p><p class="product-price">${p.price}</p></div>
+        <button class="add-to-cart-btn" id="btn-${i}" onclick="addToCart(${i})">Add to Cart</button>
+      </div>`
+    ).join('');
+
+    document.getElementById('cartCount').textContent = cartCount;
+  }
+
+  function selectCategory(cat) {
+    activeCategory = cat;
+    activeSub = getSubs(activeCategory)[0];
+    render();
+  }
+
+  function selectSub(sub) {
+    activeSub = sub;
+    render();
+  }
+
+  function addToCart(i) {
+    cartCount++;
+    document.getElementById('cartCount').textContent = cartCount;
+    const btn = document.getElementById('btn-' + i);
+    btn.textContent = '✓ Added!';
+    btn.classList.add('added');
+    setTimeout(() => { btn.textContent = 'Add to Cart'; btn.classList.remove('added'); }, 1500);
+  }
+
+  render();
+</script>
+</body>
+</html>

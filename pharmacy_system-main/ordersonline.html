@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"><title>Online Orders | Med it Easy</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<style>
+  *,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+  :root{--dark:#0f172a;--dark2:#1e293b;--dark3:#334155;--accent:#00ffcc;--red:#ef4444;--green:#10b981;--orange:#f59e0b;--text:#f1f5f9;--muted:#94a3b8;}
+  body{font-family:"Segoe UI",sans-serif;background:#f0f4f8;display:flex;min-height:100vh;}
+  .sidebar{width:250px;background:var(--dark);display:flex;flex-direction:column;position:fixed;top:0;left:0;height:100vh;overflow-y:auto;z-index:100;}
+  .sb-logo{display:flex;align-items:center;gap:12px;padding:28px 24px 24px;border-bottom:1px solid var(--dark3);}
+  .sb-logo-icon{font-size:2rem;} .sb-logo-name{font-size:1.3rem;font-weight:900;color:var(--accent);} .sb-logo-sub{font-size:0.68rem;color:var(--muted);margin-top:1px;}
+  .sb-section-label{font-size:0.65rem;font-weight:800;letter-spacing:0.12em;text-transform:uppercase;color:#475569;padding:20px 24px 8px;}
+  .sb-link{display:flex;align-items:center;gap:12px;padding:11px 24px;color:var(--muted);text-decoration:none;font-size:0.88rem;border-left:3px solid transparent;transition:all 0.15s;}
+  .sb-link:hover,.sb-link.active{background:var(--dark2);color:var(--accent);border-left-color:var(--accent);padding-left:30px;font-weight:700;}
+  .sb-link .ico{font-size:1.1rem;width:20px;text-align:center;flex-shrink:0;}
+  .sb-badge{margin-left:auto;background:var(--red);color:white;font-size:0.62rem;font-weight:800;padding:2px 7px;border-radius:50px;}
+  .sb-divider{height:1px;background:var(--dark3);margin:10px 0;}
+  .sb-footer{margin-top:auto;padding:20px 24px;border-top:1px solid var(--dark3);display:flex;align-items:center;gap:10px;}
+  .sb-avatar{width:36px;height:36px;border-radius:50%;background:linear-gradient(135deg,var(--accent),#00b4d8);display:flex;align-items:center;justify-content:center;font-size:1rem;font-weight:800;color:var(--dark);}
+  .sb-user-name{font-size:0.85rem;font-weight:700;color:var(--text);} .sb-user-role{font-size:0.7rem;color:var(--muted);}
+  .main{flex:1;margin-left:250px;display:flex;flex-direction:column;}
+  .topbar{background:white;height:66px;display:flex;align-items:center;justify-content:space-between;padding:0 32px;border-bottom:1px solid #e2e8f0;position:sticky;top:0;z-index:50;box-shadow:0 1px 8px rgba(0,0,0,0.05);}
+  .topbar-left h1{font-size:1.35rem;font-weight:800;color:var(--dark);} .topbar-left p{font-size:0.78rem;color:#64748b;}
+  .content{padding:30px 32px;flex:1;}
+  .stat-row{display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:16px;margin-bottom:24px;}
+  .stat{background:white;border-radius:16px;padding:18px 20px;border:1.5px solid #e2e8f0;box-shadow:0 2px 8px rgba(0,0,0,0.04);}
+  .stat-lbl{font-size:0.72rem;font-weight:700;color:#64748b;text-transform:uppercase;letter-spacing:0.06em;}
+  .stat-val{font-size:1.6rem;font-weight:900;color:#0f172a;margin:6px 0 2px;}
+  .stat-sub{font-size:0.7rem;font-weight:600;}
+  .filter-tabs{display:flex;gap:8px;margin-bottom:20px;flex-wrap:wrap;}
+  .tab{background:white;border:1.5px solid #e2e8f0;border-radius:50px;padding:8px 18px;font-size:0.8rem;font-weight:700;color:#475569;cursor:pointer;transition:all 0.15s;}
+  .tab:hover,.tab.active{background:var(--accent);border-color:var(--accent);color:var(--dark);}
+  table{width:100%;border-collapse:collapse;background:white;border-radius:18px;overflow:hidden;box-shadow:0 2px 12px rgba(0,0,0,0.05);}
+  thead{background:#f8fafc;} th{padding:14px 18px;font-size:0.75rem;font-weight:800;color:#64748b;text-transform:uppercase;letter-spacing:0.06em;text-align:left;border-bottom:1.5px solid #e2e8f0;}
+  td{padding:14px 18px;font-size:0.85rem;color:#1e293b;border-bottom:1px solid #f1f5f9;} tr:last-child td{border-bottom:none;} tr:hover td{background:#f8fafc;}
+  .badge{display:inline-flex;padding:4px 10px;border-radius:50px;font-size:0.72rem;font-weight:700;}
+  .badge.new{background:#dbeafe;color:#1e40af;} .badge.processing{background:#fef3c7;color:#92400e;} .badge.shipped{background:#ede9fe;color:#5b21b6;} .badge.delivered{background:#d1fae5;color:#065f46;} .badge.cancelled{background:#fee2e2;color:#991b1b;}
+  .act-btn{background:none;border:1.5px solid #e2e8f0;border-radius:50px;padding:5px 12px;font-size:0.75rem;font-weight:700;cursor:pointer;color:#475569;transition:all 0.15s;margin-right:4px;}
+  .act-btn:hover{background:var(--accent);border-color:var(--accent);color:var(--dark);}
+  .footer{background:white;border-top:1px solid #e2e8f0;padding:16px 32px;font-size:0.78rem;color:#64748b;display:flex;justify-content:space-between;}
+</style>
+</head>
+<body>
+<aside class="sidebar">
+  <div class="sb-logo"><div class="sb-logo-icon">💊</div><div><div class="sb-logo-name">Med it Easy</div><div class="sb-logo-sub">Admin Panel</div></div></div>
+  <div class="sb-section-label">Main Menu</div>
+  <a href="admin.html" class="sb-link"><span class="ico">🏠</span> Dashboard</a>
+  <a href="product.html" class="sb-link"><span class="ico">💊</span> Products</a>
+  <a href="purchases.html" class="sb-link"><span class="ico">🛒</span> Purchases</a>
+  <a href="customer.html" class="sb-link"><span class="ico">👥</span> Customers <span class="sb-badge">12</span></a>
+  <a href="cashier.html" class="sb-link"><span class="ico">💳</span> Cashier</a>
+  <div class="sb-divider"></div>
+  <div class="sb-section-label">Management</div>
+  <a href="staff.html" class="sb-link"><span class="ico">👨‍⚕️</span> Staff</a>
+  <a href="stock.html" class="sb-link"><span class="ico">📦</span> Stock <span class="sb-badge">5</span></a>
+  <a href="logs.html" class="sb-link"><span class="ico">📋</span> Logs</a>
+  <div class="sb-divider"></div>
+  <div class="sb-section-label">Store</div>
+  <a href="ordersonline.html" class="sb-link active"><span class="ico">🌐</span> Online Orders</a>
+  <a href="onlinepharmacy.html" class="sb-link"><span class="ico">🏥</span> Online Pharmacy</a>
+  <a href="qrcode.html" class="sb-link"><span class="ico">📷</span> QR Code</a>
+  <div class="sb-footer"><div class="sb-avatar">A</div><div><div class="sb-user-name">Admin User</div><div class="sb-user-role">Super Admin</div></div></div>
+</aside>
+<div class="main">
+  <div class="topbar"><div class="topbar-left"><h1>🌐 Online Orders</h1><p>Manage all customer web orders</p></div></div>
+  <div class="content">
+    <div class="stat-row">
+      <div class="stat"><div class="stat-lbl">New Orders</div><div class="stat-val">12</div><div class="stat-sub" style="color:#3b82f6">🔵 Awaiting action</div></div>
+      <div class="stat"><div class="stat-lbl">Processing</div><div class="stat-val">8</div><div class="stat-sub" style="color:#f59e0b">⏳ Being prepared</div></div>
+      <div class="stat"><div class="stat-lbl">Shipped</div><div class="stat-val">21</div><div class="stat-sub" style="color:#8b5cf6">🚚 On the way</div></div>
+      <div class="stat"><div class="stat-lbl">Delivered</div><div class="stat-val">89</div><div class="stat-sub" style="color:#10b981">✅ Completed</div></div>
+    </div>
+    <div class="filter-tabs">
+      <div class="tab active" onclick="setTab('all',this)">All Orders</div>
+      <div class="tab" onclick="setTab('new',this)">New</div>
+      <div class="tab" onclick="setTab('processing',this)">Processing</div>
+      <div class="tab" onclick="setTab('shipped',this)">Shipped</div>
+      <div class="tab" onclick="setTab('delivered',this)">Delivered</div>
+    </div>
+    <table id="ordersTable">
+      <thead><tr><th>Order ID</th><th>Customer</th><th>Items</th><th>Amount</th><th>Date</th><th>Status</th><th>Actions</th></tr></thead>
+      <tbody>
+        <tr data-status="new"><td>#ORD-1048</td><td>Priya Sharma</td><td>3 items</td><td>₹420</td><td>18 Mar 2026</td><td><span class="badge new">New</span></td><td><button class="act-btn" onclick="alert('Accept order ORD-1048')">Accept</button><button class="act-btn" onclick="alert('Reject order')">Reject</button></td></tr>
+        <tr data-status="processing"><td>#ORD-1047</td><td>Ravi Kumar</td><td>5 items</td><td>₹890</td><td>17 Mar 2026</td><td><span class="badge processing">Processing</span></td><td><button class="act-btn" onclick="alert('Mark Shipped ORD-1047')">Ship</button></td></tr>
+        <tr data-status="shipped"><td>#ORD-1046</td><td>Anita Desai</td><td>2 items</td><td>₹310</td><td>16 Mar 2026</td><td><span class="badge shipped">Shipped</span></td><td><button class="act-btn" onclick="alert('Track ORD-1046')">Track</button></td></tr>
+        <tr data-status="delivered"><td>#ORD-1045</td><td>Suresh Nair</td><td>7 items</td><td>₹1,240</td><td>15 Mar 2026</td><td><span class="badge delivered">Delivered</span></td><td><button class="act-btn" onclick="alert('Invoice ORD-1045')">Invoice</button></td></tr>
+        <tr data-status="new"><td>#ORD-1044</td><td>Meera Joshi</td><td>1 item</td><td>₹120</td><td>15 Mar 2026</td><td><span class="badge new">New</span></td><td><button class="act-btn" onclick="alert('Accept ORD-1044')">Accept</button><button class="act-btn" onclick="alert('Reject')">Reject</button></td></tr>
+        <tr data-status="delivered"><td>#ORD-1043</td><td>Karan Singh</td><td>4 items</td><td>₹580</td><td>14 Mar 2026</td><td><span class="badge delivered">Delivered</span></td><td><button class="act-btn" onclick="alert('Invoice ORD-1043')">Invoice</button></td></tr>
+      </tbody>
+    </table>
+  </div>
+  <div class="footer"><span>&copy; 2026 Med it Easy</span><span>Admin Panel v2.0</span></div>
+</div>
+<script>function setTab(s,btn){document.querySelectorAll('.tab').forEach(b=>b.classList.remove('active'));btn.classList.add('active');document.querySelectorAll('#ordersTable tbody tr').forEach(r=>{r.style.display=(s==='all'||r.dataset.status===s)?'':'none';});}</script>
+</body></html>

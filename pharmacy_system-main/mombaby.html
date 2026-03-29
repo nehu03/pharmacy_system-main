@@ -1,0 +1,896 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Mom &amp; Baby Care</title>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    body { font-family: "Segoe UI", sans-serif; background: #fff5f8; color: #1a0d12; }
+    .app { min-height: 100vh; display: flex; flex-direction: column; }
+
+    /* HEADER */
+    .header { background: linear-gradient(135deg, #1a0d12 0%, #2d1420 100%); padding: 0 24px; height: 66px; display: flex; align-items: center; justify-content: space-between; position: sticky; top: 0; z-index: 200; box-shadow: 0 2px 16px rgba(0,0,0,0.3); }
+    .brand { display: flex; align-items: center; gap: 10px; text-decoration: none; }
+    .brand-icon { font-size: 2rem; }
+    .brand-name { font-size: 1.3rem; font-weight: 900; color: #ffb3c8; }
+    .brand-sub { font-size: 0.68rem; color: #94a3b8; }
+    .hdr-search { flex: 1; max-width: 400px; margin: 0 24px; display: flex; align-items: center; background: rgba(255,255,255,0.1); border: 1.5px solid rgba(255,179,200,0.3); border-radius: 50px; padding: 8px 16px; gap: 8px; transition: border-color 0.2s; }
+    .hdr-search:focus-within { border-color: #ffb3c8; }
+    .hdr-search input { background: none; border: none; outline: none; color: white; font-size: 0.88rem; width: 100%; }
+    .hdr-search input::placeholder { color: #94a3b8; }
+    .hdr-right { display: flex; align-items: center; gap: 8px; }
+    .hdr-btn { width: 40px; height: 40px; border-radius: 50%; background: rgba(255,255,255,0.1); border: 1.5px solid rgba(255,179,200,0.3); color: white; font-size: 1.1rem; display: flex; align-items: center; justify-content: center; cursor: pointer; position: relative; transition: all 0.2s; }
+    .hdr-btn:hover { background: #ffb3c8; color: #1a0d12; }
+    .cart-badge { position: absolute; top: -3px; right: -3px; background: #ef4444; color: white; font-size: 0.6rem; font-weight: 800; width: 17px; height: 17px; border-radius: 50%; display: flex; align-items: center; justify-content: center; }
+
+    /* TOP NAV */
+    .top-nav { background: #fce4ec; border-bottom: 2px solid #f48fb1; display: flex; flex-wrap: wrap; justify-content: center; overflow-x: auto; }
+    .nav-btn { background: none; border: none; border-bottom: 3px solid transparent; padding: 13px 16px; font-size: 0.82rem; font-weight: 700; color: #880e4f; cursor: pointer; white-space: nowrap; transition: all 0.15s; display: flex; align-items: center; gap: 5px; }
+    .nav-btn:hover { color: #4a0028; background: #f8bbd0; }
+    .nav-btn.active { color: #4a0028; border-bottom-color: #880e4f; background: #f8bbd0; }
+
+    /* BODY */
+    .body-layout { flex: 1; display: flex; max-width: 1200px; margin: 24px auto; width: 100%; padding: 0 16px; gap: 24px; }
+
+    /* SIDEBAR */
+    .sidebar { width: 220px; flex-shrink: 0; background: white; border-radius: 16px; border: 1.5px solid #f48fb1; padding: 20px 0; height: fit-content; box-shadow: 0 2px 12px rgba(136,14,79,0.07); }
+    .sidebar-title { font-size: 0.78rem; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; color: #ad1457; padding: 0 20px 12px; border-bottom: 1.5px solid #f48fb1; margin-bottom: 8px; }
+    .sidebar-list { list-style: none; }
+    .sidebar-btn { display: block; width: 100%; background: none; border: none; border-left: 3px solid transparent; text-align: left; padding: 10px 20px; font-size: 0.9rem; color: #880e4f; cursor: pointer; transition: background 0.15s, padding-left 0.15s; }
+    .sidebar-btn:hover { background: #fce4ec; padding-left: 26px; }
+    .sidebar-btn.active { background: #f8bbd0; font-weight: 700; border-left-color: #880e4f; padding-left: 26px; }
+
+    /* MAIN */
+    .main-content { flex: 1; min-width: 0; }
+    .section-header { margin-bottom: 18px; display: flex; align-items: center; justify-content: space-between; }
+    .section-title { font-size: 1.3rem; font-weight: 800; color: #880e4f; }
+    .section-sub { font-size: 0.82rem; color: #ad1457; }
+
+    /* PRODUCTS GRID */
+    .products-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 18px; }
+
+    /* PRODUCT CARD */
+    .product-card { background: white; border-radius: 18px; border: 1.5px solid #f48fb1; overflow: hidden; display: flex; flex-direction: column; transition: transform 0.2s, box-shadow 0.2s; box-shadow: 0 2px 10px rgba(136,14,79,0.07); }
+    .product-card:hover { transform: translateY(-5px); box-shadow: 0 10px 28px rgba(136,14,79,0.15); }
+
+    /* PRODUCT IMAGE AREA - Styled packaging */
+    .prod-img { height: 160px; display: flex; flex-direction: column; align-items: center; justify-content: center; position: relative; padding: 12px; }
+    .prod-brand-tag { position: absolute; top: 8px; left: 8px; background: rgba(255,255,255,0.92); padding: 3px 9px; border-radius: 50px; font-size: 0.62rem; font-weight: 900; letter-spacing: 0.06em; color: #1a0d12; }
+    .prod-badge { position: absolute; top: 8px; right: 8px; background: #ef4444; color: white; padding: 3px 7px; border-radius: 50px; font-size: 0.62rem; font-weight: 800; }
+    .prod-main-icon { font-size: 3.2rem; margin-bottom: 4px; }
+    .prod-variant-tag { background: rgba(255,255,255,0.85); border-radius: 50px; padding: 3px 10px; font-size: 0.65rem; font-weight: 700; color: #475569; }
+
+    /* PRODUCT INFO */
+    .prod-body { padding: 12px 14px 8px; flex: 1; }
+    .prod-cat { font-size: 0.68rem; font-weight: 700; color: #ad1457; text-transform: uppercase; letter-spacing: 0.06em; margin-bottom: 3px; }
+    .prod-name { font-size: 0.88rem; font-weight: 700; color: #1a0d12; line-height: 1.35; margin-bottom: 6px; }
+    .prod-stars { font-size: 0.72rem; color: #f59e0b; margin-bottom: 6px; }
+    .prod-stars span { color: #94a3b8; font-size: 0.7rem; }
+    .prod-price-row { display: flex; align-items: center; gap: 6px; flex-wrap: wrap; }
+    .prod-price { font-size: 1rem; font-weight: 900; color: #880e4f; }
+    .prod-mrp { font-size: 0.75rem; color: #94a3b8; text-decoration: line-through; }
+    .prod-off { font-size: 0.68rem; font-weight: 700; color: #10b981; }
+    .prod-btn { margin: 10px 14px 14px; padding: 9px 0; background: linear-gradient(90deg, #e91e8c, #ad1457); color: white; border: none; border-radius: 50px; font-size: 0.84rem; font-weight: 700; cursor: pointer; transition: opacity 0.2s, transform 0.1s, background 0.3s; }
+    .prod-btn:hover { opacity: 0.9; transform: scale(1.02); }
+    .prod-btn.added { background: linear-gradient(90deg, #10b981, #059669); }
+
+    /* FOOTER */
+    .footer { background: #fce4ec; border-top: 1.5px solid #f48fb1; text-align: center; padding: 18px; font-size: 0.85rem; color: #ad1457; margin-top: 40px; }
+
+    /* CART OVERLAY + DRAWER */
+    .cart-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.5); z-index: 400; display: none; }
+    .cart-overlay.open { display: block; }
+    .cart-drawer { position: fixed; top: 0; right: -420px; width: 400px; height: 100vh; background: white; z-index: 500; transition: right 0.3s; display: flex; flex-direction: column; box-shadow: -8px 0 32px rgba(0,0,0,0.15); }
+    .cart-drawer.open { right: 0; }
+    .cart-hdr { padding: 18px 22px; border-bottom: 1px solid #fce4ec; display: flex; align-items: center; justify-content: space-between; }
+    .cart-hdr h2 { font-size: 1rem; font-weight: 800; color: #880e4f; }
+    .cart-close { background: none; border: none; font-size: 1.3rem; cursor: pointer; color: #64748b; }
+    .cart-body { flex: 1; overflow-y: auto; padding: 10px 20px; }
+    .cart-empty-msg { text-align: center; padding: 50px 20px; color: #94a3b8; }
+    .cart-item-row { display: flex; align-items: center; gap: 12px; padding: 10px 0; border-bottom: 1px solid #fce4ec; }
+    .cart-item-row:last-child { border-bottom: none; }
+    .ci-img { width: 48px; height: 48px; border-radius: 10px; display: flex; align-items: center; justify-content: center; font-size: 1.5rem; flex-shrink: 0; }
+    .ci-info { flex: 1; }
+    .ci-name { font-size: 0.8rem; font-weight: 700; color: #1a0d12; }
+    .ci-price { font-size: 0.8rem; font-weight: 800; color: #880e4f; }
+    .ci-qty-row { display: flex; align-items: center; gap: 6px; margin-top: 4px; }
+    .qty-b { width: 24px; height: 24px; border-radius: 50%; border: 1.5px solid #f48fb1; background: white; cursor: pointer; font-size: 0.85rem; display: flex; align-items: center; justify-content: center; font-weight: 800; }
+    .qty-b:hover { background: #880e4f; color: white; border-color: #880e4f; }
+    .qty-n { font-size: 0.85rem; font-weight: 700; min-width: 20px; text-align: center; }
+    .ci-del { background: none; border: none; cursor: pointer; color: #94a3b8; font-size: 0.85rem; margin-left: auto; padding: 3px; border-radius: 50%; }
+    .ci-del:hover { background: #fee2e2; color: #ef4444; }
+    .cart-foot { padding: 14px 20px; border-top: 1px solid #fce4ec; }
+    .cart-total-row { display: flex; justify-content: space-between; font-size: 0.85rem; color: #64748b; margin-bottom: 6px; }
+    .cart-total-row.big { font-size: 1.05rem; font-weight: 900; color: #1a0d12; padding-top: 8px; border-top: 1.5px solid #fce4ec; margin-top: 8px; }
+    .checkout-btn { width: 100%; background: linear-gradient(90deg, #e91e8c, #ad1457); color: white; border: none; border-radius: 50px; padding: 13px; font-size: 0.92rem; font-weight: 800; cursor: pointer; margin-top: 12px; transition: opacity 0.2s; }
+    .checkout-btn:hover { opacity: 0.88; }
+    .checkout-btn:disabled { background: #e2e8f0; color: #94a3b8; cursor: not-allowed; }
+
+    /* PAYMENT MODAL */
+    .pay-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.6); z-index: 1000; display: none; align-items: center; justify-content: center; backdrop-filter: blur(4px); padding: 16px; }
+    .pay-overlay.open { display: flex; }
+    .pay-modal { background: white; border-radius: 24px; width: 100%; max-width: 520px; max-height: 90vh; overflow-y: auto; box-shadow: 0 24px 60px rgba(0,0,0,0.25); animation: slideUp 0.25s ease; }
+    .pay-modal::-webkit-scrollbar { width: 4px; }
+    .pay-modal::-webkit-scrollbar-thumb { background: #fce4ec; border-radius: 4px; }
+    @keyframes slideUp { from{opacity:0;transform:translateY(20px);}to{opacity:1;transform:translateY(0);} }
+    .pay-header { padding: 18px 22px 14px; border-bottom: 1px solid #fce4ec; display: flex; align-items: center; justify-content: space-between; }
+    .pay-header h3 { font-size: 1rem; font-weight: 800; color: #880e4f; }
+    .pay-close { background: #f8fafc; border: none; border-radius: 50%; width: 32px; height: 32px; font-size: 1.1rem; cursor: pointer; display: flex; align-items: center; justify-content: center; }
+    .pay-close:hover { background: #fce4ec; }
+    /* STEPS */
+    .step-bar { display: flex; align-items: center; padding: 14px 22px; border-bottom: 1px solid #fce4ec; }
+    .step-item { display: flex; align-items: center; gap: 5px; }
+    .step-num { width: 25px; height: 25px; border-radius: 50%; background: #f1f5f9; border: 2px solid #e2e8f0; font-size: 0.72rem; font-weight: 800; color: #64748b; display: flex; align-items: center; justify-content: center; }
+    .step-num.active { background: #880e4f; border-color: #880e4f; color: white; }
+    .step-num.done { background: #10b981; border-color: #10b981; color: white; }
+    .step-lbl { font-size: 0.7rem; font-weight: 700; color: #94a3b8; }
+    .step-lbl.active { color: #880e4f; }
+    .step-line { flex: 1; height: 2px; background: #e2e8f0; margin: 0 6px; }
+    .step-line.done { background: #10b981; }
+    /* BODY */
+    .pay-body { padding: 18px 22px; }
+    .step-pane { display: none; }
+    .step-pane.active { display: block; }
+    /* ORDER SUMMARY */
+    .os-box { background: #fdf2f7; border-radius: 12px; padding: 14px; margin-bottom: 14px; }
+    .os-title { font-size: 0.78rem; font-weight: 800; color: #ad1457; text-transform: uppercase; letter-spacing: 0.06em; margin-bottom: 10px; }
+    .os-row { display: flex; justify-content: space-between; padding: 6px 0; font-size: 0.82rem; border-bottom: 1px solid #fce4ec; }
+    .os-row:last-child { border-bottom: none; }
+    .os-total { display: flex; justify-content: space-between; font-size: 1rem; font-weight: 900; color: #880e4f; padding-top: 10px; margin-top: 6px; border-top: 2px solid #f48fb1; }
+    /* FORM */
+    .f-group { margin-bottom: 12px; }
+    .f-group label { display: block; font-size: 0.78rem; font-weight: 700; color: #475569; margin-bottom: 5px; }
+    .f-group input, .f-group select { width: 100%; border: 1.5px solid #fce4ec; border-radius: 10px; padding: 10px 13px; font-size: 0.86rem; color: #1a0d12; outline: none; font-family: inherit; transition: border-color 0.2s; }
+    .f-group input:focus, .f-group select:focus { border-color: #e91e8c; }
+    .row2 { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+    /* PAYMENT METHODS */
+    .pm-tabs { display: flex; gap: 7px; margin-bottom: 16px; flex-wrap: wrap; }
+    .pm-tab { flex: 1; min-width: 72px; background: #f8fafc; border: 2px solid #e2e8f0; border-radius: 11px; padding: 9px 6px; text-align: center; cursor: pointer; transition: all 0.15s; }
+    .pm-tab:hover, .pm-tab.sel { background: #880e4f; border-color: #880e4f; }
+    .pm-tab:hover .pmn, .pm-tab.sel .pmn { color: #ffb3c8; }
+    .pmi { font-size: 1.3rem; margin-bottom: 3px; }
+    .pmn { font-size: 0.65rem; font-weight: 700; color: #64748b; }
+    /* CARD */
+    .card-ico { position: absolute; left: 12px; top: 50%; transform: translateY(-50%); font-size: 1.1rem; pointer-events: none; }
+    .card-wrap { position: relative; }
+    .card-wrap input { padding-left: 42px; letter-spacing: 0.08em; }
+    /* UPI */
+    .upi-section { text-align: center; }
+    .qr-code { width: 150px; height: 150px; background: #f8fafc; border: 2px dashed #f48fb1; border-radius: 12px; margin: 0 auto 12px; display: flex; align-items: center; justify-content: center; }
+    .qr-code svg { width: 130px; height: 130px; }
+    .upi-apps { display: flex; justify-content: center; gap: 14px; margin: 12px 0; }
+    .upi-app-btn { display: flex; flex-direction: column; align-items: center; gap: 4px; cursor: pointer; }
+    .upi-app-ico { width: 42px; height: 42px; border-radius: 10px; display: flex; align-items: center; justify-content: center; font-size: 1.3rem; border: 2px solid transparent; transition: border-color 0.15s; }
+    .upi-app-btn:hover .upi-app-ico { border-color: #e91e8c; }
+    .upi-app-btn span { font-size: 0.62rem; font-weight: 700; color: #64748b; }
+    /* BANKS */
+    .bank-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-bottom: 12px; }
+    .bank-opt { background: #f8fafc; border: 1.5px solid #e2e8f0; border-radius: 9px; padding: 9px 12px; font-size: 0.78rem; font-weight: 700; color: #475569; cursor: pointer; text-align: left; transition: all 0.15s; }
+    .bank-opt:hover, .bank-opt.sel { background: #880e4f; border-color: #880e4f; color: white; }
+    /* WALLETS */
+    .wallet-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-bottom: 12px; }
+    .wallet-opt { background: #f8fafc; border: 1.5px solid #e2e8f0; border-radius: 9px; padding: 12px; text-align: center; cursor: pointer; transition: all 0.15s; }
+    .wallet-opt:hover, .wallet-opt.sel { background: #fdf2f7; border-color: #f48fb1; }
+    .wallet-ico { font-size: 1.5rem; margin-bottom: 4px; }
+    .wallet-name { font-size: 0.72rem; font-weight: 700; color: #475569; }
+    /* COD */
+    .cod-box { background: #fff7ed; border: 1.5px solid #fed7aa; border-radius: 12px; padding: 14px; font-size: 0.84rem; color: #92400e; line-height: 1.7; }
+    /* OTP */
+    .otp-section { text-align: center; padding: 10px 0; }
+    .otp-inputs { display: flex; gap: 8px; justify-content: center; margin: 16px 0; }
+    .otp-inp { width: 44px; height: 50px; border: 2px solid #fce4ec; border-radius: 10px; text-align: center; font-size: 1.3rem; font-weight: 800; color: #880e4f; outline: none; transition: border-color 0.2s; }
+    .otp-inp:focus { border-color: #e91e8c; }
+    /* PROCESSING */
+    .proc-wrap { text-align: center; padding: 28px 0; }
+    .spinner { width: 60px; height: 60px; border: 4px solid #fce4ec; border-top: 4px solid #e91e8c; border-radius: 50%; animation: spin 0.8s linear infinite; margin: 0 auto 14px; }
+    @keyframes spin { to { transform: rotate(360deg); } }
+    /* SUCCESS */
+    .succ-wrap { text-align: center; padding: 16px 0; }
+    .succ-icon { font-size: 4rem; margin-bottom: 10px; }
+    .succ-title { font-size: 1.25rem; font-weight: 900; color: #880e4f; margin-bottom: 6px; }
+    .succ-sub { font-size: 0.85rem; color: #64748b; margin-bottom: 18px; }
+    .order-confirm-box { background: #f0fdf4; border: 1.5px solid #86efac; border-radius: 12px; padding: 14px; margin-bottom: 14px; }
+    .ocb-id { font-size: 1.05rem; font-weight: 900; color: #065f46; margin-bottom: 4px; }
+    .ocb-detail { font-size: 0.78rem; color: #047857; }
+    .delivery-steps { display: flex; align-items: center; justify-content: center; gap: 8px; margin: 14px 0; flex-wrap: wrap; }
+    .ds-step { display: flex; flex-direction: column; align-items: center; gap: 3px; }
+    .ds-ico { font-size: 1.3rem; }
+    .ds-lbl { font-size: 0.62rem; font-weight: 700; color: #64748b; }
+    .ds-line { width: 30px; height: 2px; background: #e2e8f0; }
+    /* BUTTONS */
+    .pay-actions { display: flex; gap: 10px; margin-top: 16px; }
+    .btn-next { flex: 1; background: linear-gradient(90deg, #e91e8c, #ad1457); color: white; border: none; border-radius: 50px; padding: 12px; font-size: 0.9rem; font-weight: 800; cursor: pointer; transition: opacity 0.2s; }
+    .btn-next:hover { opacity: 0.88; }
+    .btn-back { background: white; color: #64748b; border: 1.5px solid #e2e8f0; border-radius: 50px; padding: 12px 18px; font-size: 0.86rem; font-weight: 700; cursor: pointer; }
+    .btn-back:hover { background: #f8fafc; }
+
+    /* TOAST */
+    .toast { position: fixed; bottom: 24px; right: 24px; background: #880e4f; color: #ffb3c8; padding: 12px 22px; border-radius: 50px; font-size: 0.85rem; font-weight: 700; box-shadow: 0 8px 24px rgba(0,0,0,0.2); z-index: 9999; animation: slideUp 0.25s ease; }
+
+    @media (max-width: 768px) {
+      .body-layout { flex-direction: column; margin: 16px auto; }
+      .sidebar { width: 100%; }
+      .sidebar-list { display: flex; flex-wrap: wrap; gap: 4px; padding: 0 12px 12px; }
+      .sidebar-btn { width: auto; border: 1.5px solid #f48fb1; border-left: 1.5px solid #f48fb1; border-radius: 50px; padding: 7px 14px; font-size: 0.8rem; }
+      .sidebar-btn.active { padding-left: 14px; border-color: #880e4f; }
+      .products-grid { grid-template-columns: repeat(auto-fill, minmax(160px, 1fr)); gap: 12px; }
+      .hdr-search { display: none; }
+      .row2 { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+<body>
+<div class="app">
+
+  <!-- HEADER -->
+  <header class="header">
+    <a class="brand" href="onlinepharmacy.html">
+      <div class="brand-icon">🍼</div>
+      <div><div class="brand-name">Mom &amp; Baby</div><div class="brand-sub">Med it Easy</div></div>
+    </a>
+    <div class="hdr-search">
+      <span style="color:#94a3b8">🔍</span>
+      <input type="text" placeholder="Search baby products..." oninput="filterProducts(this.value)" />
+    </div>
+    <div class="hdr-right">
+      <div class="hdr-btn" onclick="openCart()" title="Cart">🛒<span class="cart-badge" id="cartCount">0</span></div>
+      <div class="hdr-btn" title="Wishlist">❤️</div>
+    </div>
+  </header>
+
+  <!-- TOP NAV -->
+  <nav class="top-nav" id="topNav"></nav>
+
+  <!-- BODY -->
+  <div class="body-layout">
+    <aside class="sidebar">
+      <h3 class="sidebar-title">Categories</h3>
+      <ul class="sidebar-list" id="sidebarList"></ul>
+    </aside>
+    <main class="main-content">
+      <div class="section-header">
+        <div>
+          <div class="section-title" id="sectionTitle"></div>
+          <div class="section-sub" id="sectionSub"></div>
+        </div>
+      </div>
+      <div class="products-grid" id="productsGrid"></div>
+    </main>
+  </div>
+
+  <footer class="footer"><p>&copy; 2026 Med it Easy — Mom &amp; Baby Care. Built with 💕</p></footer>
+</div>
+
+<!-- CART OVERLAY + DRAWER -->
+<div class="cart-overlay" id="cartOverlay" onclick="closeCart()"></div>
+<div class="cart-drawer" id="cartDrawer">
+  <div class="cart-hdr">
+    <h2>🛒 My Cart <span id="cartCountDrawer" style="background:#f8bbd0;color:#880e4f;font-size:0.7rem;padding:2px 8px;border-radius:50px;font-weight:800;">0</span></h2>
+    <button class="cart-close" onclick="closeCart()">&#215;</button>
+  </div>
+  <div class="cart-body" id="cartBody"><div class="cart-empty-msg"><div style="font-size:3rem;margin-bottom:12px">🛒</div><p style="font-size:0.88rem;font-weight:600;color:#475569">Cart is empty</p><p style="font-size:0.78rem;color:#94a3b8;margin-top:4px">Add products to start shopping</p></div></div>
+  <div class="cart-foot">
+    <div class="cart-total-row"><span>Subtotal</span><span id="cartSub">₹0</span></div>
+    <div class="cart-total-row"><span>Delivery</span><span id="cartDel">FREE</span></div>
+    <div class="cart-total-row big"><span>Total</span><span id="cartTot">₹0</span></div>
+    <button class="checkout-btn" id="checkoutBtn" onclick="openPayModal()" disabled>Checkout Now 💳</button>
+  </div>
+</div>
+
+<!-- PAYMENT MODAL -->
+<div class="pay-overlay" id="payOverlay">
+  <div class="pay-modal">
+    <div class="pay-header">
+      <h3 id="payTitle">💳 Secure Checkout</h3>
+      <button class="pay-close" onclick="closePayModal()">&#215;</button>
+    </div>
+    <div class="step-bar">
+      <div class="step-item"><div class="step-num active" id="sn1">1</div><div class="step-lbl active" id="sl1">Review</div></div>
+      <div class="step-line" id="sline1"></div>
+      <div class="step-item"><div class="step-num" id="sn2">2</div><div class="step-lbl" id="sl2">Address</div></div>
+      <div class="step-line" id="sline2"></div>
+      <div class="step-item"><div class="step-num" id="sn3">3</div><div class="step-lbl" id="sl3">Payment</div></div>
+      <div class="step-line" id="sline3"></div>
+      <div class="step-item"><div class="step-num" id="sn4">4</div><div class="step-lbl" id="sl4">Done</div></div>
+    </div>
+    <div class="pay-body">
+
+      <!-- STEP 1: REVIEW -->
+      <div class="step-pane active" id="sp1">
+        <div class="os-box">
+          <div class="os-title">📦 Order Items</div>
+          <div id="osItems"></div>
+          <div class="os-total"><span>Grand Total</span><span id="osTotal">₹0</span></div>
+        </div>
+        <div class="pay-actions"><button class="btn-next" onclick="goStep(2)">Continue →</button></div>
+      </div>
+
+      <!-- STEP 2: ADDRESS -->
+      <div class="step-pane" id="sp2">
+        <div class="row2">
+          <div class="f-group"><label>First Name *</label><input id="af" placeholder="Priya" /></div>
+          <div class="f-group"><label>Last Name *</label><input id="al" placeholder="Sharma" /></div>
+        </div>
+        <div class="f-group"><label>Phone *</label><input id="ap" type="tel" placeholder="+91 98765 43210" /></div>
+        <div class="f-group"><label>Email</label><input id="ae" type="email" placeholder="priya@email.com" /></div>
+        <div class="f-group"><label>Address *</label><input id="aa1" placeholder="House No., Street, Area" /></div>
+        <div class="row2">
+          <div class="f-group"><label>City *</label><input id="ac" placeholder="Mumbai" /></div>
+          <div class="f-group"><label>PIN Code *</label><input id="apin" placeholder="400001" maxlength="6" /></div>
+        </div>
+        <div class="f-group"><label>State *</label>
+          <select id="ast">
+            <option value="">Select State</option>
+            <option>Maharashtra</option><option>Delhi</option><option>Karnataka</option>
+            <option>Tamil Nadu</option><option>Gujarat</option><option>Kerala</option>
+            <option>Rajasthan</option><option>West Bengal</option><option>Uttar Pradesh</option>
+          </select>
+        </div>
+        <div class="pay-actions">
+          <button class="btn-back" onclick="goStep(1)">← Back</button>
+          <button class="btn-next" onclick="validateAddr()">Continue to Payment →</button>
+        </div>
+      </div>
+
+      <!-- STEP 3: PAYMENT -->
+      <div class="step-pane" id="sp3">
+        <div class="pm-tabs">
+          <div class="pm-tab sel" onclick="selPM('card',this)"><div class="pmi">💳</div><div class="pmn">Card</div></div>
+          <div class="pm-tab" onclick="selPM('upi',this)"><div class="pmi">📱</div><div class="pmn">UPI</div></div>
+          <div class="pm-tab" onclick="selPM('nb',this)"><div class="pmi">🏦</div><div class="pmn">Net Banking</div></div>
+          <div class="pm-tab" onclick="selPM('wallet',this)"><div class="pmi">💜</div><div class="pmn">Wallet</div></div>
+          <div class="pm-tab" onclick="selPM('cod',this)"><div class="pmi">💵</div><div class="pmn">COD</div></div>
+        </div>
+
+        <!-- CARD -->
+        <div id="pmCard">
+          <div class="f-group"><label>Card Number *</label>
+            <div class="card-wrap"><span class="card-ico" id="cardIco">💳</span><input id="cNum" placeholder="0000  0000  0000  0000" maxlength="19" oninput="fmtCard(this)" /></div>
+          </div>
+          <div class="f-group"><label>Cardholder Name *</label><input id="cName" placeholder="PRIYA SHARMA" style="text-transform:uppercase" /></div>
+          <div class="row2">
+            <div class="f-group"><label>Expiry (MM/YY) *</label><input id="cExp" placeholder="MM/YY" maxlength="5" oninput="fmtExp(this)" /></div>
+            <div class="f-group"><label>CVV *</label><input id="cCvv" type="password" placeholder="•••" maxlength="3" /></div>
+          </div>
+          <div style="background:#f0fdf4;border:1px solid #86efac;border-radius:8px;padding:9px 12px;font-size:0.76rem;color:#065f46;margin-top:4px;">🔒 SSL encrypted. Your card is safe.</div>
+        </div>
+
+        <!-- UPI -->
+        <div id="pmUpi" style="display:none">
+          <div class="upi-section">
+            <div class="qr-code">
+              <svg viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg"><rect width="200" height="200" fill="white"/><g fill="#880e4f"><rect x="20" y="20" width="60" height="60" rx="5"/><rect x="28" y="28" width="44" height="44" fill="white" rx="3"/><rect x="34" y="34" width="32" height="32" rx="1"/><rect x="120" y="20" width="60" height="60" rx="5"/><rect x="128" y="28" width="44" height="44" fill="white" rx="3"/><rect x="134" y="34" width="32" height="32" rx="1"/><rect x="20" y="120" width="60" height="60" rx="5"/><rect x="28" y="128" width="44" height="44" fill="white" rx="3"/><rect x="34" y="134" width="32" height="32" rx="1"/><rect x="90" y="20" width="8" height="8"/><rect x="102" y="20" width="8" height="8"/><rect x="90" y="32" width="8" height="20"/><rect x="102" y="32" width="8" height="8"/><rect x="90" y="90" width="8" height="8"/><rect x="102" y="90" width="8" height="8"/><rect x="114" y="90" width="8" height="8"/><rect x="120" y="102" width="8" height="8"/><rect x="134" y="102" width="8" height="8"/><rect x="148" y="102" width="22" height="8"/><rect x="120" y="114" width="8" height="8"/><rect x="148" y="114" width="8" height="8"/><rect x="120" y="126" width="8" height="8"/><rect x="134" y="126" width="8" height="8"/></g></svg>
+            </div>
+            <p style="font-size:0.78rem;color:#64748b;margin-bottom:12px;">Scan QR with any UPI app</p>
+            <div class="upi-apps">
+              <div class="upi-app-btn"><div class="upi-app-ico" style="background:#e8f5e9;">G</div><span>GPay</span></div>
+              <div class="upi-app-btn"><div class="upi-app-ico" style="background:#e3f2fd;">💰</div><span>Paytm</span></div>
+              <div class="upi-app-btn"><div class="upi-app-ico" style="background:#ede7f6;">頃</div><span>PhonePe</span></div>
+              <div class="upi-app-btn"><div class="upi-app-ico" style="background:#fff3e0;">B</div><span>BHIM</span></div>
+            </div>
+            <div class="f-group" style="max-width:280px;margin:0 auto;"><label>Or enter UPI ID</label><input id="upiId" placeholder="name@upi" /></div>
+          </div>
+        </div>
+
+        <!-- NET BANKING -->
+        <div id="pmNb" style="display:none">
+          <div class="bank-grid">
+            <button class="bank-opt" onclick="selBank(this)">🏦 SBI</button>
+            <button class="bank-opt" onclick="selBank(this)">🏦 HDFC Bank</button>
+            <button class="bank-opt" onclick="selBank(this)">🏦 ICICI Bank</button>
+            <button class="bank-opt" onclick="selBank(this)">🏦 Axis Bank</button>
+            <button class="bank-opt" onclick="selBank(this)">🏦 Kotak Bank</button>
+            <button class="bank-opt" onclick="selBank(this)">🏦 Yes Bank</button>
+          </div>
+          <div class="f-group"><label>Or choose bank</label><select id="allBanks"><option value="">Select Bank</option><option>SBI</option><option>HDFC Bank</option><option>ICICI Bank</option><option>Axis Bank</option><option>Kotak Bank</option><option>IndusInd Bank</option></select></div>
+        </div>
+
+        <!-- WALLET -->
+        <div id="pmWallet" style="display:none">
+          <div class="wallet-grid">
+            <div class="wallet-opt" onclick="this.classList.toggle('sel')"><div class="wallet-ico">💰</div><div class="wallet-name">Paytm</div></div>
+            <div class="wallet-opt" onclick="this.classList.toggle('sel')"><div class="wallet-ico">頃</div><div class="wallet-name">PhonePe</div></div>
+            <div class="wallet-opt" onclick="this.classList.toggle('sel')"><div class="wallet-ico">G</div><div class="wallet-name">Google Pay</div></div>
+            <div class="wallet-opt" onclick="this.classList.toggle('sel')"><div class="wallet-ico">📦</div><div class="wallet-name">Amazon Pay</div></div>
+          </div>
+        </div>
+
+        <!-- COD -->
+        <div id="pmCod" style="display:none">
+          <div class="cod-box">ℹ️ <strong>Cash on Delivery</strong><br>Pay in cash at delivery. COD fee: ₹50<br><br>• Keep exact change ready<br>• Delivery partner collects cash</div>
+        </div>
+
+        <div class="pay-actions" style="margin-top:14px;">
+          <button class="btn-back" onclick="goStep(2)">← Back</button>
+          <button class="btn-next" onclick="processPay()">🔒 Pay <span id="payAmt">₹0</span></button>
+        </div>
+      </div>
+
+      <!-- OTP -->
+      <div class="step-pane" id="spOtp">
+        <div class="otp-section">
+          <div style="font-size:2.8rem;margin-bottom:8px;">📱</div>
+          <p style="font-size:0.9rem;font-weight:800;color:#880e4f;margin-bottom:4px;">OTP Verification</p>
+          <p style="font-size:0.8rem;color:#64748b;margin-bottom:4px;">Enter 6-digit OTP sent to <strong id="otpNum">your number</strong></p>
+          <p style="font-size:0.72rem;color:#94a3b8;margin-bottom:12px;">Valid for 10 minutes</p>
+          <div class="otp-inputs">
+            <input class="otp-inp" type="text" maxlength="1" id="o0" oninput="onxt(this,0)">
+            <input class="otp-inp" type="text" maxlength="1" id="o1" oninput="onxt(this,1)">
+            <input class="otp-inp" type="text" maxlength="1" id="o2" oninput="onxt(this,2)">
+            <input class="otp-inp" type="text" maxlength="1" id="o3" oninput="onxt(this,3)">
+            <input class="otp-inp" type="text" maxlength="1" id="o4" oninput="onxt(this,4)">
+            <input class="otp-inp" type="text" maxlength="1" id="o5" oninput="onxt(this,5)">
+          </div>
+          <button onclick="showToast('📨 OTP resent!')" style="background:none;border:none;color:#ad1457;font-weight:700;cursor:pointer;font-size:0.78rem;">Resend OTP</button>
+        </div>
+        <div class="pay-actions">
+          <button class="btn-back" onclick="goStep(3)">← Back</button>
+          <button class="btn-next" onclick="verifyOtp()">Verify &amp; Pay</button>
+        </div>
+      </div>
+
+      <!-- PROCESSING -->
+      <div class="step-pane" id="spProc">
+        <div class="proc-wrap">
+          <div class="spinner"></div>
+          <p style="font-size:1rem;font-weight:800;color:#880e4f;margin-bottom:6px;">Processing Payment...</p>
+          <p style="font-size:0.82rem;color:#64748b;">Please do not close this window</p>
+        </div>
+      </div>
+
+      <!-- SUCCESS -->
+      <div class="step-pane" id="spSucc">
+        <div class="succ-wrap">
+          <div class="succ-icon">✅</div>
+          <div class="succ-title">Order Confirmed! 🎉</div>
+          <div class="succ-sub">Your baby products are on the way!</div>
+          <div class="order-confirm-box">
+            <div class="ocb-id" id="succId">#ORD-000000</div>
+            <div class="ocb-detail" id="succDetail"></div>
+          </div>
+          <div class="delivery-steps">
+            <div class="ds-step"><div class="ds-ico">✅</div><div class="ds-lbl">Confirmed</div></div>
+            <div class="ds-line"></div>
+            <div class="ds-step"><div class="ds-ico">📎</div><div class="ds-lbl">Packed</div></div>
+            <div class="ds-line"></div>
+            <div class="ds-step"><div class="ds-ico">🚚</div><div class="ds-lbl">Shipped</div></div>
+            <div class="ds-line"></div>
+            <div class="ds-step"><div class="ds-ico">🏠</div><div class="ds-lbl">Delivered</div></div>
+          </div>
+          <p style="font-size:0.82rem;color:#64748b;">Est. delivery: <strong id="succDate"></strong></p>
+        </div>
+        <div class="pay-actions"><button class="btn-next" onclick="onSuccessContinue()">Continue Shopping</button></div>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+<script>
+// ---- DATA ----
+const data = {
+  "Diapers & Wipes": {
+    subcats: ["Diapers","Baby Wipes","Training Pants","Diaper Rash Cream"],
+    products: {
+      "Diapers": [
+        {id:101,name:"Pampers Premium Care Pants",brand:"PAMPERS",cat:"Diapers",price:849,mrp:999,off:"15% off",rating:4.5,reviews:2481,emoji:"👶",variant:"Size M · 44 pcs",bg:"linear-gradient(135deg,#E3F2FD,#BBDEFB)"},
+        {id:102,name:"Huggies Wonder Pants Medium",brand:"HUGGIES",cat:"Diapers",price:799,mrp:949,off:"16% off",rating:4.4,reviews:1823,emoji:"👶",variant:"Size M · 40 pcs",bg:"linear-gradient(135deg,#FFF8E1,#FFECB3)"},
+        {id:103,name:"MamyPoko Pants Standard",brand:"MAMYPOKO",cat:"Diapers",price:649,mrp:749,off:"13% off",rating:4.2,reviews:954,emoji:"👶",variant:"Size L · 36 pcs",bg:"linear-gradient(135deg,#F3E5F5,#E1BEE7)"},
+        {id:104,name:"Sebamed Baby Diaper Sensitive",brand:"SEBAMED",cat:"Diapers",price:1249,mrp:1499,off:"17% off",rating:4.6,reviews:312,emoji:"👶",variant:"Size S · 30 pcs",bg:"linear-gradient(135deg,#E8F5E9,#C8E6C9)"},
+        {id:105,name:"Himalaya Total Care Pants",brand:"HIMALAYA",cat:"Diapers",price:699,mrp:849,off:"18% off",rating:4.3,reviews:678,emoji:"👶",variant:"Size XL · 32 pcs",bg:"linear-gradient(135deg,#E8F5E9,#DCEDC8)"}
+      ],
+      "Baby Wipes": [
+        {id:106,name:"WaterWipes Original Baby Wipes",brand:"WATERWIPES",cat:"Baby Wipes",price:499,mrp:599,off:"17% off",rating:4.8,reviews:5621,emoji:"🧼",variant:"540 wipes · 3 packs",bg:"linear-gradient(135deg,#E1F5FE,#B3E5FC)"},
+        {id:107,name:"Pampers Sensitive Baby Wipes",brand:"PAMPERS",cat:"Baby Wipes",price:349,mrp:399,off:"13% off",rating:4.5,reviews:3210,emoji:"🧼",variant:"288 wipes",bg:"linear-gradient(135deg,#E3F2FD,#BBDEFB)"},
+        {id:108,name:"Huggies Pure Baby Wipes",brand:"HUGGIES",cat:"Baby Wipes",price:299,mrp:349,off:"14% off",rating:4.3,reviews:1890,emoji:"🧼",variant:"3×56 wipes",bg:"linear-gradient(135deg,#FFF8E1,#FFECB3)"},
+        {id:109,name:"Himalaya Baby Wipes 72 count",brand:"HIMALAYA",cat:"Baby Wipes",price:199,mrp:249,off:"20% off",rating:4.2,reviews:2341,emoji:"🧼",variant:"72 wipes",bg:"linear-gradient(135deg,#E8F5E9,#C8E6C9)"}
+      ],
+      "Training Pants": [
+        {id:110,name:"Pampers Easy Ups Training Pants",brand:"PAMPERS",cat:"Training Pants",price:999,mrp:1199,off:"17% off",rating:4.4,reviews:876,emoji:"👢",variant:"Size XL · 22 pcs",bg:"linear-gradient(135deg,#E3F2FD,#BBDEFB)"},
+        {id:111,name:"Huggies Pull-Ups Training Pants",brand:"HUGGIES",cat:"Training Pants",price:899,mrp:1099,off:"18% off",rating:4.3,reviews:543,emoji:"👢",variant:"18 pcs",bg:"linear-gradient(135deg,#FFF8E1,#FFECB3)"},
+        {id:112,name:"MamyPoko Training Pants Boys",brand:"MAMYPOKO",cat:"Training Pants",price:749,mrp:899,off:"17% off",rating:4.1,reviews:312,emoji:"👢",variant:"20 pcs · Boys",bg:"linear-gradient(135deg,#E8EAF6,#C5CAE9)"}
+      ],
+      "Diaper Rash Cream": [
+        {id:113,name:"Himalaya Baby Diaper Rash Cream",brand:"HIMALAYA",cat:"Diaper Rash Cream",price:179,mrp:199,off:"10% off",rating:4.5,reviews:2134,emoji:"🧴",variant:"50g",bg:"linear-gradient(135deg,#E8F5E9,#C8E6C9)"},
+        {id:114,name:"Johnson's Baby Diaper Rash Cream",brand:"JOHNSON'S",cat:"Diaper Rash Cream",price:249,mrp:299,off:"17% off",rating:4.4,reviews:1456,emoji:"🧴",variant:"100g",bg:"linear-gradient(135deg,#FFF3E0,#FFE082)"},
+        {id:115,name:"Sebamed Baby Diaper Rash Cream",brand:"SEBAMED",cat:"Diaper Rash Cream",price:399,mrp:449,off:"11% off",rating:4.7,reviews:678,emoji:"🧴",variant:"100ml pH 5.5",bg:"linear-gradient(135deg,#F0F4FF,#E8EAF6)"}
+      ]
+    }
+  },
+  "Baby Food": {
+    subcats: ["Infant Formula","Baby Cereal","Fruit Purees","Baby Snacks"],
+    products: {
+      "Infant Formula": [
+        {id:201,name:"Nestle Nan Pro 1 Infant Formula",brand:"NESTLE",cat:"Infant Formula",price:1350,mrp:1499,off:"10% off",rating:4.5,reviews:3421,emoji:"🍼",variant:"400g · 0-6 months",bg:"linear-gradient(135deg,#FFF3E0,#FFE0B2)"},
+        {id:202,name:"Similac Advance IQ Infant Formula",brand:"SIMILAC",cat:"Infant Formula",price:1499,mrp:1749,off:"14% off",rating:4.4,reviews:1823,emoji:"🍼",variant:"400g · 0-12 months",bg:"linear-gradient(135deg,#E0F7FA,#B2EBF2)"},
+        {id:203,name:"Dexolac Premium 1 Infant Formula",brand:"DEXOLAC",cat:"Infant Formula",price:1250,mrp:1399,off:"11% off",rating:4.3,reviews:945,emoji:"🍼",variant:"500g",bg:"linear-gradient(135deg,#F3E5F5,#E1BEE7)"},
+        {id:204,name:"Aptamil 1 First Infant Milk",brand:"APTAMIL",cat:"Infant Formula",price:1799,mrp:1999,off:"10% off",rating:4.6,reviews:2134,emoji:"🍼",variant:"400g · 0-6 months",bg:"linear-gradient(135deg,#E8F5E9,#C8E6C9)"}
+      ],
+      "Baby Cereal": [
+        {id:205,name:"Cerelac Rice + Milk Baby Cereal",brand:"CERELAC",cat:"Baby Cereal",price:249,mrp:299,off:"17% off",rating:4.5,reviews:4521,emoji:"🍚",variant:"300g · 6+ months",bg:"linear-gradient(135deg,#FFF3E0,#FFE082)"},
+        {id:206,name:"Cerelac Wheat Honey Baby Cereal",brand:"CERELAC",cat:"Baby Cereal",price:249,mrp:299,off:"17% off",rating:4.4,reviews:2341,emoji:"🍚",variant:"300g",bg:"linear-gradient(135deg,#FFF3E0,#FFCC80)"},
+        {id:207,name:"Nestle Gerber Oatmeal Cereal",brand:"NESTLE",cat:"Baby Cereal",price:349,mrp:399,off:"13% off",rating:4.3,reviews:1234,emoji:"🍚",variant:"200g · 8+ months",bg:"linear-gradient(135deg,#FFF3E0,#FFE0B2)"}
+      ],
+      "Fruit Purees": [
+        {id:208,name:"HiPP Organic Banana Puree",brand:"HIPP",cat:"Fruit Purees",price:199,mrp:249,off:"20% off",rating:4.6,reviews:876,emoji:"🍌",variant:"125g · 4+ months",bg:"linear-gradient(135deg,#FFFDE7,#FFF9C4)"},
+        {id:209,name:"Gerber 2nd Foods Apple Puree",brand:"GERBER",cat:"Fruit Purees",price:179,mrp:219,off:"18% off",rating:4.4,reviews:1123,emoji:"🍎",variant:"140g",bg:"linear-gradient(135deg,#FFEBEE,#FFCDD2)"},
+        {id:210,name:"Earth's Best Organic Banana",brand:"EARTH'S BEST",cat:"Fruit Purees",price:229,mrp:279,off:"18% off",rating:4.5,reviews:654,emoji:"🍌",variant:"113g pack",bg:"linear-gradient(135deg,#F9FBE7,#F0F4C3)"}
+      ],
+      "Baby Snacks": [
+        {id:211,name:"Gerber Puffs Strawberry Apple",brand:"GERBER",cat:"Baby Snacks",price:299,mrp:349,off:"14% off",rating:4.3,reviews:543,emoji:"🍪",variant:"42g · 8+ months",bg:"linear-gradient(135deg,#FFEBEE,#FFCDD2)"},
+        {id:212,name:"Heinz Baby Biscuits Original",brand:"HEINZ",cat:"Baby Snacks",price:199,mrp:249,off:"20% off",rating:4.2,reviews:432,emoji:"🍪",variant:"180g",bg:"linear-gradient(135deg,#FFF3E0,#FFE0B2)"}
+      ]
+    }
+  },
+  "Baby Skincare": {
+    subcats: ["Baby Lotion","Baby Wash","Baby Powder","Baby Sunscreen"],
+    products: {
+      "Baby Lotion": [
+        {id:301,name:"Johnson's Baby Lotion Original",brand:"JOHNSON'S",cat:"Baby Lotion",price:220,mrp:275,off:"20% off",rating:4.5,reviews:8921,emoji:"🧴",variant:"200ml",bg:"linear-gradient(135deg,#FFF3E0,#FFE082)"},
+        {id:302,name:"Himalaya Baby Lotion",brand:"HIMALAYA",cat:"Baby Lotion",price:185,mrp:225,off:"18% off",rating:4.4,reviews:5432,emoji:"🧴",variant:"200ml",bg:"linear-gradient(135deg,#E8F5E9,#C8E6C9)"},
+        {id:303,name:"Cetaphil Baby Daily Lotion",brand:"CETAPHIL",cat:"Baby Lotion",price:499,mrp:599,off:"17% off",rating:4.7,reviews:2134,emoji:"🧴",variant:"400ml",bg:"linear-gradient(135deg,#E3F2FD,#BBDEFB)"},
+        {id:304,name:"Sebamed Baby Lotion pH 5.5",brand:"SEBAMED",cat:"Baby Lotion",price:649,mrp:749,off:"13% off",rating:4.8,reviews:1456,emoji:"🧴",variant:"200ml Sensitive",bg:"linear-gradient(135deg,#F0F4FF,#E8EAF6)"}
+      ],
+      "Baby Wash": [
+        {id:305,name:"Johnson's Baby Wash Tear Free",brand:"JOHNSON'S",cat:"Baby Wash",price:249,mrp:299,off:"17% off",rating:4.5,reviews:6782,emoji:"🛁",variant:"400ml",bg:"linear-gradient(135deg,#FFF3E0,#FFE082)"},
+        {id:306,name:"Himalaya Baby Wash Gentle",brand:"HIMALAYA",cat:"Baby Wash",price:199,mrp:249,off:"20% off",rating:4.3,reviews:4521,emoji:"🛁",variant:"200ml",bg:"linear-gradient(135deg,#E8F5E9,#C8E6C9)"},
+        {id:307,name:"Cetaphil Baby Wash & Shampoo",brand:"CETAPHIL",cat:"Baby Wash",price:549,mrp:649,off:"15% off",rating:4.7,reviews:1823,emoji:"🛁",variant:"230ml",bg:"linear-gradient(135deg,#E3F2FD,#BBDEFB)"}
+      ],
+      "Baby Powder": [
+        {id:308,name:"Johnson's Baby Powder Classic",brand:"JOHNSON'S",cat:"Baby Powder",price:199,mrp:249,off:"20% off",rating:4.4,reviews:9231,emoji:"☁️",variant:"300g",bg:"linear-gradient(135deg,#FFF3E0,#FFE082)"},
+        {id:309,name:"Himalaya Baby Powder",brand:"HIMALAYA",cat:"Baby Powder",price:169,mrp:199,off:"15% off",rating:4.3,reviews:4321,emoji:"☁️",variant:"400g",bg:"linear-gradient(135deg,#E8F5E9,#C8E6C9)"},
+        {id:310,name:"Sebamed Baby Powder",brand:"SEBAMED",cat:"Baby Powder",price:449,mrp:499,off:"10% off",rating:4.6,reviews:876,emoji:"☁️",variant:"200g pH 5.5",bg:"linear-gradient(135deg,#F0F4FF,#E8EAF6)"}
+      ],
+      "Baby Sunscreen": [
+        {id:311,name:"Neutrogena Pure & Free Baby SPF 50",brand:"NEUTROGENA",cat:"Baby Sunscreen",price:899,mrp:999,off:"10% off",rating:4.5,reviews:543,emoji:"☀️",variant:"88ml SPF 50",bg:"linear-gradient(135deg,#FFFDE7,#FFF9C4)"},
+        {id:312,name:"Aveeno Baby SPF 50 Sunscreen",brand:"AVEENO",cat:"Baby Sunscreen",price:1299,mrp:1499,off:"13% off",rating:4.6,reviews:432,emoji:"☀️",variant:"71g",bg:"linear-gradient(135deg,#FFF3E0,#FFE0B2)"}
+      ]
+    }
+  },
+  "Baby Health": {
+    subcats: ["Gripe Water","Baby Vitamins","Teething Gel","Baby Thermometer"],
+    products: {
+      "Gripe Water": [
+        {id:401,name:"Woodward's Gripe Water",brand:"WOODWARD'S",cat:"Gripe Water",price:69,mrp:79,off:"13% off",rating:4.4,reviews:12431,emoji:"💊",variant:"200ml",bg:"linear-gradient(135deg,#E8F5E9,#C8E6C9)"},
+        {id:402,name:"Bonnisan Himalaya Digestive Syrup",brand:"HIMALAYA",cat:"Gripe Water",price:89,mrp:99,off:"10% off",rating:4.3,reviews:5421,emoji:"💊",variant:"120ml",bg:"linear-gradient(135deg,#E8F5E9,#DCEDC8)"},
+        {id:403,name:"Dabur Lal Tail Baby Massage Oil",brand:"DABUR",cat:"Gripe Water",price:129,mrp:149,off:"13% off",rating:4.5,reviews:3241,emoji:"💊",variant:"100ml",bg:"linear-gradient(135deg,#FFF3E0,#FFE082)"}
+      ],
+      "Baby Vitamins": [
+        {id:404,name:"Pfizer Protinex Mama",brand:"PFIZER",cat:"Baby Vitamins",price:499,mrp:599,off:"17% off",rating:4.4,reviews:2134,emoji:"✨",variant:"200g",bg:"linear-gradient(135deg,#E8EAF6,#C5CAE9)"},
+        {id:405,name:"Zincovit Baby Drops",brand:"APEX",cat:"Baby Vitamins",price:89,mrp:99,off:"10% off",rating:4.3,reviews:876,emoji:"✨",variant:"15ml",bg:"linear-gradient(135deg,#FFF3E0,#FFCC80)"},
+        {id:406,name:"Tiffy & Toffee Vitamin D3 Drops",brand:"T&T",cat:"Baby Vitamins",price:299,mrp:349,off:"14% off",rating:4.5,reviews:543,emoji:"✨",variant:"15ml Vit D3",bg:"linear-gradient(135deg,#FFFDE7,#FFF9C4)"}
+      ],
+      "Teething Gel": [
+        {id:407,name:"Dentinox Teething Gel",brand:"DENTINOX",cat:"Teething Gel",price:199,mrp:249,off:"20% off",rating:4.3,reviews:1234,emoji:"💧",variant:"10g",bg:"linear-gradient(135deg,#E3F2FD,#BBDEFB)"},
+        {id:408,name:"Bonjela Teething Gel for Babies",brand:"BONJELA",cat:"Teething Gel",price:249,mrp:299,off:"17% off",rating:4.4,reviews:876,emoji:"💧",variant:"15g",bg:"linear-gradient(135deg,#F3E5F5,#E1BEE7)"}
+      ],
+      "Baby Thermometer": [
+        {id:409,name:"Braun ThermoScan 5 Ear Thermometer",brand:"BRAUN",cat:"Baby Thermometer",price:2499,mrp:2999,off:"17% off",rating:4.7,reviews:3421,emoji:"🌡️",variant:"Digital Ear",bg:"linear-gradient(135deg,#FFEBEE,#FFCDD2)"},
+        {id:410,name:"Dr. Morepen Infrared Thermometer",brand:"DR. MOREPEN",cat:"Baby Thermometer",price:699,mrp:849,off:"18% off",rating:4.4,reviews:2134,emoji:"🌡️",variant:"No-touch IR",bg:"linear-gradient(135deg,#E3F2FD,#BBDEFB)"}
+      ]
+    }
+  },
+  "Maternity": {
+    subcats: ["Prenatal Vitamins","Stretch Mark Cream","Maternity Wear","Breast Pads"],
+    products: {
+      "Prenatal Vitamins": [
+        {id:501,name:"Materna Prenatal Complete Vitamin",brand:"MATERNA",cat:"Prenatal Vitamins",price:849,mrp:999,off:"15% off",rating:4.5,reviews:2341,emoji:"🌱",variant:"60 tablets",bg:"linear-gradient(135deg,#E8F5E9,#C8E6C9)"},
+        {id:502,name:"Pregnacare Plus Omega 3 Vitamins",brand:"PREGNACARE",cat:"Prenatal Vitamins",price:1299,mrp:1499,off:"13% off",rating:4.6,reviews:1234,emoji:"🌱",variant:"28 tabs + 28 caps",bg:"linear-gradient(135deg,#F3E5F5,#E1BEE7)"},
+        {id:503,name:"Himalaya Shatavari Women Wellness",brand:"HIMALAYA",cat:"Prenatal Vitamins",price:299,mrp:349,off:"14% off",rating:4.3,reviews:876,emoji:"🌱",variant:"60 tablets",bg:"linear-gradient(135deg,#E8F5E9,#DCEDC8)"}
+      ],
+      "Stretch Mark Cream": [
+        {id:504,name:"Bio-Oil Skincare Oil",brand:"BIO-OIL",cat:"Stretch Mark Cream",price:649,mrp:749,off:"13% off",rating:4.5,reviews:5432,emoji:"🧴",variant:"125ml",bg:"linear-gradient(135deg,#FFF3E0,#FFE082)"},
+        {id:505,name:"Mustela Stretch Marks Cream",brand:"MUSTELA",cat:"Stretch Mark Cream",price:1499,mrp:1699,off:"12% off",rating:4.7,reviews:1234,emoji:"🧴",variant:"150ml",bg:"linear-gradient(135deg,#E8F5E9,#C8E6C9)"}
+      ],
+      "Maternity Wear": [
+        {id:506,name:"Morph Maternity Nursing Bra",brand:"MORPH",cat:"Maternity Wear",price:899,mrp:1099,off:"18% off",rating:4.4,reviews:2134,emoji:"👗",variant:"Cotton · Size M",bg:"linear-gradient(135deg,#FCE4EC,#F8BBD0)"},
+        {id:507,name:"Enamor Maternity Panty Pack",brand:"ENAMOR",cat:"Maternity Wear",price:699,mrp:849,off:"18% off",rating:4.3,reviews:987,emoji:"👗",variant:"Pack of 2",bg:"linear-gradient(135deg,#F3E5F5,#E1BEE7)"}
+      ],
+      "Breast Pads": [
+        {id:508,name:"Pigeon Disposable Breast Pads",brand:"PIGEON",cat:"Breast Pads",price:299,mrp:349,off:"14% off",rating:4.5,reviews:3421,emoji:"🟡",variant:"36 pads",bg:"linear-gradient(135deg,#FFF3E0,#FFCC80)"},
+        {id:509,name:"Medela Disposable Nursing Pads",brand:"MEDELA",cat:"Breast Pads",price:599,mrp:699,off:"14% off",rating:4.6,reviews:1234,emoji:"🟡",variant:"60 pads",bg:"linear-gradient(135deg,#E3F2FD,#BBDEFB)"}
+      ]
+    }
+  },
+  "Feeding & Nursing": {
+    subcats: ["Baby Bottles","Breast Pumps","Sterilizers","Nipples"],
+    products: {
+      "Baby Bottles": [
+        {id:601,name:"Philips Avent Natural Bottle 260ml",brand:"PHILIPS",cat:"Baby Bottles",price:849,mrp:999,off:"15% off",rating:4.6,reviews:4521,emoji:"🍼",variant:"260ml · 0+ months",bg:"linear-gradient(135deg,#E8EAF6,#C5CAE9)"},
+        {id:602,name:"Pigeon Nursing Bottle Wide Neck",brand:"PIGEON",cat:"Baby Bottles",price:449,mrp:549,off:"18% off",rating:4.4,reviews:3210,emoji:"🍼",variant:"200ml",bg:"linear-gradient(135deg,#FFF3E0,#FFCC80)"},
+        {id:603,name:"Dr. Brown's Natural Flow Bottle",brand:"DR. BROWN'S",cat:"Baby Bottles",price:1299,mrp:1499,off:"13% off",rating:4.7,reviews:2341,emoji:"🍼",variant:"270ml Anti-colic",bg:"linear-gradient(135deg,#E8F5E9,#C8E6C9)"},
+        {id:604,name:"NUK First Choice Plus Bottle",brand:"NUK",cat:"Baby Bottles",price:699,mrp:799,off:"13% off",rating:4.5,reviews:1456,emoji:"🍼",variant:"150ml",bg:"linear-gradient(135deg,#E3F2FD,#BBDEFB)"}
+      ],
+      "Breast Pumps": [
+        {id:605,name:"Medela Swing Single Breast Pump",brand:"MEDELA",cat:"Breast Pumps",price:6499,mrp:7499,off:"13% off",rating:4.7,reviews:2134,emoji:"🏥",variant:"Electric Single",bg:"linear-gradient(135deg,#E3F2FD,#BBDEFB)"},
+        {id:606,name:"Pigeon Manual Breast Pump",brand:"PIGEON",cat:"Breast Pumps",price:899,mrp:1099,off:"18% off",rating:4.3,reviews:1234,emoji:"🏥",variant:"Manual",bg:"linear-gradient(135deg,#FFF3E0,#FFCC80)"}
+      ],
+      "Sterilizers": [
+        {id:607,name:"Philips Avent 3-in-1 Sterilizer",brand:"PHILIPS",cat:"Sterilizers",price:3499,mrp:3999,off:"13% off",rating:4.6,reviews:1823,emoji:"🥎",variant:"Electric Steam",bg:"linear-gradient(135deg,#E8EAF6,#C5CAE9)"},
+        {id:608,name:"Mee Mee Sterilizer & Dryer",brand:"MEE MEE",cat:"Sterilizers",price:2499,mrp:2999,off:"17% off",rating:4.4,reviews:987,emoji:"🥎",variant:"6 bottles",bg:"linear-gradient(135deg,#FCE4EC,#F8BBD0)"}
+      ],
+      "Nipples": [
+        {id:609,name:"Philips Avent Natural Nipple S1",brand:"PHILIPS",cat:"Nipples",price:449,mrp:549,off:"18% off",rating:4.5,reviews:2134,emoji:"🛑",variant:"Pack of 2 · 0m+",bg:"linear-gradient(135deg,#E8EAF6,#C5CAE9)"},
+        {id:610,name:"Pigeon Softouch Nipple M Size",brand:"PIGEON",cat:"Nipples",price:299,mrp:349,off:"14% off",rating:4.3,reviews:1456,emoji:"🛑",variant:"Pack of 2",bg:"linear-gradient(135deg,#FFF3E0,#FFCC80)"}
+      ]
+    }
+  },
+  "Baby Gear": {
+    subcats: ["Strollers","Baby Carriers","Car Seats","Baby Monitors"],
+    products: {
+      "Strollers": [
+        {id:701,name:"Chicco Bravo Stroller Titan",brand:"CHICCO",cat:"Strollers",price:15999,mrp:18999,off:"16% off",rating:4.6,reviews:876,emoji:"👶",variant:"Titan Black",bg:"linear-gradient(135deg,#ECEFF1,#CFD8DC)"},
+        {id:702,name:"Mee Mee 5-in-1 Baby Stroller",brand:"MEE MEE",cat:"Strollers",price:6499,mrp:7999,off:"19% off",rating:4.3,reviews:1234,emoji:"👶",variant:"Foldable",bg:"linear-gradient(135deg,#FCE4EC,#F8BBD0)"},
+        {id:703,name:"LuvLap Baby Stroller Galaxy",brand:"LUVLAP",cat:"Strollers",price:4999,mrp:5999,off:"17% off",rating:4.2,reviews:2134,emoji:"👶",variant:"Red",bg:"linear-gradient(135deg,#FFEBEE,#FFCDD2)"}
+      ],
+      "Baby Carriers": [
+        {id:704,name:"Ergobaby Omni 360 Baby Carrier",brand:"ERGOBABY",cat:"Baby Carriers",price:11999,mrp:13999,off:"14% off",rating:4.7,reviews:1234,emoji:"👶",variant:"Cool Air",bg:"linear-gradient(135deg,#E8EAF6,#C5CAE9)"},
+        {id:705,name:"LuvLap Hands-Free Baby Carrier",brand:"LUVLAP",cat:"Baby Carriers",price:1499,mrp:1799,off:"17% off",rating:4.3,reviews:3241,emoji:"👶",variant:"Adjustable",bg:"linear-gradient(135deg,#FCE4EC,#F8BBD0)"}
+      ],
+      "Car Seats": [
+        {id:706,name:"Chicco KidFit 2-in-1 Belt Car Seat",brand:"CHICCO",cat:"Car Seats",price:24999,mrp:29999,off:"17% off",rating:4.6,reviews:432,emoji:"🚗",variant:"Black",bg:"linear-gradient(135deg,#ECEFF1,#CFD8DC)"},
+        {id:707,name:"Graco SnugRide 35 Infant Car Seat",brand:"GRACO",cat:"Car Seats",price:14999,mrp:17999,off:"17% off",rating:4.5,reviews:654,emoji:"🚗",variant:"Gotham",bg:"linear-gradient(135deg,#E8EAF6,#C5CAE9)"}
+      ],
+      "Baby Monitors": [
+        {id:708,name:"Motorola Halo+ Video Baby Monitor",brand:"MOTOROLA",cat:"Baby Monitors",price:9999,mrp:11999,off:"17% off",rating:4.5,reviews:876,emoji:"📷",variant:"Wi-Fi HD",bg:"linear-gradient(135deg,#E3F2FD,#BBDEFB)"},
+        {id:709,name:"Philips Avent Audio Baby Monitor",brand:"PHILIPS",cat:"Baby Monitors",price:4999,mrp:5999,off:"17% off",rating:4.4,reviews:543,emoji:"📷",variant:"Digital",bg:"linear-gradient(135deg,#E8EAF6,#C5CAE9)"}
+      ]
+    }
+  },
+  "Baby Toys": {
+    subcats: ["Rattles","Teethers","Activity Mats","Bath Toys"],
+    products: {
+      "Rattles": [
+        {id:801,name:"Fisher-Price Baby's First Rattle",brand:"FISHER-PRICE",cat:"Rattles",price:399,mrp:499,off:"20% off",rating:4.4,reviews:2341,emoji:"🔔",variant:"3+ months",bg:"linear-gradient(135deg,#FFFDE7,#FFF9C4)"},
+        {id:802,name:"Chicco Rainbow Bear Rattle",brand:"CHICCO",cat:"Rattles",price:599,mrp:699,off:"14% off",rating:4.5,reviews:1234,emoji:"🔔",variant:"Soft 0+m",bg:"linear-gradient(135deg,#FCE4EC,#F8BBD0)"},
+        {id:803,name:"Mee Mee Rattle Set 5 pcs",brand:"MEE MEE",cat:"Rattles",price:299,mrp:399,off:"25% off",rating:4.2,reviews:876,emoji:"🔔",variant:"5 pieces",bg:"linear-gradient(135deg,#E8F5E9,#C8E6C9)"}
+      ],
+      "Teethers": [
+        {id:804,name:"Nuby Icybite Teether Toy",brand:"NUBY",cat:"Teethers",price:349,mrp:399,off:"13% off",rating:4.5,reviews:1823,emoji:"🧬",variant:"BPA Free",bg:"linear-gradient(135deg,#E3F2FD,#BBDEFB)"},
+        {id:805,name:"Chicco Fresh Relax Teether",brand:"CHICCO",cat:"Teethers",price:449,mrp:549,off:"18% off",rating:4.4,reviews:987,emoji:"🧬",variant:"Water filled",bg:"linear-gradient(135deg,#FFFDE7,#FFF9C4)"}
+      ],
+      "Activity Mats": [
+        {id:806,name:"Fisher-Price Deluxe Kick & Play Mat",brand:"FISHER-PRICE",cat:"Activity Mats",price:2999,mrp:3499,off:"14% off",rating:4.6,reviews:1456,emoji:"🎯",variant:"With piano",bg:"linear-gradient(135deg,#FFFDE7,#FFF9C4)"},
+        {id:807,name:"Skip Hop Explore & More Mat",brand:"SKIP HOP",cat:"Activity Mats",price:3999,mrp:4499,off:"11% off",rating:4.7,reviews:876,emoji:"🎯",variant:"Reversible",bg:"linear-gradient(135deg,#E8F5E9,#C8E6C9)"}
+      ],
+      "Bath Toys": [
+        {id:808,name:"Munchkin Float & Play Bubbles",brand:"MUNCHKIN",cat:"Bath Toys",price:699,mrp:849,off:"18% off",rating:4.5,reviews:1234,emoji:"🛀",variant:"Colorful set",bg:"linear-gradient(135deg,#E1F5FE,#B3E5FC)"},
+        {id:809,name:"Skip Hop Bath Toys Stack Pour",brand:"SKIP HOP",cat:"Bath Toys",price:599,mrp:749,off:"20% off",rating:4.4,reviews:876,emoji:"🛀",variant:"3 pcs",bg:"linear-gradient(135deg,#E8F5E9,#C8E6C9)"}
+      ]
+    }
+  }
+};
+
+const categories = Object.keys(data);
+const catEmoji = {
+  "Diapers & Wipes":"🧻","Baby Food":"🍜","Baby Skincare":"🧴",
+  "Baby Health":"💊","Maternity":"🤱","Feeding & Nursing":"🍼",
+  "Baby Gear":"👶","Baby Toys":"🧸"
+};
+
+let activeCategory = categories[0];
+let activeSub = data[activeCategory].subcats[0];
+let cart = [];
+let payMethod = 'card';
+
+function render(){
+  // TOP NAV
+  document.getElementById('topNav').innerHTML = categories.map(cat=>
+    `<button class="nav-btn${activeCategory===cat?' active':''}" onclick="selectCat('${cat.replace(/'/g,"\\'")}")">${catEmoji[cat]||'🛍️'} ${cat}</button>`
+  ).join('');
+  // SIDEBAR
+  const subs = data[activeCategory].subcats;
+  document.getElementById('sidebarList').innerHTML = subs.map(sub=>
+    `<li><button class="sidebar-btn${activeSub===sub?' active':''}" onclick="selectSub('${sub.replace(/'/g,"\\'")}")">${sub}</button></li>`
+  ).join('');
+  // PRODUCTS
+  renderProducts();
+}
+
+function renderProducts(searchQ=''){
+  const prods = data[activeCategory].products[activeSub] || [];
+  const filtered = searchQ ? prods.filter(p=>p.name.toLowerCase().includes(searchQ.toLowerCase())||p.brand.toLowerCase().includes(searchQ.toLowerCase())) : prods;
+  document.getElementById('sectionTitle').textContent = activeSub;
+  document.getElementById('sectionSub').textContent = filtered.length + ' products found';
+  document.getElementById('productsGrid').innerHTML = filtered.map(p=>{
+    const stars = '★'.repeat(Math.floor(p.rating)) + (p.rating%1>=0.5?'½':'');
+    return `<div class="product-card">
+      <div class="prod-img" style="background:${p.bg}">
+        <span class="prod-brand-tag">${p.brand}</span>
+        <span class="prod-badge">${p.off}</span>
+        <div class="prod-main-icon">${p.emoji}</div>
+        <div class="prod-variant-tag">${p.variant}</div>
+      </div>
+      <div class="prod-body">
+        <div class="prod-cat">${p.cat}</div>
+        <div class="prod-name">${p.name}</div>
+        <div class="prod-stars">${stars} <span>(${p.reviews.toLocaleString()})</span></div>
+        <div class="prod-price-row">
+          <span class="prod-price">₹${p.price}</span>
+          <span class="prod-mrp">₹${p.mrp}</span>
+          <span class="prod-off">${p.off}</span>
+        </div>
+      </div>
+      <button class="prod-btn" id="pb${p.id}" onclick="addToCart(${p.id})">Add to Cart</button>
+    </div>`;
+  }).join('') || '<p style="color:#94a3b8;text-align:center;padding:40px;grid-column:1/-1;">No products found</p>';
+}
+
+function filterProducts(q){ renderProducts(q); }
+
+function selectCat(cat){
+  activeCategory=cat; activeSub=data[cat].subcats[0]; render();
+}
+function selectSub(sub){ activeSub=sub; render(); }
+
+// --- CART ---
+function addToCart(id){
+  const prods = Object.values(data[activeCategory].products).flat();
+  const p = prods.find(x=>x.id===id);
+  if(!p) return;
+  const ex = cart.find(c=>c.id===id);
+  if(ex) ex.qty++;
+  else cart.push({...p, qty:1});
+  renderCart();
+  const btn = document.getElementById('pb'+id);
+  if(btn){ btn.textContent='✓ Added!'; btn.classList.add('added'); setTimeout(()=>{ btn.textContent='Add to Cart'; btn.classList.remove('added'); },1500); }
+  showToast(`🛒 ${p.name.split(' ').slice(0,3).join(' ')} added!`);
+}
+
+function renderCart(){
+  const total = cart.reduce((a,i)=>a+i.price*i.qty,0);
+  const totalQty = cart.reduce((a,i)=>a+i.qty,0);
+  document.getElementById('cartCount').textContent=totalQty;
+  document.getElementById('cartCountDrawer').textContent=totalQty+' items';
+  document.getElementById('cartSub').textContent='₹'+total;
+  document.getElementById('cartDel').textContent=total>=499?'FREE':'₹50';
+  document.getElementById('cartTot').textContent='₹'+(total+(total>=499?0:50));
+  document.getElementById('checkoutBtn').disabled=!cart.length;
+  if(!cart.length){
+    document.getElementById('cartBody').innerHTML='<div class="cart-empty-msg"><div style="font-size:3rem;margin-bottom:12px">🛒</div><p style="font-size:0.88rem;font-weight:600;color:#475569">Cart is empty</p><p style="font-size:0.78rem;color:#94a3b8;margin-top:4px">Add products to start shopping</p></div>';
+    return;
+  }
+  document.getElementById('cartBody').innerHTML=cart.map(item=>`
+    <div class="cart-item-row">
+      <div class="ci-img" style="background:${item.bg}">${item.emoji}</div>
+      <div class="ci-info">
+        <div class="ci-name">${item.name}</div>
+        <div class="ci-price">₹${item.price}</div>
+        <div class="ci-qty-row">
+          <button class="qty-b" onclick="chgQty(${item.id},-1)">−</button>
+          <span class="qty-n">${item.qty}</span>
+          <button class="qty-b" onclick="chgQty(${item.id},1)">+</button>
+        </div>
+      </div>
+      <button class="ci-del" onclick="remItem(${item.id})">✕</button>
+    </div>`);
+}
+function chgQty(id,d){ const i=cart.find(c=>c.id===id); if(!i)return; i.qty+=d; if(i.qty<=0)cart=cart.filter(c=>c.id!==id); renderCart(); }
+function remItem(id){ cart=cart.filter(c=>c.id!==id); renderCart(); }
+function openCart(){ document.getElementById('cartOverlay').classList.add('open'); document.getElementById('cartDrawer').classList.add('open'); }
+function closeCart(){ document.getElementById('cartOverlay').classList.remove('open'); document.getElementById('cartDrawer').classList.remove('open'); }
+
+// --- PAYMENT ---
+function openPayModal(){
+  if(!cart.length)return;
+  const total=cart.reduce((a,i)=>a+i.price*i.qty,0)+(cart.reduce((a,i)=>a+i.price*i.qty,0)>=499?0:50);
+  document.getElementById('osItems').innerHTML=cart.map(i=>`<div class="os-row"><span>${i.name} x${i.qty}</span><span>₹${i.price*i.qty}</span></div>`).join('');
+  document.getElementById('osTotal').textContent='₹'+total;
+  document.getElementById('payAmt').textContent='₹'+total;
+  closeCart();
+  goStep(1);
+  document.getElementById('payOverlay').classList.add('open');
+}
+function closePayModal(){ document.getElementById('payOverlay').classList.remove('open'); }
+
+function goStep(n){
+  ['sp1','sp2','sp3','spOtp','spProc','spSucc'].forEach(id=>{ const el=document.getElementById(id); if(el){el.classList.remove('active');el.style.display='none';} });
+  for(let i=1;i<=4;i++){
+    const sn=document.getElementById('sn'+i),sl=document.getElementById('sl'+i);
+    if(sn){sn.classList.remove('active','done'); if(i<n)sn.classList.add('done'); else if(i===n)sn.classList.add('active');}
+    if(sl){sl.classList.remove('active'); if(i===n)sl.classList.add('active');}
+    if(i<4){const line=document.getElementById('sline'+i);if(line)line.classList.toggle('done',i<n);}
+  }
+  if(n<=4){
+    const el=document.getElementById('sp'+n);
+    if(el){el.classList.add('active');el.style.display='block';}
+  }
+}
+
+function validateAddr(){
+  const f=document.getElementById('af').value.trim();
+  const l=document.getElementById('al').value.trim();
+  const p=document.getElementById('ap').value.trim();
+  const a=document.getElementById('aa1').value.trim();
+  const c=document.getElementById('ac').value.trim();
+  const pin=document.getElementById('apin').value.trim();
+  const s=document.getElementById('ast').value;
+  if(!f||!l||!p||!a||!c||!pin||!s){showToast('⚠️ Please fill all required fields');return;}
+  if(pin.length!==6){showToast('⚠️ PIN Code must be 6 digits');return;}
+  goStep(3);
+}
+
+function selPM(method,btn){
+  payMethod=method;
+  document.querySelectorAll('.pm-tab').forEach(b=>b.classList.remove('sel'));
+  btn.classList.add('sel');
+  ['pmCard','pmUpi','pmNb','pmWallet','pmCod'].forEach(id=>{ const el=document.getElementById(id); if(el)el.style.display='none'; });
+  const map={card:'pmCard',upi:'pmUpi',nb:'pmNb',wallet:'pmWallet',cod:'pmCod'};
+  const target=document.getElementById(map[method]);
+  if(target)target.style.display='block';
+}
+
+function fmtCard(el){
+  let v=el.value.replace(/\D/g,'').slice(0,16);
+  el.value=v.replace(/(\d{4})(?=\d)/g,'$1  ');
+  const ico=document.getElementById('cardIco');
+  ico.textContent=v.startsWith('4')?'🟦':v.startsWith('5')?'🟥':v.startsWith('6')?'🟨':'💳';
+}
+function fmtExp(el){ let v=el.value.replace(/\D/g,'').slice(0,4); if(v.length>=2)v=v.slice(0,2)+'/'+v.slice(2); el.value=v; }
+function selBank(btn){ document.querySelectorAll('.bank-opt').forEach(b=>b.classList.remove('sel')); btn.classList.add('sel'); }
+
+function processPay(){
+  if(payMethod==='card'){
+    const num=document.getElementById('cNum').value.replace(/\s/g,'');
+    const name=document.getElementById('cName').value.trim();
+    const exp=document.getElementById('cExp').value;
+    const cvv=document.getElementById('cCvv').value;
+    if(num.length<16||!name||exp.length<5||cvv.length<3){showToast('⚠️ Please fill all card details');return;}
+  }
+  if(payMethod==='cod'){ showProc(); }
+  else {
+    const phone=document.getElementById('ap').value;
+    document.getElementById('otpNum').textContent=phone||'+91 XXXXXXX';
+    ['sp1','sp2','sp3'].forEach(id=>{const el=document.getElementById(id);if(el){el.classList.remove('active');el.style.display='none';}});
+    document.getElementById('spOtp').classList.add('active');
+    document.getElementById('spOtp').style.display='block';
+  }
+}
+
+function onxt(el,i){ if(el.value.length===1&&i<5) document.getElementById('o'+(i+1)).focus(); }
+
+function verifyOtp(){
+  const otp=[0,1,2,3,4,5].map(i=>document.getElementById('o'+i).value).join('');
+  if(otp.length<6){showToast('⚠️ Enter complete 6-digit OTP');return;}
+  showProc();
+}
+
+function showProc(){
+  ['sp1','sp2','sp3','spOtp'].forEach(id=>{const el=document.getElementById(id);if(el){el.classList.remove('active');el.style.display='none';}});
+  document.getElementById('spProc').classList.add('active');
+  document.getElementById('spProc').style.display='block';
+  setTimeout(showSuccess,2500);
+}
+
+function showSuccess(){
+  const total=cart.reduce((a,i)=>a+i.price*i.qty,0)+(cart.reduce((a,i)=>a+i.price*i.qty,0)>=499?0:50);
+  const orderId='#MOM-'+Math.floor(100000+Math.random()*900000);
+  const methods={card:'Card',upi:'UPI',nb:'Net Banking',wallet:'Wallet',cod:'Cash on Delivery'};
+  document.getElementById('succId').textContent=orderId;
+  document.getElementById('succDetail').textContent=`Paid ₹${total} via ${methods[payMethod]}`;
+  const d=new Date(); d.setDate(d.getDate()+3);
+  document.getElementById('succDate').textContent=d.toLocaleDateString('en-IN',{weekday:'short',day:'numeric',month:'short',year:'numeric'});
+  document.getElementById('spProc').classList.remove('active');
+  document.getElementById('spProc').style.display='none';
+  document.getElementById('spSucc').classList.add('active');
+  document.getElementById('spSucc').style.display='block';
+  // Update step indicator to done
+  for(let i=1;i<=4;i++){const sn=document.getElementById('sn'+i);if(sn){sn.classList.remove('active');sn.classList.add('done');}}
+  cart=[]; renderCart();
+  showToast('✅ Order placed successfully!');
+}
+
+function onSuccessContinue(){ closePayModal(); goStep(1); }
+
+function showToast(msg){
+  const ex=document.querySelector('.toast');if(ex)ex.remove();
+  const t=document.createElement('div');t.className='toast';t.textContent=msg;
+  document.body.appendChild(t);
+  setTimeout(()=>t.remove(),3000);
+}
+
+render();
+</script>
+</body>
+</html>

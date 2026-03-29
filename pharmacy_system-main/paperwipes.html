@@ -1,0 +1,228 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Paper & Wipes</title>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    body { font-family: "Segoe UI", sans-serif; background: #f0f8ff; color: #0d2137; }
+    .app { min-height: 100vh; display: flex; flex-direction: column; }
+    .header { background: linear-gradient(135deg, #e1f5fe 0%, #e0f7fa 60%, #b3e5fc 100%); border-bottom: 2px solid #29b6f6; }
+    .header-content { max-width: 1200px; margin: 0 auto; padding: 20px 24px; }
+    .header-top { display: flex; align-items: center; gap: 16px; justify-content: space-between; }
+    .logo { font-size: 2.4rem; }
+    .header-text { text-align: center; flex: 1; }
+    .site-title { font-size: 2.2rem; font-weight: 800; letter-spacing: 0.14em; color: #0277bd; text-transform: uppercase; }
+    .site-tagline { font-size: 0.95rem; color: #0288d1; margin-top: 4px; }
+    .cart-icon { font-size: 1.5rem; cursor: pointer; background: white; border: 2px solid #29b6f6; border-radius: 50px; padding: 6px 14px; display: flex; align-items: center; gap: 6px; user-select: none; }
+    .cart-icon:hover { background: #e1f5fe; }
+    .cart-count { font-size: 1rem; font-weight: 700; color: #0277bd; }
+    .top-nav { background: #e1f5fe; border-bottom: 2px solid #81d4fa; display: flex; flex-wrap: wrap; justify-content: center; padding: 0 16px; overflow-x: auto; }
+    .nav-btn { background: none; border: none; border-bottom: 3px solid transparent; padding: 14px 24px; font-size: 0.92rem; font-weight: 600; color: #01579b; cursor: pointer; white-space: nowrap; transition: color 0.2s, border-color 0.2s, background 0.2s; }
+    .nav-btn:hover { color: #0277bd; background: #b3e5fc; }
+    .nav-btn.active { color: #0277bd; border-bottom-color: #0277bd; background: #b3e5fc; }
+    .body-layout { flex: 1; display: flex; max-width: 1200px; margin: 24px auto; width: 100%; padding: 0 16px; gap: 24px; }
+    .sidebar { width: 220px; flex-shrink: 0; background: white; border-radius: 16px; border: 1.5px solid #81d4fa; padding: 20px 0; height: fit-content; box-shadow: 0 2px 12px rgba(2,119,189,0.07); }
+    .sidebar-title { font-size: 0.78rem; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; color: #0288d1; padding: 0 20px 12px; border-bottom: 1.5px solid #81d4fa; margin-bottom: 8px; }
+    .sidebar-list { list-style: none; }
+    .sidebar-btn { display: block; width: 100%; background: none; border: none; border-left: 3px solid transparent; text-align: left; padding: 10px 20px; font-size: 0.9rem; color: #01579b; cursor: pointer; transition: background 0.15s, color 0.15s, padding-left 0.15s; }
+    .sidebar-btn:hover { background: #e1f5fe; color: #0277bd; padding-left: 26px; }
+    .sidebar-btn.active { background: #b3e5fc; color: #0277bd; font-weight: 700; border-left-color: #0277bd; padding-left: 26px; }
+    .main-content { flex: 1; min-width: 0; }
+    .section-header { margin-bottom: 20px; display: flex; align-items: baseline; gap: 12px; flex-wrap: wrap; }
+    .section-title { font-size: 1.5rem; font-weight: 800; color: #0277bd; }
+    .section-subtitle { font-size: 0.85rem; color: #0288d1; }
+    .products-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 20px; }
+    .product-card { background: white; border-radius: 16px; border: 1.5px solid #81d4fa; overflow: hidden; box-shadow: 0 2px 10px rgba(2,119,189,0.07); display: flex; flex-direction: column; transition: transform 0.2s, box-shadow 0.2s; }
+    .product-card:hover { transform: translateY(-4px); box-shadow: 0 8px 24px rgba(2,119,189,0.15); }
+    .product-img { background: linear-gradient(135deg, #e1f5fe 0%, #e0f7fa 100%); height: 130px; display: flex; align-items: center; justify-content: center; position: relative; overflow: hidden; }
+    .product-img img { width: 100%; height: 100%; object-fit: cover; }
+    .product-emoji { font-size: 3.2rem; user-select: none; }
+    .product-info { padding: 14px 14px 8px; flex: 1; }
+    .product-name { font-size: 0.88rem; font-weight: 600; color: #0d2137; line-height: 1.4; margin-bottom: 6px; }
+    .product-price { font-size: 1rem; font-weight: 800; color: #0277bd; }
+    .add-to-cart-btn { margin: 0 14px 14px; padding: 9px 0; background: linear-gradient(90deg, #29b6f6, #0288d1); color: white; border: none; border-radius: 50px; font-size: 0.85rem; font-weight: 700; cursor: pointer; transition: opacity 0.2s, transform 0.1s, background 0.3s; }
+    .add-to-cart-btn:hover { opacity: 0.9; transform: scale(1.02); }
+    .add-to-cart-btn.added { background: linear-gradient(90deg, #66bb6a, #43a047); }
+    .footer { background: #e1f5fe; border-top: 1.5px solid #81d4fa; text-align: center; padding: 18px; font-size: 0.85rem; color: #0288d1; }
+    @media (max-width: 768px) {
+      .site-title { font-size: 1.4rem; }
+      .body-layout { flex-direction: column; margin: 16px auto; }
+      .sidebar { width: 100%; }
+      .sidebar-list { display: flex; flex-wrap: wrap; gap: 4px; padding: 0 12px 12px; }
+      .sidebar-btn { width: auto; border: 1.5px solid #81d4fa; border-left: 1.5px solid #81d4fa; border-radius: 50px; padding: 7px 16px; font-size: 0.82rem; }
+      .sidebar-btn.active { padding-left: 16px; border-color: #0277bd; }
+      .products-grid { grid-template-columns: repeat(auto-fill, minmax(160px, 1fr)); gap: 14px; }
+      .nav-btn { padding: 12px 14px; font-size: 0.85rem; }
+    }
+  </style>
+</head>
+<body>
+<div class="app">
+  <header class="header">
+    <div class="header-content">
+      <div class="header-top">
+        <div class="logo">🧻</div>
+        <div class="header-text">
+          <h1 class="site-title">PAPER &amp; WIPES</h1>
+          <p class="site-tagline">Clean, fresh and hygienic every day</p>
+        </div>
+        <div class="cart-icon">🛒 <span class="cart-count" id="cartCount">0</span></div>
+      </div>
+    </div>
+  </header>
+  <nav class="top-nav" id="topNav"></nav>
+  <div class="body-layout">
+    <aside class="sidebar">
+      <h3 class="sidebar-title">Categories</h3>
+      <ul class="sidebar-list" id="sidebarList"></ul>
+    </aside>
+    <main class="main-content">
+      <div class="section-header">
+        <h2 class="section-title" id="sectionTitle"></h2>
+        <p class="section-subtitle" id="sectionSubtitle"></p>
+      </div>
+      <div class="products-grid" id="productsGrid"></div>
+    </main>
+  </div>
+  <footer class="footer"><p>&copy; 2026 Paper &amp; Wipes. Built with 💙</p></footer>
+</div>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
+<script src="js/supabase-config.js"></script>
+<script src="js/supabase-client.js"></script>
+<script>
+  const categoryName = 'Paper & Wipes';
+  
+  let allProducts = [];
+  let cart = [];
+  let cartCount = 0;
+
+  async function loadProducts() {
+    const sb = typeof MeditSupabase === 'function' && MeditSupabase();
+    if (sb) {
+      try {
+        const { data: cat, error: catErr } = await sb.from('categories').select('id').eq('name', 'Paper & Wipes').maybeSingle();
+        if (catErr || !cat) {
+          console.error('Category Paper & Wipes:', catErr);
+          allProducts = [];
+          renderProducts();
+          return;
+        }
+        const { data: rows, error } = await sb.from('products').select('*').eq('category_id', cat.id);
+        if (error) {
+          console.error(error);
+          allProducts = [];
+        } else {
+          allProducts = (rows || []).map(function (p) {
+            return {
+              id: p.id,
+              name: p.name,
+              price: Number(p.price),
+              stock_quantity: p.stock_quantity,
+              image: p.image_url,
+              category_image: null
+            };
+          });
+        }
+        renderProducts();
+      } catch (e) {
+        console.error(e);
+        allProducts = [];
+        renderProducts();
+      }
+      return;
+    }
+    try {
+      const response = await fetch('api_products.php?action=get_by_category&category_id=6');
+      const data = await response.json();
+      if (data.success && data.data) {
+        allProducts = data.data;
+        renderProducts();
+      } else {
+        console.error('Failed to load products:', data.message);
+      }
+    } catch (error) {
+      console.error('Failed to fetch products:', error);
+    }
+  }
+
+  function renderProducts() {
+    const grid = document.getElementById('productsGrid');
+    
+    if(allProducts.length === 0) {
+      grid.innerHTML = '<p style="grid-column:1/-1;text-align:center;color:#0288d1;padding:40px;">No products found in this category</p>';
+      document.getElementById('sectionSubtitle').textContent = '0 products found';
+      return;
+    }
+
+    document.getElementById('sectionTitle').textContent = categoryName;
+    document.getElementById('sectionSubtitle').textContent = allProducts.length + ' products found';
+    document.getElementById('topNav').innerHTML = `<button class="nav-btn active">${categoryName}</button>`;
+    document.getElementById('sidebarList').innerHTML = '';
+
+    grid.innerHTML = allProducts.map((product, index) => {
+      // Handle image display - use category image if available, otherwise product image
+      let imgHtml = '';
+      if(product.category_image) {
+        imgHtml = `<img src="data:image/svg+xml;base64,${product.category_image}" alt="${product.name}">`;
+      } else if(product.image) {
+        imgHtml = `<img src="${product.image}" alt="${product.name}">`;
+      } else {
+        imgHtml = `<span class="product-emoji">🧻</span>`;
+      }
+
+      return `
+        <div class="product-card">
+          <div class="product-img">
+            ${imgHtml}
+          </div>
+          <div class="product-info">
+            <p class="product-name">${product.name}</p>
+            <p class="product-price">₹${product.price}</p>
+            <p style="font-size:0.75rem;color:#0288d1;margin-top:4px;">Stock: ${product.stock_quantity > 0 ? 'Available' : 'Out of Stock'}</p>
+          </div>
+          <button class="add-to-cart-btn ${product.stock_quantity <= 0 ? 'disabled' : ''}" id="btn-${index}" onclick="addToCart(${index})" ${product.stock_quantity <= 0 ? 'disabled' : ''}>
+            ${product.stock_quantity > 0 ? 'Add to Cart' : 'Out of Stock'}
+          </button>
+        </div>
+      `;
+    }).join('');
+  }
+
+  function addToCart(index) {
+    const product = allProducts[index];
+    if(product.stock_quantity <= 0) return;
+    
+    let existing = cart.find(item => item.id === product.id);
+    if(existing) {
+      existing.quantity += 1;
+    } else {
+      cart.push({
+        id: product.id,
+        name: product.name,
+        price: product.price,
+        quantity: 1
+      });
+    }
+    
+    cartCount++;
+    document.getElementById('cartCount').textContent = cartCount;
+    
+    const btn = document.getElementById('btn-' + index);
+    btn.textContent = '✓ Added!';
+    btn.classList.add('added');
+    btn.style.pointerEvents = 'none';
+    
+    setTimeout(() => {
+      btn.textContent = 'Add to Cart';
+      btn.classList.remove('added');
+      btn.style.pointerEvents = 'auto';
+    }, 1500);
+  }
+
+  // Load products on page load
+  window.addEventListener('load', loadProducts);
+</script>
+</body>
+</html>

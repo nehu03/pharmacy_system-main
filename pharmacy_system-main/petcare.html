@@ -1,0 +1,210 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Pet Care</title>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    body { font-family: "Segoe UI", sans-serif; background: #fff8f0; color: #1a0d00; }
+    .app { min-height: 100vh; display: flex; flex-direction: column; }
+    .header { background: linear-gradient(135deg, #fff3e0 0%, #fce4ec 60%, #ffe0b2 100%); border-bottom: 2px solid #ff8f00; }
+    .header-content { max-width: 1200px; margin: 0 auto; padding: 20px 24px; }
+    .header-top { display: flex; align-items: center; gap: 16px; justify-content: space-between; }
+    .logo { font-size: 2.4rem; }
+    .header-text { text-align: center; flex: 1; }
+    .site-title { font-size: 2.2rem; font-weight: 800; letter-spacing: 0.14em; color: #e65100; text-transform: uppercase; }
+    .site-tagline { font-size: 0.95rem; color: #ef6c00; margin-top: 4px; }
+    .cart-icon { font-size: 1.5rem; cursor: pointer; background: white; border: 2px solid #ff8f00; border-radius: 50px; padding: 6px 14px; display: flex; align-items: center; gap: 6px; user-select: none; }
+    .cart-icon:hover { background: #fff3e0; }
+    .cart-count { font-size: 1rem; font-weight: 700; color: #e65100; }
+    .top-nav { background: #fff3e0; border-bottom: 2px solid #ffcc80; display: flex; flex-wrap: wrap; justify-content: center; padding: 0 16px; overflow-x: auto; }
+    .nav-btn { background: none; border: none; border-bottom: 3px solid transparent; padding: 14px 32px; font-size: 0.95rem; font-weight: 600; color: #bf360c; cursor: pointer; white-space: nowrap; transition: color 0.2s, border-color 0.2s, background 0.2s; }
+    .nav-btn:hover { color: #e65100; background: #ffe0b2; }
+    .nav-btn.active { color: #e65100; border-bottom-color: #e65100; background: #ffe0b2; }
+    .body-layout { flex: 1; display: flex; max-width: 1200px; margin: 24px auto; width: 100%; padding: 0 16px; gap: 24px; }
+    .sidebar { width: 220px; flex-shrink: 0; background: white; border-radius: 16px; border: 1.5px solid #ffcc80; padding: 20px 0; height: fit-content; box-shadow: 0 2px 12px rgba(230,81,0,0.07); }
+    .sidebar-title { font-size: 0.78rem; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; color: #ef6c00; padding: 0 20px 12px; border-bottom: 1.5px solid #ffcc80; margin-bottom: 8px; }
+    .sidebar-list { list-style: none; }
+    .sidebar-btn { display: block; width: 100%; background: none; border: none; border-left: 3px solid transparent; text-align: left; padding: 10px 20px; font-size: 0.9rem; color: #bf360c; cursor: pointer; transition: background 0.15s, color 0.15s, padding-left 0.15s; }
+    .sidebar-btn:hover { background: #fff3e0; color: #e65100; padding-left: 26px; }
+    .sidebar-btn.active { background: #ffe0b2; color: #e65100; font-weight: 700; border-left-color: #e65100; padding-left: 26px; }
+    .main-content { flex: 1; min-width: 0; }
+    .section-header { margin-bottom: 20px; display: flex; align-items: baseline; gap: 12px; flex-wrap: wrap; }
+    .section-title { font-size: 1.5rem; font-weight: 800; color: #e65100; }
+    .section-subtitle { font-size: 0.85rem; color: #ef6c00; }
+    .products-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 20px; }
+    .product-card { background: white; border-radius: 16px; border: 1.5px solid #ffcc80; overflow: hidden; box-shadow: 0 2px 10px rgba(230,81,0,0.07); display: flex; flex-direction: column; transition: transform 0.2s, box-shadow 0.2s; }
+    .product-card:hover { transform: translateY(-4px); box-shadow: 0 8px 24px rgba(230,81,0,0.15); }
+    .product-img { background: linear-gradient(135deg, #fff3e0 0%, #fce4ec 100%); height: 130px; display: flex; align-items: center; justify-content: center; }
+    .product-emoji { font-size: 3.2rem; user-select: none; }
+    .product-info { padding: 14px 14px 8px; flex: 1; }
+    .product-name { font-size: 0.88rem; font-weight: 600; color: #1a0d00; line-height: 1.4; margin-bottom: 6px; }
+    .product-price { font-size: 1rem; font-weight: 800; color: #e65100; }
+    .add-to-cart-btn { margin: 0 14px 14px; padding: 9px 0; background: linear-gradient(90deg, #ff8f00, #f4511e); color: white; border: none; border-radius: 50px; font-size: 0.85rem; font-weight: 700; cursor: pointer; transition: opacity 0.2s, transform 0.1s, background 0.3s; }
+    .add-to-cart-btn:hover { opacity: 0.9; transform: scale(1.02); }
+    .add-to-cart-btn.added { background: linear-gradient(90deg, #66bb6a, #43a047); }
+    .footer { background: #fff3e0; border-top: 1.5px solid #ffcc80; text-align: center; padding: 18px; font-size: 0.85rem; color: #ef6c00; }
+    @media (max-width: 768px) {
+      .site-title { font-size: 1.4rem; }
+      .body-layout { flex-direction: column; margin: 16px auto; }
+      .sidebar { width: 100%; }
+      .sidebar-list { display: flex; flex-wrap: wrap; gap: 4px; padding: 0 12px 12px; }
+      .sidebar-btn { width: auto; border: 1.5px solid #ffcc80; border-left: 1.5px solid #ffcc80; border-radius: 50px; padding: 7px 16px; font-size: 0.82rem; }
+      .sidebar-btn.active { padding-left: 16px; border-color: #e65100; }
+      .products-grid { grid-template-columns: repeat(auto-fill, minmax(160px, 1fr)); gap: 14px; }
+      .nav-btn { padding: 12px 18px; font-size: 0.85rem; }
+    }
+  </style>
+</head>
+<body>
+<div class="app">
+  <header class="header">
+    <div class="header-content">
+      <div class="header-top">
+        <div class="logo">🐾</div>
+        <div class="header-text">
+          <h1 class="site-title">PET CARE</h1>
+          <p class="site-tagline">Everything your furry friend needs</p>
+        </div>
+        <div class="cart-icon">🛒 <span class="cart-count" id="cartCount">0</span></div>
+      </div>
+    </div>
+  </header>
+  <nav class="top-nav" id="topNav"></nav>
+  <div class="body-layout">
+    <aside class="sidebar">
+      <h3 class="sidebar-title">Categories</h3>
+      <ul class="sidebar-list" id="sidebarList"></ul>
+    </aside>
+    <main class="main-content">
+      <div class="section-header">
+        <h2 class="section-title" id="sectionTitle"></h2>
+        <p class="section-subtitle" id="sectionSubtitle"></p>
+      </div>
+      <div class="products-grid" id="productsGrid"></div>
+    </main>
+  </div>
+  <footer class="footer"><p>&copy; 2026 Pet Care. Built with 🧡</p></footer>
+</div>
+<script>
+  const data = {
+    "Dog": {
+      "Dog Food": [
+        { name: "Pedigree Adult Dry Dog Food Chicken & Rice 10kg", price: "$34.99" },
+        { name: "Royal Canin Maxi Adult Dog Food 15kg", price: "$64.99" },
+        { name: "Purina Pro Plan Adult Shredded Chicken 6kg", price: "$44.99" },
+        { name: "Hill's Science Diet Adult Chicken 4kg", price: "$38.49" },
+        { name: "Drools Chicken & Egg Adult Dog Food 3kg", price: "$18.99" }
+      ],
+      "Dog Treats & Snacks": [
+        { name: "Pedigree Dentastix Daily Oral Care 7 Sticks", price: "$7.99" },
+        { name: "Milk-Bone Original Dog Biscuits 900g", price: "$9.49" },
+        { name: "Purina Beggin' Strips Bacon Flavour 170g", price: "$6.99" },
+        { name: "Zuke's Mini Naturals Chicken Training Treats 170g", price: "$8.49" },
+        { name: "Himalaya Healthy Treats Liver Bites 200g", price: "$5.99" }
+      ],
+      "Dog Grooming": [
+        { name: "Wahl Pet Clippers Deluxe Pro Series Kit", price: "$39.99" },
+        { name: "Furminator deShedding Tool for Large Dogs", price: "$34.99" },
+        { name: "Burt's Bees Hypoallergenic Dog Shampoo 475ml", price: "$11.49" },
+        { name: "Hertzko Self-Cleaning Slicker Brush", price: "$14.99" },
+        { name: "Pet Head Dry Clean Waterless Dog Shampoo 450ml", price: "$12.99" }
+      ],
+      "Dog Health & Wellness": [
+        { name: "NexGard Chewables Flea & Tick Treatment Small Dogs", price: "$44.99" },
+        { name: "Frontline Plus Flea & Tick Spot-On for Dogs", price: "$38.49" },
+        { name: "Zymox Ear Solution with Hydrocortisone 118ml", price: "$19.99" },
+        { name: "Cosequin DS Plus MSM Joint Supplement 60ct", price: "$28.99" },
+        { name: "Vetri-Science Canine Plus Senior Multivitamin 60ct", price: "$22.49" }
+      ],
+      "Dog Accessories": [
+        { name: "Ruffwear Front Range Dog Harness Medium", price: "$49.99" },
+        { name: "Kong Classic Dog Toy Large Red", price: "$14.99" },
+        { name: "PetSafe Easy Walk Dog Harness Large", price: "$24.99" },
+        { name: "Chuckit! Ultra Ball Dog Toy Large 2-Pack", price: "$12.49" },
+        { name: "Midwest iCrate Folding Metal Dog Crate 36\"", price: "$54.99" }
+      ]
+    },
+    "Cat": {
+      "Cat Food": [
+        { name: "Whiskas Adult Wet Cat Food Tuna Pouches 12x85g", price: "$14.99" },
+        { name: "Royal Canin Indoor Adult Cat Food 2kg", price: "$28.49" },
+        { name: "Purina Felix Mixed Selection Pouches 40x100g", price: "$24.99" },
+        { name: "Hill's Science Diet Adult Indoor Cat Food 1.8kg", price: "$22.99" },
+        { name: "Sheba Perfect Portions Premium Cat Food 24ct", price: "$19.49" }
+      ],
+      "Cat Treats & Snacks": [
+        { name: "Temptations Classic Cat Treats Tasty Chicken 180g", price: "$6.99" },
+        { name: "Dreamies Cat Treats Chicken 60g", price: "$3.99" },
+        { name: "Greenies Feline Dental Treats Catnip Flavour 71g", price: "$7.49" },
+        { name: "Churu Cat Treats Tuna Puree Sticks 20ct", price: "$9.99" },
+        { name: "Fancy Feast Creamy Delights Treats 10ct", price: "$5.49" }
+      ],
+      "Cat Grooming": [
+        { name: "Furminator Short Hair Cat deShedding Tool", price: "$29.99" },
+        { name: "Vet's Best Waterless Cat Bath No-Rinse Shampoo 236ml", price: "$8.99" },
+        { name: "Safari Cat Shedding Comb", price: "$11.49" },
+        { name: "Burt's Bees Hypoallergenic Cat Shampoo 354ml", price: "$9.99" },
+        { name: "Hartz Groomer's Best Combo Cat Brush", price: "$7.49" }
+      ],
+      "Cat Health & Wellness": [
+        { name: "Advantage II Flea Prevention for Cats 4ct", price: "$39.99" },
+        { name: "Frontline Plus Flea & Tick Treatment for Cats 3ct", price: "$34.49" },
+        { name: "Zymox Ear Solution for Cats 118ml", price: "$18.99" },
+        { name: "Nutramax Cosequin for Cats Joint Supplement 80ct", price: "$24.99" },
+        { name: "VetriScience NuCat Senior Multivitamin 30ct", price: "$19.49" }
+      ],
+      "Cat Accessories": [
+        { name: "Catit Design Senses Play Circuit Cat Toy", price: "$19.99" },
+        { name: "Trixie Posto Scratching Post 95cm", price: "$34.99" },
+        { name: "PetFusion Ultimate Cat Scratcher Lounge", price: "$44.99" },
+        { name: "Bergan Turbo Scratcher Cat Toy with Catnip", price: "$14.49" },
+        { name: "SmartCat Pioneer Pet Corner Cat Scratcher", price: "$22.99" }
+      ]
+    }
+  };
+
+  const emojiMap = { "Dog": "🐶", "Cat": "🐱" };
+
+  const categories = Object.keys(data);
+  let activeCategory = categories[0];
+  let activeSub = Object.keys(data[activeCategory])[0];
+  let cartCount = 0;
+
+  function render() {
+    document.getElementById('topNav').innerHTML = categories.map(cat =>
+      `<button class="nav-btn${activeCategory===cat?' active':''}" onclick="selectCategory('${cat}')">${emojiMap[cat]} ${cat}</button>`
+    ).join('');
+    const subs = Object.keys(data[activeCategory]);
+    document.getElementById('sidebarList').innerHTML = subs.map(sub =>
+      `<li><button class="sidebar-btn${activeSub===sub?' active':''}" onclick="selectSub('${sub.replace(/'/g,"\\'")}')">${sub}</button></li>`
+    ).join('');
+    const products = data[activeCategory][activeSub];
+    document.getElementById('sectionTitle').textContent = activeSub;
+    document.getElementById('sectionSubtitle').textContent = products.length + ' products found';
+    document.getElementById('productsGrid').innerHTML = products.map((p, i) =>
+      `<div class="product-card">
+        <div class="product-img"><span class="product-emoji">${emojiMap[activeCategory]}</span></div>
+        <div class="product-info"><p class="product-name">${p.name}</p><p class="product-price">${p.price}</p></div>
+        <button class="add-to-cart-btn" id="btn-${i}" onclick="addToCart(${i})">Add to Cart</button>
+      </div>`
+    ).join('');
+    document.getElementById('cartCount').textContent = cartCount;
+  }
+
+  function selectCategory(cat) { activeCategory = cat; activeSub = Object.keys(data[cat])[0]; render(); }
+  function selectSub(sub) { activeSub = sub; render(); }
+  function addToCart(i) {
+    cartCount++;
+    document.getElementById('cartCount').textContent = cartCount;
+    const btn = document.getElementById('btn-'+i);
+    btn.textContent = '✓ Added!'; btn.classList.add('added');
+    setTimeout(() => { btn.textContent = 'Add to Cart'; btn.classList.remove('added'); }, 1500);
+  }
+
+  render();
+</script>
+</body>
+</html>
+
