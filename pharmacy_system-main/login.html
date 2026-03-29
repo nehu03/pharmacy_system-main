@@ -371,7 +371,9 @@ body{
       <!-- Admin creds hint (hidden by default) -->
       <div class="creds-badge" id="adminCredsHint" style="display:none">
         <strong>Default Admin Credentials:</strong><br>
-        Username: <strong>admin</strong> &nbsp;&bull;&nbsp; Password: <strong>admin123</strong>
+        Username: <strong>admin</strong> &nbsp;&bull;&nbsp; Password: <strong>admin123</strong><br>
+        <strong>Default Customer Credentials:</strong><br>
+        Email: <strong>customer@mediteasy.com</strong> &nbsp;&bull;&nbsp; Password: <strong>customer123</strong>
       </div>
 
       <div class="form-alert" id="login-alert"><span id="login-alert-msg"></span></div>
@@ -549,11 +551,6 @@ body{
 
 </div><!-- /wrapper -->
 
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
-<script src="js/supabase-config.js"></script>
-<script src="js/supabase-client.js"></script>
-<script src="js/medit-auth.js"></script>
-
 <script>
 const ADMIN_KEY   = 'meditAdmins';
 const CUST_KEY    = 'meditCustomers';
@@ -563,15 +560,22 @@ let currentTab    = 'login';
 
 
 
-// ── DEFAULT ADMIN (local demo only — skipped when Supabase is configured) ──
+// ── DEFAULT USERS ──
 (function(){
-  if (typeof MeditSupabase === 'function' && MeditSupabase()) return;
   let admins = JSON.parse(localStorage.getItem(ADMIN_KEY) || '[]');
   if (!admins.find(a => a.username === 'admin')) {
     admins.push({ id:'admin-001', name:'Super Admin', username:'admin',
       email:'admin@meditEasy.com', password:'admin123',
       role:'admin', createdAt: new Date().toISOString() });
     localStorage.setItem(ADMIN_KEY, JSON.stringify(admins));
+  }
+  let customers = JSON.parse(localStorage.getItem(CUST_KEY) || '[]');
+  if (!customers.find(c => c.email === 'customer@mediteasy.com')) {
+    customers.push({ id:'cust-001', name:'Demo Customer',
+      firstName:'Demo', lastName:'Customer', email:'customer@mediteasy.com',
+      phone:'9999999999', password:'customer123',
+      role:'customer', joinDate:new Date().toISOString(), orders:[], totalSpent:0 });
+    localStorage.setItem(CUST_KEY, JSON.stringify(customers));
   }
 })();
 
@@ -588,11 +592,7 @@ function sessionRedirectHref(s) {
     const s = JSON.parse(sessionStorage.getItem(SESSION_KEY) || localStorage.getItem(SESSION_KEY) || 'null');
     if (s) { location.href = sessionRedirectHref(s); }
   }
-  if (typeof MeditSupabase === 'function' && MeditSupabase()) {
-    MeditAuthHydrateSession().then(go).catch(go);
-  } else {
-    go();
-  }
+  go();
 })();
 
 // ── ROLE CHANGE ──
@@ -632,7 +632,6 @@ function onRoleChange() {
     document.getElementById('cust-fields').style.display  = 'block';
     document.getElementById('admin-fields').style.display = 'none';
   }
-  if (typeof updateSupabaseHints === 'function') updateSupabaseHints();
   clearAlerts();
 }
 
@@ -714,92 +713,10 @@ function createSession(user, remember) {
   if (remember) localStorage.setItem(SESSION_KEY, JSON.stringify(s));
 }
 
-function updateSupabaseHints() {
-  const sb = typeof MeditSupabase === 'function' && MeditSupabase();
-  const hint = document.getElementById('adminCredsHint');
-  const uLab = document.querySelector('#field-username-wrap label');
-  if (!hint || !uLab) return;
-  if (sb && currentRole === 'admin') {
-    uLab.textContent = 'Email (Supabase)';
-    document.getElementById('login-username').placeholder = 'you@example.com';
-    hint.innerHTML = 'Use the <strong>email</strong> you registered with. Password is managed by Supabase Auth.';
-    hint.style.display = 'block';
-  } else if (currentRole === 'admin') {
-    uLab.textContent = 'Username or Email';
-    document.getElementById('login-username').placeholder = 'Enter username or email...';
-    hint.innerHTML = 'Demo: <strong>admin</strong> / <strong>admin123</strong>';
-    hint.style.display = 'block';
-  }
-}
-
-async function doLoginSupabase(sb) {
-  const password = document.getElementById('login-password').value;
-  const remember = document.getElementById('login-remember').checked;
-  let email = '';
-
-  if (currentRole === 'admin') {
-    email = document.getElementById('login-username').value.trim();
-    if (!email) { showErr('login-username-err'); return; }
-    if (!/^[^@]+@[^@]+\.[^@]+$/.test(email)) {
-      showErr('login-username-err');
-      showAlert('login-alert','login-alert-msg','With Supabase, sign in using your email address.','error');
-      return;
-    }
-  } else {
-    email = document.getElementById('login-email').value.trim();
-    if (!email || !/^[^@]+@[^@]+\.[^@]+$/.test(email)) { showErr('login-email-err'); return; }
-  }
-  if (!password) { showErr('login-password-err'); return; }
-
-  setLoading('login-btn', true);
-  const { data, error } = await sb.auth.signInWithPassword({ email, password });
-  if (error) {
-    setLoading('login-btn', false, currentRole === 'admin' ? '🔓 Login to Dashboard' : '🛍️ Login &amp; Shop Now');
-    showAlert('login-alert','login-alert-msg','❌ ' + (error.message || 'Login failed'), 'error');
-    return;
-  }
-  const user = data.user;
-  const { data: profRow, error: pErr } = await sb.from('profiles').select('*').eq('id', user.id).maybeSingle();
-  if (pErr || !profRow) {
-    await sb.auth.signOut();
-    setLoading('login-btn', false, currentRole === 'admin' ? '🔓 Login to Dashboard' : '🛍️ Login &amp; Shop Now');
-    showAlert('login-alert','login-alert-msg','❌ Profile not found. Complete sign up first.','error');
-    return;
-  }
-  const pr = profRow.role;
-  if (currentRole === 'admin' && pr === 'customer') {
-    await sb.auth.signOut();
-    setLoading('login-btn', false, '🔓 Login to Dashboard');
-    showAlert('login-alert','login-alert-msg','❌ This account is not an admin. Use Customer portal.','error');
-    return;
-  }
-  if (currentRole === 'customer' && pr !== 'customer') {
-    await sb.auth.signOut();
-    setLoading('login-btn', false, '🛍️ Login &amp; Shop Now');
-    showAlert('login-alert','login-alert-msg','❌ Staff accounts must use the Admin portal.','error');
-    return;
-  }
-
-  MeditAuth.persistSession(MeditAuth.mapProfileToSession(user, profRow), remember);
-  showAlert('login-alert','login-alert-msg','✅ Login successful! Redirecting...','success');
-  showToast('Welcome back! 👋', 'success');
-  setTimeout(() => { location.href = sessionRedirectHref({ role: pr }); }, 800);
-}
-
 // ── LOGIN ──
 function doLogin() {
   clearAlerts();
   const password = document.getElementById('login-password').value;
-  const sb = typeof MeditSupabase === 'function' && MeditSupabase();
-  if (sb) {
-    doLoginSupabase(sb).catch(function (e) {
-      console.error(e);
-      setLoading('login-btn', false, currentRole === 'admin' ? '🔓 Login to Dashboard' : '🛍️ Login &amp; Shop Now');
-      showAlert('login-alert','login-alert-msg','❌ Something went wrong. Try again.','error');
-    });
-    return;
-  }
-
   let valid = true;
 
   if (currentRole === 'admin') {
@@ -845,111 +762,9 @@ function doLogin() {
   }
 }
 
-async function doRegisterSupabase(sb) {
-  let valid = true;
-  if (currentRole === 'admin') {
-    const name     = document.getElementById('areg-name').value.trim();
-    const username = document.getElementById('areg-username').value.trim();
-    const email    = document.getElementById('areg-email').value.trim();
-    const password = document.getElementById('areg-password').value;
-    const secret   = document.getElementById('areg-secret').value;
-    const terms    = document.getElementById('areg-terms').checked;
-    if (!name)                                           { showErr('areg-name-err');     valid = false; }
-    if (!username || username.length < 4)                { showErr('areg-username-err'); valid = false; }
-    if (!email || !/^[^@]+@[^@]+\.[^@]+$/.test(email))  { showErr('areg-email-err');    valid = false; }
-    if (!password || password.length < 6)                { showErr('areg-password-err'); valid = false; }
-    if (secret !== 'meditadmin2024')                     { showErr('areg-secret-err');   valid = false; }
-    if (!valid) return;
-    if (!terms) { showAlert('reg-alert','reg-alert-msg','⚠️ Please accept Terms & Conditions','error'); return; }
-    setLoading('register-btn', true);
-    const { data, error } = await sb.auth.signUp({
-      email,
-      password,
-      options: {
-        data: { full_name: name, username: username, phone: '' }
-      }
-    });
-    if (error) {
-      setLoading('register-btn', false, '✅ Create Admin Account');
-      showAlert('reg-alert','reg-alert-msg','❌ ' + (error.message || 'Sign up failed'), 'error');
-      return;
-    }
-    if (!data.session) {
-      setLoading('register-btn', false, '✅ Create Admin Account');
-      showAlert('reg-alert','reg-alert-msg','📧 Check your email to confirm, then run claim_admin_role from SQL or disable email confirm in Supabase Auth settings.', 'success');
-      return;
-    }
-    const { error: rpcErr } = await sb.rpc('claim_admin_role', { secret: secret });
-    if (rpcErr) {
-      await sb.auth.signOut();
-      setLoading('register-btn', false, '✅ Create Admin Account');
-      showAlert('reg-alert','reg-alert-msg','❌ ' + (rpcErr.message || 'Could not grant admin role'), 'error');
-      return;
-    }
-    const user = data.session.user;
-    const { data: profRow } = await sb.from('profiles').select('*').eq('id', user.id).single();
-    MeditAuth.persistSession(MeditAuth.mapProfileToSession(user, profRow), false);
-    showAlert('reg-alert','reg-alert-msg','🎉 Admin account created! Redirecting...','success');
-    showToast('Welcome, ' + name + '! 🎉', 'success');
-    setTimeout(() => { location.href = 'admin.html'; }, 1200);
-  } else {
-    const fname    = document.getElementById('creg-fname').value.trim();
-    const lname    = document.getElementById('creg-lname').value.trim();
-    const email    = document.getElementById('creg-email').value.trim();
-    const phone    = document.getElementById('creg-phone').value.trim();
-    const password = document.getElementById('creg-password').value;
-    const terms    = document.getElementById('creg-terms').checked;
-    if (!fname)                                          { showErr('creg-fname-err');    valid = false; }
-    if (!lname)                                          { showErr('creg-lname-err');    valid = false; }
-    if (!email || !/^[^@]+@[^@]+\.[^@]+$/.test(email))  { showErr('creg-email-err');    valid = false; }
-    if (!phone || phone.replace(/\D/g,'').length < 10)   { showErr('creg-phone-err');    valid = false; }
-    if (!password || password.length < 6)                { showErr('creg-password-err'); valid = false; }
-    if (!valid) return;
-    if (!terms) { showAlert('reg-alert','reg-alert-msg','⚠️ Please accept Terms & Conditions','error'); return; }
-    setLoading('register-btn', true);
-    const { data, error } = await sb.auth.signUp({
-      email,
-      password,
-      options: {
-        data: {
-          full_name: fname + ' ' + lname,
-          phone: phone,
-          username: ''
-        }
-      }
-    });
-    if (error) {
-      setLoading('register-btn', false, '🎉 Create My Account');
-      showAlert('reg-alert','reg-alert-msg','❌ ' + (error.message || 'Sign up failed'), 'error');
-      return;
-    }
-    if (!data.session) {
-      setLoading('register-btn', false, '🎉 Create My Account');
-      showAlert('reg-alert','reg-alert-msg','📧 Confirm your email, then log in.', 'success');
-      return;
-    }
-    const user = data.session.user;
-    const { data: profRow } = await sb.from('profiles').select('*').eq('id', user.id).single();
-    MeditAuth.persistSession(MeditAuth.mapProfileToSession(user, profRow), false);
-    showAlert('reg-alert','reg-alert-msg','🎉 Account created! Redirecting to pharmacy...','success');
-    showToast('Welcome to Med it Easy, ' + fname + '! 💊', 'success');
-    setTimeout(() => { location.href = 'onlinepharmacy.html'; }, 1200);
-  }
-}
-
 // ── REGISTER ──
 function doRegister() {
   clearAlerts();
-  const sb = typeof MeditSupabase === 'function' && MeditSupabase();
-  if (sb) {
-    doRegisterSupabase(sb).catch(function (e) {
-      console.error(e);
-      setLoading('register-btn', false, currentRole === 'admin' ? '✅ Create Admin Account' : '🎉 Create My Account');
-      showAlert('reg-alert','reg-alert-msg','❌ Something went wrong. Try again.','error');
-    });
-    return;
-  }
-
   let valid = true;
 
   if (currentRole === 'admin') {

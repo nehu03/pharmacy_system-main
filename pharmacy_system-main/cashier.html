@@ -592,15 +592,8 @@
 
   init();
 </script>
-<script src="js/supabase-config.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
-<script src="js/supabase-client.js"></script>
-<script src="js/medit-auth.js"></script>
 <script>
-  document.addEventListener('DOMContentLoaded', async function () {
-    if (typeof MeditSupabase === 'function' && MeditSupabase()) {
-      await MeditAuthHydrateSession();
-    }
+  document.addEventListener('DOMContentLoaded', function () {
     var raw = sessionStorage.getItem('meditSession') || localStorage.getItem('meditSession');
     if (!raw) { location.href = 'login.html'; return; }
     try {

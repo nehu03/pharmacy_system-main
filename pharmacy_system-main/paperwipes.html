@@ -88,9 +88,6 @@
   </div>
   <footer class="footer"><p>&copy; 2026 Paper &amp; Wipes. Built with 💙</p></footer>
 </div>
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
-<script src="js/supabase-config.js"></script>
-<script src="js/supabase-client.js"></script>
 <script>
   const categoryName = 'Paper & Wipes';
   
@@ -99,40 +96,6 @@
   let cartCount = 0;
 
   async function loadProducts() {
-    const sb = typeof MeditSupabase === 'function' && MeditSupabase();
-    if (sb) {
-      try {
-        const { data: cat, error: catErr } = await sb.from('categories').select('id').eq('name', 'Paper & Wipes').maybeSingle();
-        if (catErr || !cat) {
-          console.error('Category Paper & Wipes:', catErr);
-          allProducts = [];
-          renderProducts();
-          return;
-        }
-        const { data: rows, error } = await sb.from('products').select('*').eq('category_id', cat.id);
-        if (error) {
-          console.error(error);
-          allProducts = [];
-        } else {
-          allProducts = (rows || []).map(function (p) {
-            return {
-              id: p.id,
-              name: p.name,
-              price: Number(p.price),
-              stock_quantity: p.stock_quantity,
-              image: p.image_url,
-              category_image: null
-            };
-          });
-        }
-        renderProducts();
-      } catch (e) {
-        console.error(e);
-        allProducts = [];
-        renderProducts();
-      }
-      return;
-    }
     try {
       const response = await fetch('api_products.php?action=get_by_category&category_id=6');
       const data = await response.json();

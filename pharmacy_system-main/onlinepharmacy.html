@@ -885,16 +885,5 @@
   // Initialize payment section displays
   selectPayMethod('card',document.querySelector('.pm-tab'));
 </script>
-<script src="js/supabase-config.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
-<script src="js/supabase-client.js"></script>
-<script src="js/medit-auth.js"></script>
-<script>
-  document.addEventListener('DOMContentLoaded', async function () {
-    if (typeof MeditSupabase === 'function' && MeditSupabase()) {
-      await MeditAuthHydrateSession();
-    }
-  });
-</script>
 </body>
 </html>
