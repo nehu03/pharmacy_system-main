@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"><title>Staff | Med it Easy</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<style>
+  *,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+  :root{--dark:#0f172a;--dark2:#1e293b;--dark3:#334155;--accent:#00ffcc;--accent2:#00d4aa;--red:#ef4444;--green:#10b981;--text:#f1f5f9;--muted:#94a3b8;}
+  body{font-family:"Segoe UI",sans-serif;background:#f0f4f8;display:flex;min-height:100vh;}
+  .sidebar{width:250px;background:var(--dark);display:flex;flex-direction:column;position:fixed;top:0;left:0;height:100vh;overflow-y:auto;z-index:100;}
+  .sb-logo{display:flex;align-items:center;gap:12px;padding:28px 24px 24px;border-bottom:1px solid var(--dark3);}
+  .sb-logo-icon{font-size:2rem;} .sb-logo-name{font-size:1.3rem;font-weight:900;color:var(--accent);} .sb-logo-sub{font-size:0.68rem;color:var(--muted);margin-top:1px;}
+  .sb-section-label{font-size:0.65rem;font-weight:800;letter-spacing:0.12em;text-transform:uppercase;color:#475569;padding:20px 24px 8px;}
+  .sb-link{display:flex;align-items:center;gap:12px;padding:11px 24px;color:var(--muted);text-decoration:none;font-size:0.88rem;border-left:3px solid transparent;transition:all 0.15s;}
+  .sb-link:hover,.sb-link.active{background:var(--dark2);color:var(--accent);border-left-color:var(--accent);padding-left:30px;font-weight:700;}
+  .sb-link .ico{font-size:1.1rem;width:20px;text-align:center;flex-shrink:0;}
+  .sb-badge{margin-left:auto;background:var(--red);color:white;font-size:0.62rem;font-weight:800;padding:2px 7px;border-radius:50px;}
+  .sb-divider{height:1px;background:var(--dark3);margin:10px 0;}
+  .sb-footer{margin-top:auto;padding:20px 24px;border-top:1px solid var(--dark3);display:flex;align-items:center;gap:10px;}
+  .sb-avatar{width:36px;height:36px;border-radius:50%;background:linear-gradient(135deg,var(--accent),#00b4d8);display:flex;align-items:center;justify-content:center;font-size:1rem;font-weight:800;color:var(--dark);}
+  .sb-user-name{font-size:0.85rem;font-weight:700;color:var(--text);} .sb-user-role{font-size:0.7rem;color:var(--muted);}
+  .main{flex:1;margin-left:250px;display:flex;flex-direction:column;}
+  .topbar{background:white;height:66px;display:flex;align-items:center;justify-content:space-between;padding:0 32px;border-bottom:1px solid #e2e8f0;position:sticky;top:0;z-index:50;box-shadow:0 1px 8px rgba(0,0,0,0.05);}
+  .topbar-left h1{font-size:1.35rem;font-weight:800;color:var(--dark);} .topbar-left p{font-size:0.78rem;color:#64748b;}
+  .tb-btn{background:var(--accent);color:var(--dark);border:none;border-radius:50px;padding:9px 20px;font-size:0.82rem;font-weight:800;cursor:pointer;}
+  .content{padding:30px 32px;flex:1;}
+  .staff-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(240px,1fr));gap:20px;}
+  .staff-card{background:white;border-radius:20px;border:1.5px solid #e2e8f0;padding:24px;text-align:center;box-shadow:0 2px 12px rgba(0,0,0,0.05);transition:transform 0.2s,box-shadow 0.2s;}
+  .staff-card:hover{transform:translateY(-5px);box-shadow:0 10px 28px rgba(0,0,0,0.1);}
+  .staff-avatar{width:70px;height:70px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:2rem;margin:0 auto 14px;}
+  .staff-name{font-size:1rem;font-weight:800;color:var(--dark);margin-bottom:4px;}
+  .staff-role{font-size:0.78rem;color:#64748b;margin-bottom:12px;}
+  .staff-info{display:flex;justify-content:center;gap:16px;margin-bottom:14px;}
+  .staff-info span{font-size:0.72rem;color:#94a3b8;display:flex;align-items:center;gap:4px;}
+  .badge{display:inline-flex;padding:4px 12px;border-radius:50px;font-size:0.72rem;font-weight:700;}
+  .badge.active{background:#d1fae5;color:#065f46;} .badge.off{background:#fef3c7;color:#92400e;} .badge.leave{background:#fee2e2;color:#991b1b;}
+  .card-btns{display:flex;gap:8px;justify-content:center;margin-top:14px;}
+  .card-btn{border:1.5px solid #e2e8f0;background:white;border-radius:50px;padding:6px 16px;font-size:0.75rem;font-weight:700;cursor:pointer;color:#475569;transition:all 0.15s;}
+  .card-btn:hover{background:var(--accent);border-color:var(--accent);color:var(--dark);}
+  .footer{background:white;border-top:1px solid #e2e8f0;padding:16px 32px;font-size:0.78rem;color:#64748b;display:flex;justify-content:space-between;}
+</style>
+</head>
+<body>
+<aside class="sidebar">
+  <div class="sb-logo"><div class="sb-logo-icon">💊</div><div><div class="sb-logo-name">Med it Easy</div><div class="sb-logo-sub">Admin Panel</div></div></div>
+  <div class="sb-section-label">Main Menu</div>
+  <a href="admin.html" class="sb-link"><span class="ico">🏠</span> Dashboard</a>
+  <a href="product.html" class="sb-link"><span class="ico">💊</span> Products</a>
+  <a href="purchases.html" class="sb-link"><span class="ico">🛒</span> Purchases</a>
+  <a href="customer.html" class="sb-link"><span class="ico">👥</span> Customers <span class="sb-badge">12</span></a>
+  <a href="cashier.html" class="sb-link"><span class="ico">💳</span> Cashier</a>
+  <div class="sb-divider"></div>
+  <div class="sb-section-label">Management</div>
+  <a href="staff.html" class="sb-link active"><span class="ico">👨‍⚕️</span> Staff</a>
+  <a href="stock.html" class="sb-link"><span class="ico">📦</span> Stock <span class="sb-badge">5</span></a>
+  <a href="logs.html" class="sb-link"><span class="ico">📋</span> Logs</a>
+  <div class="sb-divider"></div>
+  <div class="sb-section-label">Store</div>
+  <a href="ordersonline.html" class="sb-link"><span class="ico">🌐</span> Online Orders</a>
+  <a href="onlinepharmacy.html" class="sb-link"><span class="ico">🏥</span> Online Pharmacy</a>
+  <a href="qrcode.html" class="sb-link"><span class="ico">📷</span> QR Code</a>
+  <div class="sb-footer"><div class="sb-avatar">A</div><div><div class="sb-user-name">Admin User</div><div class="sb-user-role">Super Admin</div></div></div>
+</aside>
+<div class="main">
+  <div class="topbar">
+    <div class="topbar-left"><h1>👨‍⚕️ Staff</h1><p>Manage pharmacy team members</p></div>
+    <div class="topbar-right"><button class="tb-btn" onclick="alert('Add Staff Member!')">+ Add Staff</button></div>
+  </div>
+  <div class="content">
+    <div class="staff-grid">
+      <div class="staff-card"><div class="staff-avatar" style="background:#dbeafe">👨‍⚕️</div><div class="staff-name">Dr. Rajesh Kumar</div><div class="staff-role">Head Pharmacist</div><div class="staff-info"><span>📞 +91 98765 43210</span></div><span class="badge active">Active</span><div class="card-btns"><button class="card-btn" onclick="alert('Edit Dr. Rajesh')">Edit</button><button class="card-btn" onclick="alert('View Profile')">View</button></div></div>
+      <div class="staff-card"><div class="staff-avatar" style="background:#d1fae5">👩‍⚕️</div><div class="staff-name">Priya Sharma</div><div class="staff-role">Pharmacist</div><div class="staff-info"><span>📞 +91 87654 32109</span></div><span class="badge active">Active</span><div class="card-btns"><button class="card-btn" onclick="alert('Edit Priya')">Edit</button><button class="card-btn" onclick="alert('View Profile')">View</button></div></div>
+      <div class="staff-card"><div class="staff-avatar" style="background:#fef3c7">🧑‍💼</div><div class="staff-name">Amit Verma</div><div class="staff-role">Cashier</div><div class="staff-info"><span>📞 +91 76543 21098</span></div><span class="badge active">Active</span><div class="card-btns"><button class="card-btn" onclick="alert('Edit Amit')">Edit</button><button class="card-btn" onclick="alert('View Profile')">View</button></div></div>
+      <div class="staff-card"><div class="staff-avatar" style="background:#ede9fe">👩‍💻</div><div class="staff-name">Sunita Patel</div><div class="staff-role">Billing Executive</div><div class="staff-info"><span>📞 +91 65432 10987</span></div><span class="badge off">Day Off</span><div class="card-btns"><button class="card-btn" onclick="alert('Edit Sunita')">Edit</button><button class="card-btn" onclick="alert('View Profile')">View</button></div></div>
+      <div class="staff-card"><div class="staff-avatar" style="background:#ffedd5">👨‍📦</div><div class="staff-name">Ravi Nair</div><div class="staff-role">Store Manager</div><div class="staff-info"><span>📞 +91 54321 09876</span></div><span class="badge active">Active</span><div class="card-btns"><button class="card-btn" onclick="alert('Edit Ravi')">Edit</button><button class="card-btn" onclick="alert('View Profile')">View</button></div></div>
+      <div class="staff-card"><div class="staff-avatar" style="background:#fee2e2">👩‍⚕️</div><div class="staff-name">Meena Joshi</div><div class="staff-role">Pharmacist</div><div class="staff-info"><span>📞 +91 43210 98765</span></div><span class="badge leave">On Leave</span><div class="card-btns"><button class="card-btn" onclick="alert('Edit Meena')">Edit</button><button class="card-btn" onclick="alert('View Profile')">View</button></div></div>
+    </div>
+  </div>
+  <div class="footer"><span>&copy; 2026 Med it Easy</span><span>Admin Panel v2.0</span></div>
+</div>
+<script src="validation.js"></script>
+</body></html>
